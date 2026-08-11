@@ -1,5 +1,5 @@
 ---
-name: ask-create-cloud-db
+name: create-cloud-db
 description: Guide to create-cloud-db (packages/create-cloud-db), the CLI that creates a Turso database and writes TURSO_DATABASE_URL and TURSO_AUTH_TOKEN into .env — the turso auth login prerequisite, naming the database, how the .env file is rewritten, and wiring the result into Drizzle. Use when working with create-cloud-db or troubleshooting it — "not logged in" errors, a database that already exists, .env values that get overwritten or ignored, or Drizzle failing to connect with the generated credentials.
 ---
 

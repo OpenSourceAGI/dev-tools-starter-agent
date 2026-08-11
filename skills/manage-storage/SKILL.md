@@ -1,5 +1,5 @@
 ---
-name: ask-manage-storage
+name: manage-storage
 description: Guide to manage-storage (packages/manage-storage), the unified S3 / Cloudflare R2 / Backblaze B2 client — provider auto-detection from env vars, the single manageStorage(action, options) call, upload/download/list/copy/rename/delete/deleteAll, runtime credential overrides for Workers and serverless, and return shapes. Use when working with manage-storage or troubleshooting it — "no provider configured", credentials that work locally but not on the edge, wrong bucket or region, 403/SignatureDoesNotMatch, downloads coming back as the wrong type, or list returning nothing.
 ---
 

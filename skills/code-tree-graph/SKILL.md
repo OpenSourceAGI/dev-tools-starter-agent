@@ -1,5 +1,5 @@
 ---
-name: ask-code-tree-graph
+name: code-tree-graph
 description: Guide to code-tree-graph (packages/code-tree-graph), the dependency-graph and file-tree components for Fumadocs/Next.js — mounting DependencyGraph, FileTreeView and TypeTable, the AST engine (generateFileTree, analyzeFileContent, parseIgnoreFile), path resolution, ignore patterns, and the CSS import. Use when working with code-tree-graph or troubleshooting it — an empty or one-node graph, "window is not defined" / hydration errors from Mermaid, unstyled tables, paths that resolve differently in dev and build, or GitHub links pointing at the wrong file.
 ---
 

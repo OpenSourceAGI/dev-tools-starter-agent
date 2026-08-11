@@ -1,5 +1,5 @@
 ---
-name: ask-git0
+name: git0
 description: Guide to git0 (packages/git0-repo-downloader), the GitHub repo search-download-setup CLI — the g / gg / git0 / fm commands, searching by keyword vs downloading by URL or owner/repo, release binaries for your platform, automatic dependency install per project type, IDE launch, and GITHUB_TOKEN rate limits. Use when working with git0 or troubleshooting it — "API rate limit exceeded", searches returning nothing, downloads landing in a suffixed folder, dependency install or IDE launch not firing, or release assets missing for a platform.
 ---
 

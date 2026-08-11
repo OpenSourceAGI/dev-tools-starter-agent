@@ -1,5 +1,5 @@
 ---
-name: ask-server-shell-setup
+name: server-shell-setup
 description: Guide to server-shell-setup (packages/server-shell-setup), the one-command dev-environment bootstrap for fish, nushell, nvim, helix, node via Volta, bun, docker, starship, code-server and more — interactive vs unattended installs, selecting individual components, the fish aliases it adds, and the supported distros. Use when working with server-shell-setup or troubleshooting it — the installer aborting on a fresh server, sudo or password prompts, a shell that doesn't become the default, docker rootless issues, or components that silently skip on an unsupported distro.
 ---
 

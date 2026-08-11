@@ -1,5 +1,5 @@
 ---
-name: ask-open-ready
+name: open-ready
 description: Guide to open-ready (packages/open-when-ready), the dev-server wrapper that opens the browser when the server is ready and an AI assistant when it errors — wrapping any CLI command, the --ai-base / --noAi / --noOpen / --pollDelay flags, how ready and error signals are detected, and where the log file goes. Use when working with open-ready or troubleshooting it — the browser never opening, opening too early or at the wrong port, an AI tab opening on a harmless log line, or flags being swallowed by the wrapped command.
 ---
 

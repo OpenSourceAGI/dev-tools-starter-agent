@@ -1,5 +1,5 @@
 ---
-name: ask-shadcn-theme-menu
+name: shadcn-theme-menu
 description: Guide to shadcn-theme-menu (packages/shadcn-theme-menu), the shadcn/ui theme switcher — wiring ThemeProvider, ThemeToggle, ThemeDropdown, CinematicThemeSwitcher and SidebarUserMenu, importing themes.css, the 25 OKLCH color themes, setting themes programmatically, and injecting your own Button/DropdownMenu. Use when working with shadcn-theme-menu or troubleshooting it — a flash of the wrong theme on load, colors that don't change when the theme does, dark mode not applying, hydration mismatch warnings, or the dropdown rendering unstyled.
 ---
 

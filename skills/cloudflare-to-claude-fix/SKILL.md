@@ -1,5 +1,5 @@
 ---
-name: ask-cloudflare-to-claude-fix
+name: cloudflare-to-claude-fix
 description: Guide to cloudflare-to-claude-fix (packages/cloudflare-to-claude-fix), the Cloudflare Queue consumer that fires a Claude Code routine when a Workers build fails — creating the queue and DLQ, enabling build Event Subscriptions, the routine /fire API and its beta header, the ROUTINE_FIRE_URL / ROUTINE_FIRE_TOKEN / NOTIFY_WEBHOOK_URL secrets, retries, and local testing. Use when working with this Worker or troubleshooting it — routines that never fire, 400/401/403/404/429 from the fire endpoint, messages piling up in the dead-letter queue, or build events that never reach the consumer.
 ---
 

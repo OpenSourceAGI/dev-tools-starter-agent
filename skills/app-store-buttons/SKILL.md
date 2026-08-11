@@ -1,5 +1,5 @@
 ---
-name: ask-app-store-buttons
+name: app-store-buttons
 description: Guide to the app store download badges in packages/react-app-store-buttons — rendering DownloadAppButton for iOS, Android, Chrome, macOS, Windows, Linux and Snap, appId vs href, native deep links, autoHighlight OS detection, badge sizing, the styles import, and the getOS/buildStoreUrl/buildDeepLink helpers. Use when working with these buttons or troubleshooting them — a badge that doesn't render, the wrong package name on install, deep links that don't open the store app, highlight not matching the user's OS, or SSR/hydration mismatches from userAgent detection.
 ---
 

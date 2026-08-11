@@ -1,5 +1,5 @@
 ---
-name: ask-verify-phone-sms
+name: verify-phone-sms
 description: Guide to the SMS verification API in packages/verify-phone-sms — the Hono/Cloudflare Workers server, the verifyPhone() function over AWS SNS, /api/send /api/verify /api/sms endpoints, API-key auth, rate limiting, VoIP blocking via external lookup or libphonenumber-js, and wrangler deploys per environment. Use when working with verify-phone-sms or troubleshooting it — 401s from the API key, SMS that never arrives, AWS SNS sandbox and spending limits, sender-id rules, VoIP false positives, or /api/verify accepting any code.
 ---
 

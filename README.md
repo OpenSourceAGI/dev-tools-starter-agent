@@ -109,7 +109,7 @@ Every package has a matching [Agent Skill](skills/) — setup, the calls worth k
 
 ```bash
 npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent
-npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill ask-manage-storage
+npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill manage-storage
 ```
 
 See [skills/README.md](skills/README.md) for the full index.

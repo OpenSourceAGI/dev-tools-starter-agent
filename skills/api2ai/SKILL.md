@@ -1,5 +1,5 @@
 ---
-name: ask-api2ai
+name: api2ai
 description: Guide to api2ai (packages/api2ai-mcp-generator), which generates MCP servers from an OpenAPI spec using mcp-use — the CLI and programmatic generateMcpServer/extractTools API, tool filtering by tag, method, risk or operationId, the three-layer security model (risk classification, runtime policy, HTTP hardening), generated server endpoints and env vars, and connecting to Claude or ChatGPT. Use when working with api2ai or troubleshooting it — tools missing from the generated server, mutations blocked, approval prompts, 401s from the upstream API, host-allowlist or timeout errors, or the inspector exposing more than intended.
 ---
 

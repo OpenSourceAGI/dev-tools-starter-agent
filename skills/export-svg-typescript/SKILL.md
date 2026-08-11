@@ -1,5 +1,5 @@
 ---
-name: ask-export-svg-typescript
+name: export-svg-typescript
 description: Guide to export-svg-typescript (packages/export-svg-icons-typescript), the CLI that turns a folder of SVGs into a tree-shakable TypeScript barrel of icon functions — the -i / -o flags, the generated function options (colors, size, width, height, raw), JSDoc tooltip previews, and regenerating after adding icons. Use when working with export-svg-typescript or troubleshooting it — icons that don't recolor, an index.ts written to the wrong place, camelCase export names you can't guess, missing icons after adding files, or SVG strings rendering as text in JSX.
 ---
 

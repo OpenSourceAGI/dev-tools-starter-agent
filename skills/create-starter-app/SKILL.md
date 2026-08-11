@@ -1,5 +1,5 @@
 ---
-name: ask-create-starter-app
+name: create-starter-app
 description: Guide to create-starter-app (packages/create-starter-app), the interactive scaffolder that copies a starter template out of starter-templates/ — the arrow-key menu, how templates are resolved and copied, the package.json rewrite, and which template ids actually exist on disk. Use when working with create-starter-app or troubleshooting it — ENOENT when copying a template, the menu offering a template that isn't there, node_modules being copied, "directory already exists", or the CLI failing when installed from npm instead of run inside the monorepo.
 ---
 

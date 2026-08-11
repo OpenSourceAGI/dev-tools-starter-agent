@@ -1,5 +1,5 @@
 ---
-name: ask-web2mobile
+name: web2mobile
 description: Guide to web2mobile-wrapper (packages/web2mobile-wrapper), the generator that wraps a website in an Expo/React Native WebView app — the interactive CLI vs config.json, icon auto-detection and asset generation with Sharp, the generated mobile-app/ directory, and the EAS build and submit scripts. Use when working with web2mobile or troubleshooting it — a blank or refusing-to-load WebView, X-Frame-Options and HTTPS requirements, icon generation failures, EAS build or login errors, or app-store rejections of thin wrapper apps.
 ---
 
