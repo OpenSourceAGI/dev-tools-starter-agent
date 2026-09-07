@@ -1,3 +1,33 @@
+<p align="center">
+    <img width="300px" src="https://i.imgur.com/lyvk8iy.png" />
+<br /> 
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/dm/open-ready.svg" alt="NPM Monthly Downloads"></a>
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/v/open-ready.svg" alt="npm version"></a>
+    <a href="https://discord.gg/SJdBqBz3tV">
+        <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
+            alt="Join Discord" />
+    </a>  
+     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" /></a>
+<br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+    <img alt="GitHub Discussions"
+        src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" />
+    </a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" />
+    </a>
+    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" />
+<br />
+    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
+        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
+            alt="PRs Welcome" />
+    </a>
+    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent">
+    <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
+    </a>
+</p>
+
 # open-ready
 
 Smart dev server launcher that watches your server's output and automatically opens the browser when ready — or opens an AI assistant with the error context when something goes wrong.
@@ -64,7 +94,5 @@ For Next.js projects, the log is written to `.next/port.log`; otherwise `open-wh
 MIT
 
 ---
-
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
 
 Please star this repo for updates! 🌟
