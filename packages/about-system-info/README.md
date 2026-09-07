@@ -368,3 +368,9 @@ import type {
 
 - [Repository](https://github.com/OpenSourceAGI/StarterDOCS/tree/master/packages/about-system-info)
 - [Issues](https://github.com/OpenSourceAGI/StarterDOCS/issues)
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

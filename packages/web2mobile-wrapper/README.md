@@ -500,3 +500,9 @@ MIT License - Feel free to use for personal or commercial projects
 ---
 
 **Ready to boost your SEO and reach millions of app store users?** Generate your mobile app in the next 5 minutes.
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

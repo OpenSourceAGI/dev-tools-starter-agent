@@ -13,6 +13,14 @@
   "bin": {
     "export-svg-typescript": "./export-svg-typescript.js"
   },
+  "keywords": [
+    "svg",
+    "typescript",
+    "icons",
+    "cli",
+    "codegen",
+    "react"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"

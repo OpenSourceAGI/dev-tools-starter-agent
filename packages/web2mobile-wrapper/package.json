@@ -5,6 +5,16 @@
   "bin": {
     "create-mobile-wrapper": "./bin/cli.js"
   },
+  "keywords": [
+    "react-native",
+    "expo",
+    "mobile-app",
+    "webview",
+    "app-wrapper",
+    "ios",
+    "android",
+    "cli"
+  ],
   "scripts": {
     "start": "cd mobile-app && expo start",
     "android": "cd mobile-app && expo start --android",
