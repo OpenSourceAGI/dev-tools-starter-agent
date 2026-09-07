@@ -50,3 +50,9 @@ import { loadingDoubleRing } from './demo';
 loadingDoubleRing({size: 200, colors: ["#5345bb"] })
 ```
 ![screenshot](https://i.imgur.com/aXczCC2.png)
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

@@ -7,6 +7,16 @@
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/cloudflare-to-claude-fix"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/cloudflare-to-claude-fix",
+  "keywords": [
+    "cloudflare",
+    "cloudflare-workers",
+    "claude",
+    "claude-code",
+    "queue",
+    "wrangler",
+    "ci",
+    "build-failure"
+  ],
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",

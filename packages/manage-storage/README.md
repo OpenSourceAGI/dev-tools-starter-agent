@@ -487,3 +487,9 @@ This library uses the official [@aws-sdk/client-s3](https://docs.aws.amazon.com/
 - **[Google GCS](https://cloud.google.com/storage/pricing)**: [GCP workloads](https://cloud.google.com/storage/pricing) (BigQuery, AI, Kubernetes); [multi-region needs](https://onidel.com/blog/cloudflare-r2-vs-backblaze-b2) or tiered classes for cost optimization.
 
 Backblaze wins on raw storage cost, R2 on bandwidth-heavy apps, while AWS/GCS suit enterprise ecosystems with richer tools. For exact costs, use [calculators](https://r2-calculator.cloudflare.com) with your workload (e.g., [TB stored](https://www.backblaze.com/cloud-storage/pricing), [TB egress](https://onidel.com/blog/cloudflare-r2-vs-backblaze-b2), [ops volume](https://aws.amazon.com/s3/pricing/)).
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

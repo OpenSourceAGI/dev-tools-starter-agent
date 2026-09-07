@@ -7,6 +7,16 @@
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph",
+  "keywords": [
+    "code-graph",
+    "dependency-graph",
+    "file-tree",
+    "visualization",
+    "react",
+    "typescript",
+    "ast",
+    "mermaid"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",

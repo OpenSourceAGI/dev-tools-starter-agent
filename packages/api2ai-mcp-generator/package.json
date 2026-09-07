@@ -9,6 +9,16 @@
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/api2ai-mcp-generator"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/api2ai-mcp-generator",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "openapi",
+    "api",
+    "ai",
+    "code-generator",
+    "zod"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",

@@ -410,3 +410,9 @@ wget -qO- tinyurl.com/shellsetup | bash
 ## Contributing
 
 Contributions are welcome! Please check the individual package READMEs for specific contribution guidelines.
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

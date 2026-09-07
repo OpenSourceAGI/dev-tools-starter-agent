@@ -535,3 +535,9 @@ It finishes by syncing and dropping the kernel page cache. The Docker prune dele
 - [gh GitHub CLI](https://cli.github.com/manual/gh)
 - [DevDocs.io](https://devdocs.io/)
 - [Terminal Best Tools](https://github.com/k4m4/terminals-are-sexy)
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟
