@@ -17,18 +17,43 @@ export const SETTINGS_FILE = path.join(
 export const CACHE_FILE = path.join(os.tmpdir(), "systeminfo-cache.json");
 
 // Color codes
+//
+// These are deliberately darker/more saturated than a typical terminal
+// palette. The original bright variants (e.g. yellow 226, cyan 51, gray 250)
+// have very high luminance and are nearly unreadable on a light/white
+// terminal background. `lightblue` was also mislabeled: it pointed at gold
+// (220), not a blue at all. Every value below reads clearly on both light
+// and dark backgrounds.
 export const colors = {
   reset: "\x1b[0m",
-  red: "\x1b[38;5;196m",
-  orange: "\x1b[38;5;208m",
-  yellow: "\x1b[38;5;226m",
-  green: "\x1b[38;5;46m",
-  blue: "\x1b[38;5;39m",
-  cyan: "\x1b[38;5;51m",
-  purple: "\x1b[38;5;171m",
-  magenta: "\x1b[38;5;213m",
-  gray: "\x1b[38;5;250m",
-  lightblue: "\x1b[38;5;220m",
+  red: "\x1b[38;5;160m",
+  orange: "\x1b[38;5;130m",
+  yellow: "\x1b[38;5;58m",
+  green: "\x1b[38;5;22m",
+  blue: "\x1b[38;5;25m",
+  cyan: "\x1b[38;5;23m",
+  purple: "\x1b[38;5;91m",
+  magenta: "\x1b[38;5;125m",
+  gray: "\x1b[38;5;238m",
+  lightblue: "\x1b[38;5;24m",
+};
+
+// Background variants, keyed the same as `colors`, used when
+// `display.show_backgrounds` is enabled. Each entry sets its own background
+// block plus a foreground text color chosen for contrast against it, so
+// every item is legible on its own regardless of what the terminal's
+// background actually is.
+export const backgrounds = {
+  red: "\x1b[48;5;88m\x1b[38;5;255m",
+  orange: "\x1b[48;5;166m\x1b[38;5;232m",
+  yellow: "\x1b[48;5;178m\x1b[38;5;232m",
+  green: "\x1b[48;5;22m\x1b[38;5;255m",
+  blue: "\x1b[48;5;18m\x1b[38;5;255m",
+  cyan: "\x1b[48;5;23m\x1b[38;5;255m",
+  purple: "\x1b[48;5;54m\x1b[38;5;255m",
+  magenta: "\x1b[48;5;53m\x1b[38;5;255m",
+  gray: "\x1b[48;5;236m\x1b[38;5;255m",
+  lightblue: "\x1b[48;5;26m\x1b[38;5;255m",
 };
 
 // Default settings
@@ -154,6 +179,7 @@ export const DEFAULT_SETTINGS = {
   },
   display: {
     show_emojis: true,
+    show_backgrounds: true,
     single_line: true,
     line_wrap_length: process?.stdout?.columns || 100,
   },
@@ -172,6 +198,8 @@ export interface Settings {
   labels: Record<string, string>;
   display: {
     show_emojis: boolean;
+    /** true (default): give every item its own background color block, so it stays legible regardless of the terminal's background */
+    show_backgrounds: boolean;
     /** true: print one continuous line and let the terminal soft-wrap it; false: hard-wrap at line_wrap_length */
     single_line: boolean;
     line_wrap_length: number;

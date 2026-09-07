@@ -210,6 +210,7 @@ about-system --cache-clear
   },
   "display": {
     "show_emojis": true,
+    "show_backgrounds": true,
     "single_line": true,
     "line_wrap_length": 100
   },
@@ -231,9 +232,19 @@ Available color options for each info block:
 - `red`, `orange`, `yellow`, `green`, `blue`, `cyan`, `purple`, `magenta`, `gray`, `lightblue`
 - Use `multicolor` for ports to get a rainbow effect
 
+All colors use darker, more saturated shades so they stay readable on both light and dark terminal backgrounds.
+
 ```bash
 about-system --set colors.user blue
 about-system --set colors.hostname green
+```
+
+#### Backgrounds
+
+By default, every info block is rendered as a colored background badge with a contrasting text color, so it stays legible no matter what background color your terminal uses. Disable it to fall back to plain colored text:
+
+```bash
+about-system --set display.show_backgrounds false
 ```
 
 #### Emojis

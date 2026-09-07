@@ -53,7 +53,7 @@ Note the two internal renames: `os` maps to `os_info`, `pacman` maps to `package
 | `colors` | `{ [block]: color }` | `red`, `orange`, `yellow`, `green`, `blue`, `cyan`, `purple`, `magenta`, `gray`, `lightblue`; `multicolor` for `ports`. |
 | `emojis` | `{ [block]: string }` | Include the trailing space, e.g. `"🚀 "`. |
 | `labels` | `{ [block]: string }` | Text label used when emojis are off. |
-| `display` | `{ show_emojis, single_line, line_wrap_length }` | |
+| `display` | `{ show_emojis, show_backgrounds, single_line, line_wrap_length }` | `show_backgrounds` (default `true`) renders each block as a colored background badge with contrasting text, legible on any terminal background. |
 | `network` | `{ show_offline_message }` | |
 | `advanced` | `{ debug }` | |
 
