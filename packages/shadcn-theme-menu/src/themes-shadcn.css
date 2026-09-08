@@ -1,3 +1,51 @@
+/* ---------------------------------------------------------------------------
+ * Theme typography
+ *
+ * Every `theme-*` block in this file carries `--font-sans` / `--font-serif` /
+ * `--font-mono` next to its colors, so a theme is a typeface as much as a
+ * palette. Two things have to be true for that to reach the screen:
+ *
+ *   1. the families have to be loaded — the Google Fonts import below covers
+ *      every non-system family the themes reference; and
+ *   2. something has to actually read `--font-sans` — the rule under it.
+ *
+ * The rule is scoped to `theme-*` so it only takes over once a color theme is
+ * active. Because the color theme is a class on `<html>`, the font then follows
+ * every theme change — including the hover preview in `ThemeDropdown`, where
+ * the page re-typesets under the cursor and reverts on mouse-out.
+ *
+ * Overriding it: the selector is (0,1,1), so a bare `body { font-family }` in
+ * an app stylesheet loses to it — restate this same selector pair after the
+ * import (equal specificity, later source order), or set `style.fontFamily`
+ * inline on `<html>` *and* `<body>`: the rule targets both, so an inline style
+ * on `<html>` alone is overridden again at `<body>`. Redefining `--font-sans`
+ * on `:root` is *not* enough: each theme block declares it at (0,2,0) and
+ * outranks `:root`.
+ *
+ * Themes with no `--font-*` of their own — `claude`, `caffeine`, `lemonade` —
+ * deliberately inherit whatever the app already uses.
+ * ------------------------------------------------------------------------- */
+@import url("https://fonts.googleapis.com/css2?family=Architects+Daughter&family=DM+Sans:wght@400;500;700&family=Fira+Code:wght@400;500;700&family=Geist+Mono:wght@400;500;700&family=Geist:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Libre+Baskerville:wght@400;700&family=Lora:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Oxanium:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Roboto+Mono:wght@400;500;700&family=Roboto:wght@400;500;700&family=Source+Code+Pro:wght@400;500;700&family=Source+Serif+4:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Ubuntu+Mono:wght@400;700&display=swap");
+
+html[class*="theme-"],
+html[class*="theme-"] body {
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+/* Opt-in escape hatches for the other two faces a theme defines — there is no
+   other way to reach them, since only the sans face is applied globally. */
+.font-theme-sans {
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+
+.font-theme-serif {
+  font-family: var(--font-serif, ui-serif, Georgia, serif);
+}
+
+.font-theme-mono {
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
 .theme-minimal.light {
   --background: #ffffff;
   --foreground: #333333;
@@ -71,6 +119,9 @@
   --sidebar-accent-foreground: #bfdbfe;
   --sidebar-border: #404040;
   --sidebar-ring: #3b82f6;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-lemonade.light {
@@ -223,6 +274,9 @@
   --sidebar-border: #38444d;
   --sidebar-ring: #1da1f2;
   --shadow-color: rgba(29, 161, 242, 0.25);
+  --font-sans: Open Sans, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
 }
 
 .theme-mocha.light {
@@ -304,6 +358,9 @@
   --sidebar-border: #56453f;
   --sidebar-ring: #c39e88;
   --shadow-color: hsl(20 18% 30% / 0.5);
+  --font-sans: DM Sans, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
 }
 
 .theme-bubblegum.light {
@@ -470,6 +527,9 @@
   --sidebar-accent-foreground: #f2b8c6;
   --sidebar-border: #2a273a;
   --sidebar-ring: #a995c9;
+  --font-sans: Geist, sans-serif;
+  --font-serif: "Lora", Georgia, serif;
+  --font-mono: "Fira Code", "Courier New", monospace;
 }
 
 .theme-notebook.light {
@@ -738,6 +798,9 @@
   --sidebar-accent-foreground: #1e1e2e;
   --sidebar-border: #45475a;
   --sidebar-ring: #cba6f7;
+  --font-sans: Montserrat, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: Fira Code, monospace;
 }
 
 .theme-graphite.light {
@@ -991,6 +1054,9 @@
   --sidebar-accent-foreground: #2a2521;
   --sidebar-border: #5a5345;
   --sidebar-ring: #8a9f7b;
+  --font-sans: Merriweather, serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-cosmic.light {
@@ -1072,6 +1138,9 @@
   --sidebar-accent-foreground: #e2e2f5;
   --sidebar-border: #303052;
   --sidebar-ring: #a48fff;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-tangerine.light {
@@ -1152,6 +1221,9 @@
   --sidebar-accent-foreground: #bfdbfe;
   --sidebar-border: #3d4354;
   --sidebar-ring: #e05d38;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-quantum.light {
@@ -1311,6 +1383,9 @@
   --sidebar-accent-foreground: #f0ebe5;
   --sidebar-border: #3e4a3d;
   --sidebar-ring: #4caf50;
+  --font-sans: Montserrat, sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: Source Code Pro, monospace;
 }
 
 .theme-boldtech.light {
@@ -1392,6 +1467,9 @@
   --sidebar-accent-foreground: #e0e7ff;
   --sidebar-border: #2e1065;
   --sidebar-ring: #8b5cf6;
+  --font-sans: Roboto, sans-serif;
+  --font-serif: Playfair Display, serif;
+  --font-mono: Fira Code, monospace;
 }
 
 .theme-luxury.light {
@@ -1473,6 +1551,9 @@
   --sidebar-accent-foreground: #fef3c7;
   --sidebar-border: #44403c;
   --sidebar-ring: #b91c1c;
+  --font-sans: Poppins, sans-serif;
+  --font-serif: Libre Baskerville, serif;
+  --font-mono: IBM Plex Mono, monospace;
 }
 
 .theme-ambermin.light {
@@ -1555,6 +1636,9 @@
   --sidebar-accent-foreground: #fde68a;
   --sidebar-border: #404040;
   --sidebar-ring: #f59e0b;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-supabase.light {
@@ -1636,6 +1720,9 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #292929;
   --sidebar-ring: #4ade80;
+  --font-sans: Outfit, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: monospace;
 }
 
 .theme-brutalism.light {
@@ -1716,6 +1803,8 @@
   --sidebar-accent-foreground: #000000;
   --sidebar-border: #ffffff;
   --sidebar-ring: #ff6666;
+  --font-sans: DM Sans, sans-serif;
+  --font-mono: Space Mono, monospace;
 }
 
 .theme-solardusk.light {
@@ -1798,6 +1887,9 @@
   --sidebar-border: #44403c;
   --sidebar-ring: #f97316;
   --shadow-color: hsl(0 0% 5%);
+  --font-sans: Oxanium, sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: Fira Code, monospace;
 }
 
 .theme-claymorphism.light {
@@ -1880,6 +1972,9 @@
   --sidebar-border: #3a3633;
   --sidebar-ring: #818cf8;
   --shadow-color: hsl(0 0% 0%);
+  --font-sans: Plus Jakarta Sans, sans-serif;
+  --font-serif: Lora, serif;
+  --font-mono: Roboto Mono, monospace;
 }
 
 .theme-cyberpunk.light {
@@ -1960,6 +2055,8 @@
   --sidebar-accent-foreground: #0c0c1d;
   --sidebar-border: #2e2e5e;
   --sidebar-ring: #ff00c8;
+  --font-sans: Outfit, sans-serif;
+  --font-mono: Fira Code, monospace;
 }
 
 .theme-pastel.light {
@@ -2041,6 +2138,9 @@
   --sidebar-accent-foreground: #d1d5db;
   --sidebar-border: #3f324a;
   --sidebar-ring: #c0aafd;
+  --font-sans: Open Sans, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: IBM Plex Mono, monospace;
 }
 
 .theme-cleanslate.light {
@@ -2122,6 +2222,9 @@
   --sidebar-accent-foreground: #d1d5db;
   --sidebar-border: #4b5563;
   --sidebar-ring: #818cf8;
+  --font-sans: Inter, sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-caffeine.light {
@@ -2275,6 +2378,9 @@
   --sidebar-accent-foreground: #a1a1aa;
   --sidebar-border: #4b5563;
   --sidebar-ring: #34d399;
+  --font-sans: DM Sans, sans-serif;
+  --font-serif: Lora, serif;
+  --font-mono: IBM Plex Mono, monospace;
 }
 
 .theme-retro.light {
@@ -2355,6 +2461,8 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #586e75;
   --sidebar-ring: #d33682;
+  --font-sans: Outfit, sans-serif;
+  --font-mono: Space Mono, monospace;
 }
 
 .theme-bloom.light {
@@ -2436,6 +2544,9 @@
   --sidebar-accent-foreground: #e5e5e5;
   --sidebar-border: #444444;
   --sidebar-ring: #6c5ce7;
+  --font-sans: Montserrat, sans-serif;
+  --font-serif: Playfair Display, serif;
+  --font-mono: Source Code Pro, monospace;
 }
 
 .theme-candyland.light {
@@ -2510,6 +2621,8 @@
   --sidebar-accent-foreground: #000000;
   --sidebar-border: #444444;
   --sidebar-ring: #ff99cc;
+  --font-sans: Poppins, sans-serif;
+  --font-mono: Roboto Mono, monospace;
 }
 
 .theme-aurora.light {
@@ -2585,6 +2698,9 @@
   --sidebar-accent-foreground: #e5e5e5;
   --sidebar-border: #444444;
   --sidebar-ring: #34a85a;
+  --font-sans: Plus Jakarta Sans, sans-serif;
+  --font-serif: Source Serif 4, serif;
+  --font-mono: JetBrains Mono, monospace;
 }
 
 .theme-vintage.light {
@@ -2666,6 +2782,9 @@
   --sidebar-accent-foreground: #ece5d8;
   --sidebar-border: #4a4039;
   --sidebar-ring: #c0a080;
+  --font-sans: Libre Baskerville, serif;
+  --font-serif: Lora, serif;
+  --font-mono: IBM Plex Mono, monospace;
 }
 
 .theme-horizon.light {
@@ -2747,6 +2866,9 @@
   --sidebar-accent-foreground: #2a2024;
   --sidebar-border: #463a41;
   --sidebar-ring: #ff7e5f;
+  --font-sans: Montserrat, sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: Ubuntu Mono, monospace;
 }
 
 .theme-starry.light {
@@ -2820,6 +2942,7 @@
   --sidebar-border: #2d2e3e;
   --sidebar-ring: #ffe066;
   --radius: 0.5rem;
+  --font-sans: Libre Baskerville, serif;
 }
 
 .theme-claude.light {
@@ -3054,4 +3177,7 @@
   --sidebar-accent-foreground: #fafafa;
   --sidebar-border: #ffffff;
   --sidebar-ring: #525252;
+  --font-sans: Geist Mono, monospace;
+  --font-serif: Geist Mono, monospace;
+  --font-mono: Geist Mono, monospace;
 }

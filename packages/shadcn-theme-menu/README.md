@@ -39,6 +39,7 @@ Beautiful theme components for shadcn/ui with 24+ color themes, dark/light mode,
 - **Fully type-safe** – complete TypeScript support with exported types
 - **Customizable** – pass your own Button/DropdownMenu components or set themes programmatically
 - **Persistent** – automatic `localStorage` support for color theme preferences
+- **Themed typography** – each theme brings its own font, previewed live on hover
 
 ---
 
@@ -123,6 +124,57 @@ Animated toggle with particle effects.
 ### Available Themes
 
 24 themes: `modern-minimal`, `elegant-luxury`, `cyberpunk`, `twitter`, `mocha-mousse`, `bubblegum`, `amethyst-haze`, `pink-lemonade`, `notebook`, `doom-64`, `catppuccin`, `graphite`, `perpetuity`, `kodama-grove`, `cosmic-night`, `tangerine`, `quantum-rose`, `nature`, `bold-tech`, `amber-minimal`, `supabase`, `neo-brutalism`, `solar-dusk`, `claymorphism`, `pastel-dreams`
+
+## Theme Fonts
+
+A theme is a typeface as much as a palette. Each `theme-*` class defines
+`--font-sans`, `--font-serif` and `--font-mono` alongside its colors, and
+`themes.css` both loads those families from Google Fonts and applies the sans
+face to the document:
+
+```css
+html[class*="theme-"],
+html[class*="theme-"] body {
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+}
+```
+
+Because the color theme is a class on `<html>`, the font follows every theme
+change — including the hover preview in `ThemeDropdown` and `SidebarUserMenu`,
+where the page re-typesets under the cursor and reverts on mouse-out. Nothing
+to wire up: importing `themes.css` is enough.
+
+The serif and mono faces are not applied globally; reach them with the
+`.font-theme-serif` / `.font-theme-mono` utilities (and `.font-theme-sans` for
+a subtree that opted out).
+
+```tsx
+<blockquote className="font-theme-serif">Set in the theme's serif face.</blockquote>
+<pre className="font-theme-mono">$ npm install</pre>
+```
+
+**Overriding.** To keep a self-hosted face (`next/font`, Fontsource) while the
+theme colors still switch, restate the same selector pair after the import —
+equal specificity, later source order, so yours wins:
+
+```css
+@import "shadcn-theme-menu/themes.css";
+
+html[class*="theme-"],
+html[class*="theme-"] body {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+```
+
+Redefining `--font-sans` on `:root` will *not* do it: each theme block declares
+that variable at two-class specificity and outranks `:root`. A bare
+`body { font-family }` loses too. For a user-facing font preference, set
+`style.fontFamily` inline on **both** `<html>` and `<body>` — inline beats the
+rule, but setting it on `<html>` alone is overridden again at `<body>`, since
+the rule targets both. Clearing it back to `""` restores the theme's font.
+
+A handful of themes (`claude`, `caffeine`, `lemonade`) deliberately declare no
+font of their own and inherit whatever your app already uses.
 
 ## Custom Components
 
