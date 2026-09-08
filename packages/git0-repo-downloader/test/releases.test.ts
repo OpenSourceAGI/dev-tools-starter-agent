@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect } from 'vitest';
 import { categorizeReleasesByPlatform, filterReleasesByPlatform } from '../src/releases.ts';
 import type { PlatformInfo } from '../src/types.ts';
 

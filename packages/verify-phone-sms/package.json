@@ -28,7 +28,7 @@
     "deploy:all:production": "bun run deploy:production && bun run deploy:docs:production",
     "build": "echo 'No build step needed for Workers'",
     "build:docs": "cd docs && bun run build",
-    "test": "vitest",
+    "test": "vitest run",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
     "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=junit.xml"
@@ -59,12 +59,13 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260507.1",
     "@types/node": "^25.6.0",
-    "@vitest/ui": "^1.0.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/ui": "^4.1.0",
     "eslint": "^8.55.0",
     "prettier": "^3.1.0",
     "supertest": "^6.3.3",
     "typescript": "^6.0.3",
-    "vitest": "^1.0.0",
+    "vitest": "^4.1.0",
     "wrangler": "^4.24.0"
   },
   "repository": {

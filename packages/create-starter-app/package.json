@@ -7,7 +7,10 @@
     "create-starter-app": "./bin/create-starter-app.js"
   },
   "scripts": {
-    "ship": "npm run build && npx standard-version --release-as patch; rm CHANGELOG.md; npm publish"
+    "ship": "npm run build && npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "files": [
     "bin",
@@ -34,5 +37,9 @@
     "type": "git",
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app"
   },
-  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app"
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
 }

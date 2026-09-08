@@ -10,7 +10,10 @@
   },
   "scripts": {
     "ship": "npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
-    "start": "node create-cloud-db.js"
+    "start": "node create-cloud-db.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -23,5 +26,9 @@
     "cli",
     "env"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
 }

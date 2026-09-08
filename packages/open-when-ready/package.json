@@ -8,7 +8,10 @@
   },
   "scripts": {
     "ship": "bun x standard-version --release-as patch;rm CHANGELOG.md; npm publish",
-    "owr": "./open-when-ready.mjs bun run build"
+    "owr": "./open-when-ready.mjs bun run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [
     "devtools",
@@ -30,5 +33,9 @@
     "type": "git",
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready"
   },
-  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready"
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
 }

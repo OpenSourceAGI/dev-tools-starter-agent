@@ -37,7 +37,10 @@
     "clear-cache": "npm run build && node dist/about-system-cli.js --refresh",
     "help": "npm run build && node dist/about-system-cli.js --help",
     "app:dev": "cd native && npm run dev",
-    "app:build": "cd native && npm run build:desktop"
+    "app:build": "cd native && npm run build:desktop",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [
     "src/about-system",
@@ -85,8 +88,10 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@vitest/coverage-v8": "^4.1.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.0"
   }
 }

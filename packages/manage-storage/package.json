@@ -33,15 +33,20 @@
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@vitest/coverage-v8": "^4.1.0",
     "terser": "^5.44.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.0"
   },
   "scripts": {
     "build": "vite build",
     "prepublishOnly": "npm run build",
-    "ship": "npx standard-version --release-as patch; rm CHANGELOG.md; npm publish"
+    "ship": "npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "exports": {
     ".": {

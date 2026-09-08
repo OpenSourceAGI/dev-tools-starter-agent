@@ -43,7 +43,10 @@
     "docs:generate": "fumadocs-mdx",
     "postinstall": "fumadocs-mdx && drizzle-kit push",
     "make": "concurrently \"next build && next start \" \"wait-on http://localhost:3000 && opener http://localhost:3000\"",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@ai-sdk/react": "3.0.3",
@@ -224,6 +227,7 @@
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@types/three": "^0.182.0",
+    "@vitest/coverage-v8": "^4.1.0",
     "concurrently": "^9.2.1",
     "drizzle-kit": "^0.31.8",
     "opener": "^1.5.2",
@@ -233,6 +237,7 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
     "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.0",
     "wait-on": "^9.0.3"
   },
   "data": "dist/index.d.ts",

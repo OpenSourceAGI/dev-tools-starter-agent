@@ -28,7 +28,10 @@
     "preios:dev": "node bin/cli.js configure",
     "ios:dev": "tauri ios dev",
     "preios:build": "node bin/cli.js configure",
-    "ios:build": "tauri ios build"
+    "ios:build": "tauri ios build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [
     "tauri",
@@ -48,7 +51,9 @@
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper",
   "devDependencies": {
-    "@tauri-apps/cli": "^2"
+    "@tauri-apps/cli": "^2",
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

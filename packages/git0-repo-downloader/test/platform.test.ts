@@ -17,12 +17,6 @@ afterAll(() => {
 });
 
 describe('getCurrentPlatform', () => {
-  // Helper: dynamically re-import the module so mocks apply fresh each time.
-  async function load() {
-    const mod = await import('../src/platform.ts?t=' + Date.now());
-    return mod.getCurrentPlatform;
-  }
-
   test('maps darwin/x64 → macos/x86_64', async () => {
     mockPlatform('darwin', 'x64');
     const fn = await load();
