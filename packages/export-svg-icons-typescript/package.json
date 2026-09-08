@@ -8,7 +8,10 @@
   "type": "module",
   "scripts": {
     "pub": "npm version patch && npm publish",
-    "demo": "node export-svg-typescript.js -i ./demo -o ./demo/index.ts"
+    "demo": "node export-svg-typescript.js -i ./demo -o ./demo/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "bin": {
     "export-svg-typescript": "./export-svg-typescript.js"
@@ -25,5 +28,9 @@
     "type": "git",
     "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"
   },
-  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
 }

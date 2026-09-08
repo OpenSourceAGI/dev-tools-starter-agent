@@ -1,0 +1,34 @@
+{
+  "name": "dev-tools-starter-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo of developer tools, starter templates, and cloud apps",
+  "type": "module",
+  "packageManager": "bun@1.3.11",
+  "author": "vtempest",
+  "license": "rights.institute/prosper",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:watch": "turbo run test:watch",
+    "coverage": "turbo run coverage",
+    "clean": "turbo run clean && rm -rf .turbo node_modules"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "turbo": "^2.10.12",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  }
+}

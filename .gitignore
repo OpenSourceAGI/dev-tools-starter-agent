@@ -26,3 +26,6 @@ packages/template-fumadocs/.next/*
 .next/
 .claude/
 .svelte-kit/
+# Test coverage & Turborepo cache
+coverage/
+.turbo/

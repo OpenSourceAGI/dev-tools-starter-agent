@@ -5,10 +5,12 @@
     "author": "vtempest",
     "scripts": {
         "build": "bun build src/cli.ts --outdir dist --target node --format esm --sourcemap",
-        "test": "bun test",
+        "test": "vitest run",
         "docs": "cd docs-config && bun run build:docs",
         "demo": "bun src/cli.ts react template",
-        "publish:npm": "npm version patch && npm publish --access public"
+        "publish:npm": "npm version patch && npm publish --access public",
+        "test:watch": "vitest",
+        "coverage": "vitest run --coverage"
     },
     "dependencies": {
         "chalk": "^5.4.1",
@@ -41,5 +43,9 @@
         "type": "git",
         "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader"
     },
-    "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader"
+    "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader",
+    "devDependencies": {
+        "@vitest/coverage-v8": "^4.1.0",
+        "vitest": "^4.1.0"
+    }
 }

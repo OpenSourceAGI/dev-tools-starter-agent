@@ -55,18 +55,20 @@ jobs:
             (
               cd "$dir"
 
-              npm version patch --no-git-tag-version
+              # --no-workspaces keeps npm operating on this package alone now that
+              # the repo root declares a Turborepo/bun workspace.
+              npm version patch --no-git-tag-version --no-workspaces
 
               # Skip postinstall hooks (e.g. drizzle-kit push, fumadocs-mdx) that require
               # runtime env vars not available in CI — build script is run explicitly below
-              npm install --ignore-scripts --legacy-peer-deps
+              npm install --ignore-scripts --legacy-peer-deps --no-workspaces
 
               has_build=$(node -e "const p=require('./package.json'); console.log(!!(p.scripts && p.scripts.build))")
               if [ "$has_build" = "true" ]; then
                 npm run build
               fi
 
-              npm publish --provenance --access public
+              npm publish --provenance --access public --no-workspaces
             ) || {
               echo "❌ Failed to publish $name"
               failed_packages="$failed_packages $name"

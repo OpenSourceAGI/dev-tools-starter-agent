@@ -25,7 +25,10 @@
   "scripts": {
     "build": "vite build",
     "ship": "npm run build; npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
-    "demo": "cd demo && pnpm dev"
+    "demo": "cd demo && pnpm dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "sideEffects": [
     "*.css"
@@ -75,8 +78,11 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-window": "^2.0.0",
     "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.0",
+    "jsdom": "^28.0.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "vite": "^8.0.0"
+    "vite": "^8.0.0",
+    "vitest": "^4.1.0"
   }
 }

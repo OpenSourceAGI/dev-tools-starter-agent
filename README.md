@@ -126,3 +126,39 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 ```
 
 See [skills/README.md](skills/README.md) for the full index.
+
+### 🧪 Monorepo Tasks, Tests & Coverage
+
+The repo is a [Turborepo](https://turborepo.com): `packages/*` and `apps/*` are
+workspaces, and `turbo.json` defines the shared `build`, `dev`, `lint`,
+`typecheck`, `test` and `coverage` tasks. Run them from the root, across every
+workspace at once or scoped to one:
+
+```bash
+bun install            # single hoisted install for the whole workspace
+bun run build          # turbo run build
+bun run test           # turbo run test
+bun run coverage       # turbo run coverage
+bunx turbo run coverage --filter=./packages/git0-repo-downloader
+```
+
+Testing is [Vitest](https://vitest.dev), configured **per package** rather than
+once at the root: each package owns a `vitest.config.ts` (or `.mjs`) that picks
+its own environment (`node` or `jsdom`), its own test glob, and the source globs
+that count toward coverage. Every package exposes the same three scripts:
+
+```bash
+bun run test           # vitest run
+bun run test:watch     # vitest
+bun run coverage       # vitest run --coverage
+```
+
+Coverage is written to that package's own `coverage/lcov.info`. CI
+([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs one job per
+package and uploads its report to [Codecov](https://codecov.io) under a flag
+named after the package directory, so `codecov.yml` reports per-package flags
+and components instead of one repo-wide number.
+
+Adding a package? Copy a `vitest.config.*` from a neighbour, add the three
+scripts, then add the package to the CI matrix and to the `flags` and
+`individual_components` lists in `codecov.yml`.
