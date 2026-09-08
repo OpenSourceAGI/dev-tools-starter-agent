@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>About System</title>
+    <style>
+      /*
+        The whole app's UI. It is deliberately one dependency-free file: this is
+        bundled into the binary, so anything it fetched at runtime would break
+        the offline guarantee that is the reason for packaging the CLI this way.
+      */
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f7f9;
+        --panel: #ffffff;
+        --panel-border: #e3e6ea;
+        --text: #12161c;
+        --muted: #626b78;
+        --accent: #0f766e;
+        --accent-soft: #ccfbf1;
+        --danger: #b42318;
+        --shadow: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.1);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0b1220;
+          --panel: #131c2b;
+          --panel-border: #23304a;
+          --text: #e6edf6;
+          --muted: #93a1b5;
+          --accent: #5eead4;
+          --accent-soft: #10312e;
+          --danger: #ff9c8f;
+          --shadow: none;
+        }
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 20px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .identity { min-width: 0; }
+      .identity h1 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .identity p { margin: 1px 0 0; font-size: 12px; color: var(--muted); }
+      .spacer { flex: 1; }
+
+      button {
+        font: inherit;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 7px;
+        border: 1px solid var(--panel-border);
+        background: var(--panel);
+        color: var(--text);
+        cursor: pointer;
+      }
+      button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+      button:disabled { opacity: 0.55; cursor: default; }
+
+      main { padding: 18px 20px 28px; }
+
+      .groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 14px;
+        align-items: start;
+      }
+      section {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 11px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      section h2 {
+        margin: 0;
+        padding: 11px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border-bottom: 1px solid var(--panel-border);
+      }
+      dl { margin: 0; padding: 4px 0; }
+      .row {
+        display: grid;
+        grid-template-columns: 1.6em minmax(6.5em, auto) 1fr;
+        gap: 10px;
+        align-items: baseline;
+        padding: 6px 14px;
+      }
+      .row dt { color: var(--muted); font-size: 13px; }
+      .row dd {
+        margin: 0;
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+      }
+      .emoji { font-size: 14px; line-height: 1; }
+
+      .notice {
+        max-width: 640px;
+        margin: 40px auto;
+        padding: 20px 22px;
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 11px;
+      }
+      .notice h2 { margin: 0 0 8px; font-size: 15px; }
+      .notice p { margin: 0 0 10px; color: var(--muted); }
+      .notice pre {
+        margin: 0;
+        padding: 10px 12px;
+        overflow-x: auto;
+        background: var(--bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 7px;
+        font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+        color: var(--danger);
+        white-space: pre-wrap;
+      }
+
+      footer {
+        padding: 0 20px 20px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      [hidden] { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="identity">
+        <h1 id="title">About System</h1>
+        <p id="subtitle">Reading system information…</p>
+      </div>
+      <div class="spacer"></div>
+      <button id="copy" disabled>Copy JSON</button>
+      <button id="refresh" disabled>Refresh</button>
+    </header>
+
+    <main>
+      <div class="notice" id="notice" hidden>
+        <h2 id="notice-title"></h2>
+        <p id="notice-body"></p>
+        <pre id="notice-detail" hidden></pre>
+      </div>
+      <div class="groups" id="groups"></div>
+    </main>
+
+    <footer id="footer" hidden></footer>
+
+    <script>
+      // Field -> [emoji, label], grouped the way the panels are laid out. The
+      // emoji echo the CLI's own output so the app and the terminal greeting
+      // read as the same tool. Fields the CLI returns empty on this platform
+      // are skipped rather than rendered blank, which is why the panels vary in
+      // height between machines.
+      const GROUPS = [
+        ["System", [
+          ["user", "👤", "User"],
+          ["hostname", "🏠", "Host"],
+          ["os", "⚡", "OS"],
+          ["kernel", "🔧", "Kernel"],
+          ["device", "💻", "Device"],
+          ["shell", "🐚", "Shell"],
+          ["uptime", "⏱️", "Uptime"],
+          ["users_logged_in", "🧑‍🤝‍🧑", "Logged in"],
+        ]],
+        ["Hardware", [
+          ["cpu", "📈", "CPU"],
+          ["bench", "🏅", "CPU rank"],
+          ["gpu", "🎮", "GPU"],
+          ["gpu_bench", "🥇", "GPU rank"],
+          ["load_average", "📊", "Load"],
+          ["temperature", "🌡️", "Temp"],
+          ["battery", "🔋", "Battery"],
+          ["screen_resolution", "🖥️", "Display"],
+        ]],
+        ["Memory & storage", [
+          ["ram_used", "💾", "RAM"],
+          ["memory_available", "🧠", "Available"],
+          ["swap_used", "🔄", "Swap"],
+          ["disk_used", "📁", "Disk used"],
+          ["disk_size", "🗄️", "Disk size"],
+          ["top_process", "🔝", "Top process"],
+          ["mount_points", "📌", "Mounts"],
+        ]],
+        ["Network", [
+          ["ip", "🌎", "Public IP"],
+          ["iplocal", "🌐", "Local IP"],
+          ["city", "📍", "Location"],
+          ["isp", "👮", "ISP"],
+          ["domain", "🔗", "Domain"],
+          ["network_interfaces", "🔌", "Interfaces"],
+          ["ports", "🚪", "Open ports"],
+        ]],
+        ["Software", [
+          ["pacman", "🚀", "Tools"],
+          ["containers", "📦", "Containers"],
+          ["services_running", "⚙️", "Services"],
+        ]],
+      ];
+
+      const el = (id) => document.getElementById(id);
+      const groupsEl = el("groups");
+      const noticeEl = el("notice");
+      const refreshBtn = el("refresh");
+      const copyBtn = el("copy");
+
+      let latest = null;
+
+      function showNotice(title, body, detail) {
+        el("subtitle").textContent = title;
+        el("notice-title").textContent = title;
+        el("notice-body").textContent = body;
+        const detailEl = el("notice-detail");
+        detailEl.textContent = detail ?? "";
+        detailEl.hidden = !detail;
+        noticeEl.hidden = false;
+        groupsEl.innerHTML = "";
+      }
+
+      /**
+       * A field is worth a row only if the CLI actually determined it. Both an
+       * empty string and the literal "unknown" mean "detection failed here", and
+       * a panel of blanks and "unknown"s is less readable than a shorter panel.
+       */
+      function value(info, key) {
+        const raw = info[key];
+        if (typeof raw !== "string") return null;
+        const trimmed = raw.trim();
+        return trimmed === "" || trimmed === "unknown" ? null : trimmed;
+      }
+
+      function render(info) {
+        noticeEl.hidden = true;
+        groupsEl.innerHTML = "";
+
+        const user = value(info, "user");
+        const host = value(info, "hostname");
+        el("title").textContent = user && host ? `${user}@${host}` : host ?? "About System";
+        el("subtitle").textContent =
+          [value(info, "os"), value(info, "cpu")].filter(Boolean).join(" · ") || "System information";
+
+        for (const [heading, fields] of GROUPS) {
+          const present = fields
+            .map(([key, emoji, label]) => [value(info, key), emoji, label])
+            .filter(([shown]) => shown !== null);
+          if (present.length === 0) continue;
+
+          const section = document.createElement("section");
+          const h2 = document.createElement("h2");
+          h2.textContent = heading;
+          section.appendChild(h2);
+
+          const dl = document.createElement("dl");
+          for (const [shown, emoji, label] of present) {
+            const row = document.createElement("div");
+            row.className = "row";
+
+            const icon = document.createElement("span");
+            icon.className = "emoji";
+            icon.setAttribute("aria-hidden", "true");
+            icon.textContent = emoji;
+
+            const dt = document.createElement("dt");
+            dt.textContent = label;
+
+            const dd = document.createElement("dd");
+            dd.textContent = shown;
+
+            row.append(icon, dt, dd);
+            dl.appendChild(row);
+          }
+          section.appendChild(dl);
+          groupsEl.appendChild(section);
+        }
+
+        const footer = el("footer");
+        if (info.timestamp) {
+          const when = new Date(info.timestamp);
+          footer.textContent = `Collected ${Number.isNaN(when.getTime()) ? info.timestamp : when.toLocaleString()}`;
+          footer.hidden = false;
+        } else {
+          footer.hidden = true;
+        }
+      }
+
+      async function load() {
+        // withGlobalTauri puts the IPC bridge here; its absence means the page
+        // is being viewed outside the app (a browser opening dist/index.html),
+        // where there is no bundled CLI to ask.
+        const invoke = window.__TAURI__?.core?.invoke;
+        if (!invoke) {
+          showNotice(
+            "Not running inside the app",
+            "This page is the About System app's frontend. It reads system information through the " +
+              "CLI bundled into the app, so it has nothing to show when opened directly in a browser. " +
+              "Run `npm run dev` in this directory, or install a build from the releases page.",
+          );
+          return;
+        }
+
+        refreshBtn.disabled = true;
+        copyBtn.disabled = true;
+        el("subtitle").textContent = "Reading system information…";
+
+        try {
+          const raw = await invoke("sidecar_output");
+          latest = raw;
+          render(JSON.parse(raw));
+          copyBtn.disabled = false;
+        } catch (error) {
+          latest = null;
+          showNotice(
+            "Could not read system information",
+            "The bundled about-system CLI did not return anything usable. In a development build " +
+              "this usually means the sidecar binary has not been compiled yet — run " +
+              "`npm run build:sidecar` and try again.",
+            String(error?.message ?? error),
+          );
+        } finally {
+          refreshBtn.disabled = false;
+        }
+      }
+
+      refreshBtn.addEventListener("click", load);
+      copyBtn.addEventListener("click", async () => {
+        if (!latest) return;
+        try {
+          await navigator.clipboard.writeText(latest);
+          copyBtn.textContent = "Copied";
+          setTimeout(() => { copyBtn.textContent = "Copy JSON"; }, 1400);
+        } catch {
+          copyBtn.textContent = "Copy failed";
+          setTimeout(() => { copyBtn.textContent = "Copy JSON"; }, 1400);
+        }
+      });
+      document.addEventListener("keydown", (event) => {
+        if (event.key.toLowerCase() === "r" && !event.metaKey && !event.ctrlKey && !event.altKey) load();
+      });
+
+      load();
+    </script>
+  </body>
+</html>

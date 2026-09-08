@@ -32,6 +32,7 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 | [ask-export-svg-typescript](./ask-export-svg-typescript/SKILL.md) | `export-svg-icons-typescript` | SVG folder → tree-shakable TS barrel, runtime color and size options |
 | [ask-git0](./ask-git0/SKILL.md) | `git0-repo-downloader` | Search, download, auto-install, IDE launch, rate limits |
 | [ask-manage-storage](./ask-manage-storage/SKILL.md) | `manage-storage` | S3 / R2 / B2 through one call, provider detection, edge credentials |
+| [ask-native-app-wrapper](./ask-native-app-wrapper/SKILL.md) | `native-app-wrapper` | Website or CLI → native Tauri app: profiles, the sidecar bridge, icons, per-OS builds |
 | [ask-open-ready](./ask-open-ready/SKILL.md) | `open-when-ready` | Dev-server wrapper: ready/error detection, flags, log locations |
 | [ask-server-shell-setup](./ask-server-shell-setup/SKILL.md) | `server-shell-setup` | The bootstrap installer, components, fish aliases |
 | [ask-shadcn-theme-menu](./ask-shadcn-theme-menu/SKILL.md) | `shadcn-theme-menu` | Theme provider and switchers, color themes vs dark mode |

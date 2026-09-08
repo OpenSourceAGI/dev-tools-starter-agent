@@ -44,7 +44,7 @@
 **[vscode-cloud](apps/vscode-cloud/)** - Per-user VS Code (code-server) instances on Cloudflare Containers. Each user gets a fully isolated environment: Cloudflare Access handles SSO, a Durable Object stores the per-user password in SQLite, and a Worker routes traffic to the right container.
 `bun deploy` · `wrangler deploy`
 
-**[about-system-info](packages/about-system-info/)** - Cross-platform CLI that prints CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line. Add to your shell config (`config.fish`, `.zshrc`) for an instant system snapshot on every terminal launch. Supports Windows, macOS, and Linux.
+**[about-system-info](packages/about-system-info/)** - Cross-platform CLI that prints CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line. Add to your shell config (`config.fish`, `.zshrc`) for an instant system snapshot on every terminal launch. Supports Windows, macOS, and Linux. Also ships as a [desktop app](packages/about-system-info/native/) for all three, with the CLI compiled inside it so nothing needs installing first.
 [![npm downloads](https://img.shields.io/npm/dm/about-system.svg)](https://www.npmjs.com/package/about-system)
 `npx about-system` · `npm install -g about-system`
 
@@ -74,6 +74,9 @@
 **[manage-storage](packages/manage-storage/)** - Unified storage API for AWS S3, Cloudflare R2, and Backblaze B2 built on AWS SDK v3. Auto-detects the configured provider from environment variables. Single function interface for upload, download, delete, and list — returns data directly with no filesystem dependency, ideal for serverless and edge environments.
 [![npm downloads](https://img.shields.io/npm/dm/manage-storage.svg)](https://www.npmjs.com/package/manage-storage)
 `npm install manage-storage` · `bun add manage-storage`
+
+**[native-app-wrapper](packages/native-app-wrapper/)** - Tauri scaffold that turns one JSON profile into a native desktop (Windows/macOS/Linux) and mobile (Android/iOS) app. Wraps either a website — with a real app icon per platform, a Google-OAuth-compatible login handoff through the system browser, and a fullscreen toggle — or a command-line tool, by bundling the CLI as a sidecar behind a local HTML frontend so the app needs no runtime installed. `init` copies the scaffold next to whatever you're wrapping, generates its Tauri config and icons, and leaves no link back.
+`node bin/cli.js init <dir> --profile-file <profile.json>`
 
 **[open-when-ready](packages/open-when-ready/)** - Smart dev server wrapper for Next.js, Vite, or any CLI tool. Watches server output, auto-opens the browser when a ready signal is detected, and on error extracts context and launches your AI assistant (Perplexity, ChatGPT, or custom URL) with a pre-filled prompt.
 [![npm downloads](https://img.shields.io/npm/dm/open-ready.svg)](https://www.npmjs.com/package/open-ready)

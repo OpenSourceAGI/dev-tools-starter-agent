@@ -35,7 +35,9 @@
     "show-settings": "npm run build && node dist/about-system-cli.js --settings-show",
     "reset-settings": "npm run build && node dist/about-system-cli.js --settings-reset",
     "clear-cache": "npm run build && node dist/about-system-cli.js --refresh",
-    "help": "npm run build && node dist/about-system-cli.js --help"
+    "help": "npm run build && node dist/about-system-cli.js --help",
+    "app:dev": "cd native && npm run dev",
+    "app:build": "cd native && npm run build:desktop"
   },
   "keywords": [
     "src/about-system",
@@ -50,7 +52,9 @@
     "shell",
     "greeting",
     "emoji",
-    "system-monitoring"
+    "system-monitoring",
+    "desktop-app",
+    "tauri"
   ],
   "author": "vtempest",
   "license": "rights.institute/prosper",
