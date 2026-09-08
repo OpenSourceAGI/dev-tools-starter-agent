@@ -57,7 +57,7 @@ export default function HomePage() {
               Docs
             </a>
             <a
-              href="https://docs.appdemo.site/docs/comparisons/_tool_rank"
+              href="https://rights.institute/docs/comparisons/_tool_rank"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-foreground hover:bg-accent rounded-md transition-colors"
