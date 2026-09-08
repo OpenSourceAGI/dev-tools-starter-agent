@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="300px" src="https://i.imgur.com/lyvk8iy.png" />
+    <img width="800px" src="https://i.imgur.com/lyvk8iy.png" />
 <br /> 
     <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/dm/open-ready.svg" alt="NPM Monthly Downloads"></a>
     <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/v/open-ready.svg" alt="npm version"></a>
