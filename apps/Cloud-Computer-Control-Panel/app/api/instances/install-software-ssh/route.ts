@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { Client } from "ssh2"
+import { getSession } from "@/lib/auth/session"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -65,6 +66,11 @@ async function executeSSHCommand(
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
+
     const body = await req.json()
     const {
       instanceId,

@@ -1,8 +1,15 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createSSMClient } from "@/lib/aws-ssm-client"
+import { resolveAwsCredentialsFromHeaders } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
+
     const body = await req.json()
     const { commandId, instanceId, region } = body
 
@@ -10,15 +17,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing required parameters" }, { status: 400 })
     }
 
-    // Get credentials from headers or environment
-    const accessKeyId = req.headers.get("x-aws-access-key-id") || process.env.AWS_ACCESS_KEY_ID
-    const secretAccessKey = req.headers.get("x-aws-secret-access-key") || process.env.AWS_SECRET_ACCESS_KEY
+    // Real keys sent by the browser, else the signed-in user's stored keys, else the server's
+    const credentials = await resolveAwsCredentialsFromHeaders(req.headers, region)
 
-    if (!accessKeyId || !secretAccessKey) {
+    if (!credentials) {
       return NextResponse.json({ error: "AWS credentials not provided" }, { status: 401 })
     }
 
-    const ssm = createSSMClient(accessKeyId, secretAccessKey, region)
+    const ssm = createSSMClient(credentials.accessKeyId, credentials.secretAccessKey, region)
 
     // Get command invocation status
     const invocation = await ssm.getCommandInvocation(commandId, instanceId)

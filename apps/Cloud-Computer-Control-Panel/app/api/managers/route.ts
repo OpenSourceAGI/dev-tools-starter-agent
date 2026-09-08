@@ -3,47 +3,27 @@ export const dynamic = "force-dynamic"
 
 import { NextResponse } from "next/server"
 import { EC2Client, DescribeInstancesCommand } from "@aws-sdk/client-ec2"
-import { fromEnv } from "@aws-sdk/credential-providers"
 import { runInstance } from "@/lib/aws-ec2-client"
 import { getUbuntuAMI } from "@/lib/aws-ami-ids"
-
-function createEC2Client(accessKeyId: string | null, secretAccessKey: string | null, region: string) {
-  if (!accessKeyId || !secretAccessKey) {
-    return new EC2Client({
-      region,
-      credentials: fromEnv(),
-    })
-  }
-
-  return new EC2Client({
-    region,
-    credentials: {
-      accessKeyId,
-      secretAccessKey,
-    },
-  })
-}
+import { resolveAwsCredentials } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-
-    let accessKeyId: string
-    let secretAccessKey: string
-
-    if (body.accessKeyId === "env") {
-      accessKeyId = process.env.AWS_ACCESS_KEY_ID || ""
-      secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || ""
-    } else {
-      accessKeyId = body.accessKeyId
-      secretAccessKey = body.secretAccessKey
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
     }
 
-    if (!accessKeyId || !secretAccessKey) {
+    const body = await request.json()
+
+    const credentials = await resolveAwsCredentials(body)
+
+    if (!credentials) {
       return NextResponse.json({ message: "AWS credentials are required" }, { status: 400 })
     }
 
-    const region = body.region || process.env.AWS_REGION || "us-east-1"
+    const { accessKeyId, secretAccessKey, region } = credentials
     const { config } = body
 
     const userData = `#!/bin/bash
@@ -107,23 +87,31 @@ echo "Setup complete!" > /var/log/user-data-complete.log
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
+
     const url = new URL(request.url)
     const instanceId = url.searchParams.get("instanceId")
 
-    let accessKeyId: string | null = null
-    let secretAccessKey: string | null = null
+    const credentials = await resolveAwsCredentials({
+      accessKeyId: url.searchParams.get("accessKeyId"),
+      secretAccessKey: url.searchParams.get("secretAccessKey"),
+      region: url.searchParams.get("region"),
+    })
 
-    if (url.searchParams.get("accessKeyId") === "env") {
-      accessKeyId = null
-      secretAccessKey = null
-    } else {
-      accessKeyId = url.searchParams.get("accessKeyId")
-      secretAccessKey = url.searchParams.get("secretAccessKey")
+    if (!credentials) {
+      return NextResponse.json({ message: "AWS credentials are required" }, { status: 400 })
     }
 
-    const region = url.searchParams.get("region") || process.env.AWS_REGION || "us-east-1"
-
-    const ec2Client = createEC2Client(accessKeyId, secretAccessKey, region)
+    const ec2Client = new EC2Client({
+      region: credentials.region,
+      credentials: {
+        accessKeyId: credentials.accessKeyId,
+        secretAccessKey: credentials.secretAccessKey,
+      },
+    })
 
     const command = new DescribeInstancesCommand({
       InstanceIds: instanceId ? [instanceId] : undefined,

@@ -1,9 +1,16 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { createEC2Client } from "@/lib/aws-ec2-client"
 import { createSSMClient } from "@/lib/aws-ssm-client"
+import { resolveAwsCredentialsFromHeaders } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
+
     const body = await req.json()
     const {
       instanceId,
@@ -16,14 +23,14 @@ export async function POST(req: NextRequest) {
       customScript,
     } = body
 
-    // Get credentials from headers or environment
-    const accessKeyId = req.headers.get("x-aws-access-key-id") || process.env.AWS_ACCESS_KEY_ID
-    const secretAccessKey = req.headers.get("x-aws-secret-access-key") || process.env.AWS_SECRET_ACCESS_KEY
+    // Real keys sent by the browser, else the signed-in user's stored keys, else the server's
+    const credentials = await resolveAwsCredentialsFromHeaders(req.headers, region)
 
-    if (!accessKeyId || !secretAccessKey) {
+    if (!credentials) {
       return NextResponse.json({ error: "AWS credentials not provided" }, { status: 401 })
     }
 
+    const { accessKeyId, secretAccessKey } = credentials
     const ec2 = createEC2Client(accessKeyId, secretAccessKey, region)
     const ssm = createSSMClient(accessKeyId, secretAccessKey, region)
 

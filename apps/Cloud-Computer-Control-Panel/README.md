@@ -24,15 +24,22 @@ CCCP (Cloud Computer Control Panel) lets you manage your own personal cloud and 
 - **Development Environment Setup**: Automatically install git, docker, nodejs, python3, nginx, and more
 - **Cost Estimator**: Calculate estimated monthly costs before creating instances
 - **Real-time Monitoring**: Track instance status and health in real-time
-- **Secure Credential Management**: AWS credentials stored locally in your browser, never on external servers
+- **Accounts & Sign-in**: Email + password out of the box, plus optional Google OAuth and magic links, powered by [Better Auth](https://better-auth.com)
+- **Encrypted Credential Storage**: AWS keys are sealed with AES-256-GCM and stored per user in a libSQL/SQLite database — the secret key is never sent back to the browser
+- **Multi-tenant**: Every user drives their own AWS account; API routes resolve credentials server-side from the signed-in session
 - **API Documentation**: Built-in Scalar API reference for programmatic access
 
 ## Tech Stack
 
+This app is built on the [`template-vinext-betterauth-shadcn-themes-teams-stripe`](../../starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe)
+starter template, which supplies the auth, database and theming layers.
+
 - **Frontend**: Next.js 16, React 19, TypeScript
-- **UI Components**: Radix UI, Tailwind CSS, shadcn/ui
-- **AWS Integration**: AWS SDK for JavaScript (EC2, credentials)
-- **Form Handling**: React Hook Form, Zod validation
+- **UI Components**: Radix UI, Tailwind CSS, shadcn/ui, [shadcn-theme-menu](../../packages/shadcn-theme-menu)
+- **Auth**: Better Auth (email + password, Google OAuth, magic links, anonymous dev login)
+- **Database**: Drizzle ORM over libSQL — a local SQLite file by default, or Turso in production
+- **AWS Integration**: AWS SDK for JavaScript (EC2, SSM, credentials)
+- **Form Handling**: Zod validation
 - **Deployment**: Vercel Analytics, Next Themes for dark mode
 
 ## Prerequisites
@@ -77,23 +84,57 @@ yarn install
 pnpm install
 ```
 
-3. Run the development server:
+3. Configure the environment:
+
+```bash
+cp .env.example .env
+# BETTER_AUTH_SECRET is required — it signs sessions and, unless you set
+# CREDENTIALS_ENCRYPTION_KEY separately, encrypts stored AWS secret keys.
+openssl rand -base64 32
+```
+
+4. Create the database schema:
+
+```bash
+npm run db:push       # applies lib/db/schema.ts to DATABASE_URL
+npm run db:studio     # optional: browse the data
+```
+
+With `DATABASE_URL` unset, the app uses a local SQLite file at `./data/cccp.db`.
+For a hosted database, run `npm create cloud-db` (or point `DATABASE_URL` /
+`DATABASE_AUTH_TOKEN` at a Turso database).
+
+5. Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ### Configuration
 
-1. On the home page, enter your AWS Access Key ID and Secret Access Key
-2. Your credentials are stored securely in your browser's localStorage
-3. Click "Connect to AWS" to access the dashboard
+1. Click **Sign in** and create an account with an email and password
+   (or configure `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` for Google sign-in)
+2. In the dashboard, enter your AWS Access Key ID and Secret Access Key
+3. CCCP verifies them against AWS, encrypts the secret, and stores it against your account
+
+### How credentials are stored
+
+- The secret access key is encrypted with AES-256-GCM (`lib/crypto.ts`) before it
+  reaches the `cloud_credentials` table, keyed by `CREDENTIALS_ENCRYPTION_KEY`
+  (falling back to `BETTER_AUTH_SECRET`).
+- The browser only ever receives a masked access key id — never the secret.
+- API routes send the sentinel `"db"` instead of real keys;
+  `lib/aws-credentials.ts` resolves the actual credentials server-side in this
+  order: keys explicitly sent with the request → the signed-in user's stored
+  keys → the server's `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.
+- Rotating `CREDENTIALS_ENCRYPTION_KEY` makes existing stored secrets
+  unreadable; users have to re-enter them.
+
+> **Note:** instance metadata (`ec2Managers`) and generated SSH private keys are
+> still kept in the browser's `localStorage`. Only cloud provider credentials
+> have been moved into the database so far.
 
 ## Usage
 
@@ -133,10 +174,16 @@ Access the interactive API documentation at `/api-reference` or click the "API D
 
 Available endpoints:
 
+All `/api/instances`, `/api/managers` and `/api/servers` routes require a signed-in session.
+
+- `GET /api/credentials` - The signed-in user's stored credentials (masked)
+- `POST /api/credentials` - Verify and store AWS credentials, encrypted
+- `DELETE /api/credentials` - Forget the stored credentials
+- `GET|POST /api/auth/*` - Better Auth endpoints (sign-in, sign-up, sign-out, OAuth)
 - `GET /api/instances` - List all instances in a region
 - `GET /api/instances/all-regions` - List instances across all regions
 - `POST /api/instances/install-software` - Install software on an instance
 - `POST /api/servers/create` - Create a new EC2 instance
-- `POST /api/check-credentials` - Validate AWS credentials
+- `GET /api/check-credentials` - Report session and credential status
 - `GET /api/docker-search` - Search Docker Hub
 - `GET /api/github-search` - Search GitHub repositories
