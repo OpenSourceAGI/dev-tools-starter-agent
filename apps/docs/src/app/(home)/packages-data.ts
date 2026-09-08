@@ -36,6 +36,13 @@ export const categories: Category[] = [
         path: "apps/Cloud-Computer-Control-Panel/"
       },
       {
+        name: "cccp-vscode-ext",
+        icon: "Cloud",
+        description: "The Cloud Computer Control Panel dashboard in the VS Code sidebar, reusing the Next.js app's own React components so provisioning and credential management happen inside the editor.",
+        commands: ["bun run compile", "bun run test"],
+        path: "apps/cccp-vscode-ext/"
+      },
+      {
         name: "vscode-cloud",
         icon: "Code",
         description: "Per-user VS Code (code-server) instances on Cloudflare Containers. Each user gets a fully isolated environment with SSO, SQLite storage, and traffic routing.",
