@@ -305,10 +305,16 @@ export function CreateManager({ credentials, onSuccess }: { credentials: any; on
               />
             </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor="region">Region</Label>
+            <div className="space-y-3">
+              <Label htmlFor="region">Region</Label>
+              <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
+                <GlobeCdn
+                  markers={AWS_REGION_MARKERS}
+                  arcs={[]}
+                  className="w-32 shrink-0 sm:w-36"
+                  speed={0.004}
+                />
+                <div className="w-full flex-1 space-y-2">
                   <Select
                     value={formData.region}
                     onValueChange={(value) => setFormData({ ...formData, region: value })}
@@ -324,19 +330,13 @@ export function CreateManager({ credentials, onSuccess }: { credentials: any; on
                       ))}
                     </SelectContent>
                   </Select>
+                  <div className="flex items-center gap-1 pt-1">
+                    <Badge variant="outline" className="text-xs">
+                      <MapPin className="h-3 w-3 mr-1" />
+                      {formData.region}
+                    </Badge>
+                  </div>
                 </div>
-                <GlobeCdn
-                  markers={AWS_REGION_MARKERS}
-                  arcs={[]}
-                  className="w-16 shrink-0"
-                  speed={0.004}
-                />
-              </div>
-              <div className="flex items-center gap-1 pt-1">
-                <Badge variant="outline" className="text-xs">
-                  <MapPin className="h-3 w-3 mr-1" />
-                  {formData.region}
-                </Badge>
               </div>
             </div>
 
