@@ -1,0 +1,8 @@
+<!-- Activity-bar icon: a cloud with a shell prompt in it. VS Code masks this to
+     the active foreground color, so the stroke color is only a fallback. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+     fill="none" stroke="#C5C5C5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M17.5 18.5H6.5a4.5 4.5 0 0 1-.7-8.95 6 6 0 0 1 11.63-1.6A4.25 4.25 0 0 1 17.5 18.5Z"/>
+  <path d="m9.6 11.7 1.9 1.9-1.9 1.9"/>
+  <path d="M13.4 15.5h2.6"/>
+</svg>

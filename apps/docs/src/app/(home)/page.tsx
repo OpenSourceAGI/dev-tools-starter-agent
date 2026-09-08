@@ -48,7 +48,7 @@ import { SparklesCore } from "@/components/ui/sparkles"
 const iconMap: Record<string, ElementType> = {
   FileText, Server, Code, Cpu, Wand2, Database, Rocket, GitBranch,
   Globe, HardDrive, Smartphone, Palette, Image, Zap, Shield,
-  MonitorSmartphone, Layers, BookOpen,
+  MonitorSmartphone, Layers, BookOpen, Cloud,
 }
 
 const categoryIconMap: Record<string, ElementType> = {

@@ -41,6 +41,9 @@
 **[Cloud-Computer-Control-Panel](apps/Cloud-Computer-Control-Panel/)** - Open-source cloud infrastructure management platform. Automates Dokploy deployment for container orchestration on AWS EC2 — provision servers, manage containers, and monitor services from a single dashboard.
 `bun dev` · `npm run dev`
 
+**[cccp-vscode-ext](apps/cccp-vscode-ext/)** - The Cloud Computer Control Panel dashboard in the VS Code sidebar. Imports CCCP's own React components unchanged and routes their `/api` calls through the extension host, so provisioning EC2 instances, installing Dokploy and managing encrypted AWS credentials all happen without leaving the editor.
+`bun run compile` · `bun run test`
+
 **[vscode-cloud](apps/vscode-cloud/)** - Per-user VS Code (code-server) instances on Cloudflare Containers. Each user gets a fully isolated environment: Cloudflare Access handles SSO, a Durable Object stores the per-user password in SQLite, and a Worker routes traffic to the right container.
 `bun deploy` · `wrangler deploy`
 
