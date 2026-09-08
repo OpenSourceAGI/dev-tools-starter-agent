@@ -30,7 +30,8 @@
     "build:docs": "cd docs && bun run build",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=junit.xml"
   },
   "keywords": [
     "sms",
@@ -52,7 +53,8 @@
     "grab-api.js": "^0.9.131",
     "hono": "^4.0.0",
     "hono-rate-limiter": "^0.2.2",
-    "libphonenumber-js": "^1.12.13"
+    "libphonenumber-js": "^1.12.13",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260507.1",
