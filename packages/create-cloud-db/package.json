@@ -3,7 +3,7 @@
   "description": "CLI to create a Turso database and write TURSO_* env vars to .env file",
   "type": "module",
   "author": "vtempest",
-  "version": "1.0.39",
+  "version": "1.0.40",
   "main": "create-cloud-db.js",
   "bin": {
     "create-cloud-db": "./create-cloud-db.js"
