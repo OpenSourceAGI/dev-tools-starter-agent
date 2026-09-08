@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Slider } from "@/components/ui/slider"
+import { GlobeCdn } from "@/components/ui/cobe-globe-cdn"
 import { Rocket, CheckCircle, HardDrive, Cpu, MapPin, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea"
@@ -28,28 +29,34 @@ const INSTANCE_TYPES = [
 ]
 
 const AWS_REGIONS = [
-  { value: "us-east-1", label: "US East (N. Virginia)" },
-  { value: "us-east-2", label: "US East (Ohio)" },
-  { value: "us-west-1", label: "US West (N. California)" },
-  { value: "us-west-2", label: "US West (Oregon)" },
-  { value: "ca-central-1", label: "Canada (Central)" },
-  { value: "eu-central-1", label: "Europe (Frankfurt)" },
-  { value: "eu-west-1", label: "Europe (Ireland)" },
-  { value: "eu-west-2", label: "Europe (London)" },
-  { value: "eu-west-3", label: "Europe (Paris)" },
-  { value: "eu-north-1", label: "Europe (Stockholm)" },
-  { value: "eu-south-1", label: "Europe (Milan)" },
-  { value: "ap-east-1", label: "Asia Pacific (Hong Kong)" },
-  { value: "ap-south-1", label: "Asia Pacific (Mumbai)" },
-  { value: "ap-northeast-1", label: "Asia Pacific (Tokyo)" },
-  { value: "ap-northeast-2", label: "Asia Pacific (Seoul)" },
-  { value: "ap-northeast-3", label: "Asia Pacific (Osaka)" },
-  { value: "ap-southeast-1", label: "Asia Pacific (Singapore)" },
-  { value: "ap-southeast-2", label: "Asia Pacific (Sydney)" },
-  { value: "sa-east-1", label: "South America (São Paulo)" },
-  { value: "me-south-1", label: "Middle East (Bahrain)" },
-  { value: "af-south-1", label: "Africa (Cape Town)" },
+  { value: "us-east-1", label: "US East (N. Virginia)", city: "Ashburn", coords: [39.0438, -77.4874] as [number, number] },
+  { value: "us-east-2", label: "US East (Ohio)", city: "Columbus", coords: [39.9612, -82.9988] as [number, number] },
+  { value: "us-west-1", label: "US West (N. California)", city: "San Francisco", coords: [37.7749, -122.4194] as [number, number] },
+  { value: "us-west-2", label: "US West (Oregon)", city: "Portland", coords: [45.5152, -122.6784] as [number, number] },
+  { value: "ca-central-1", label: "Canada (Central)", city: "Montreal", coords: [45.5017, -73.5673] as [number, number] },
+  { value: "eu-central-1", label: "Europe (Frankfurt)", city: "Frankfurt", coords: [50.1109, 8.6821] as [number, number] },
+  { value: "eu-west-1", label: "Europe (Ireland)", city: "Dublin", coords: [53.3498, -6.2603] as [number, number] },
+  { value: "eu-west-2", label: "Europe (London)", city: "London", coords: [51.5074, -0.1278] as [number, number] },
+  { value: "eu-west-3", label: "Europe (Paris)", city: "Paris", coords: [48.8566, 2.3522] as [number, number] },
+  { value: "eu-north-1", label: "Europe (Stockholm)", city: "Stockholm", coords: [59.3293, 18.0686] as [number, number] },
+  { value: "eu-south-1", label: "Europe (Milan)", city: "Milan", coords: [45.4642, 9.19] as [number, number] },
+  { value: "ap-east-1", label: "Asia Pacific (Hong Kong)", city: "Hong Kong", coords: [22.3193, 114.1694] as [number, number] },
+  { value: "ap-south-1", label: "Asia Pacific (Mumbai)", city: "Mumbai", coords: [19.076, 72.8777] as [number, number] },
+  { value: "ap-northeast-1", label: "Asia Pacific (Tokyo)", city: "Tokyo", coords: [35.6762, 139.6503] as [number, number] },
+  { value: "ap-northeast-2", label: "Asia Pacific (Seoul)", city: "Seoul", coords: [37.5665, 126.978] as [number, number] },
+  { value: "ap-northeast-3", label: "Asia Pacific (Osaka)", city: "Osaka", coords: [34.6937, 135.5023] as [number, number] },
+  { value: "ap-southeast-1", label: "Asia Pacific (Singapore)", city: "Singapore", coords: [1.3521, 103.8198] as [number, number] },
+  { value: "ap-southeast-2", label: "Asia Pacific (Sydney)", city: "Sydney", coords: [-33.8688, 151.2093] as [number, number] },
+  { value: "sa-east-1", label: "South America (São Paulo)", city: "São Paulo", coords: [-23.5505, -46.6333] as [number, number] },
+  { value: "me-south-1", label: "Middle East (Bahrain)", city: "Manama", coords: [26.0667, 50.5577] as [number, number] },
+  { value: "af-south-1", label: "Africa (Cape Town)", city: "Cape Town", coords: [-33.9249, 18.4241] as [number, number] },
 ]
+
+const AWS_REGION_MARKERS = AWS_REGIONS.map((region) => ({
+  id: region.value,
+  location: region.coords,
+  region: region.city,
+}))
 
 const DEV_TOOLS = ["git", "docker", "nodejs", "python3", "nginx"]
 
@@ -299,19 +306,32 @@ export function CreateManager({ credentials, onSuccess }: { credentials: any; on
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="region">Region</Label>
-              <Select value={formData.region} onValueChange={(value) => setFormData({ ...formData, region: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {AWS_REGIONS.map((region) => (
-                    <SelectItem key={region.value} value={region.value}>
-                      {region.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-3">
+                <div className="flex-1 space-y-2">
+                  <Label htmlFor="region">Region</Label>
+                  <Select
+                    value={formData.region}
+                    onValueChange={(value) => setFormData({ ...formData, region: value })}
+                  >
+                    <SelectTrigger id="region">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {AWS_REGIONS.map((region) => (
+                        <SelectItem key={region.value} value={region.value}>
+                          {region.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <GlobeCdn
+                  markers={AWS_REGION_MARKERS}
+                  arcs={[]}
+                  className="w-16 shrink-0"
+                  speed={0.004}
+                />
+              </div>
               <div className="flex items-center gap-1 pt-1">
                 <Badge variant="outline" className="text-xs">
                   <MapPin className="h-3 w-3 mr-1" />

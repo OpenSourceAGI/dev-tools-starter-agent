@@ -1,6 +1,6 @@
 {
   "name": "create-starter-app",
-  "version": "1.0.33",
+  "version": "1.0.37",
   "description": "Interactive CLI to scaffold a starter app from curated templates",
   "type": "module",
   "bin": {
