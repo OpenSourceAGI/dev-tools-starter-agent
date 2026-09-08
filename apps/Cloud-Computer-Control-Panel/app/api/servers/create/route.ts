@@ -7,27 +7,25 @@ import { NextResponse } from "next/server"
 import { runInstance, allocateAddress, associateAddress, createOrGetDokploySecurityGroup, importKeyPair } from "@/lib/aws-ec2-client"
 import { getUbuntuAMI } from "@/lib/aws-ami-ids"
 import { generateSSHKeyPair } from "@/lib/ssh-key-utils"
+import { resolveAwsCredentials } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-
-    let accessKeyId: string
-    let secretAccessKey: string
-
-    if (body.accessKeyId === "env") {
-      accessKeyId = process.env.AWS_ACCESS_KEY_ID || ""
-      secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || ""
-    } else {
-      accessKeyId = body.accessKeyId
-      secretAccessKey = body.secretAccessKey
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
     }
 
-    if (!accessKeyId || !secretAccessKey) {
+    const body = await request.json()
+
+    const credentials = await resolveAwsCredentials(body)
+
+    if (!credentials) {
       return NextResponse.json({ message: "Missing AWS credentials" }, { status: 400 })
     }
 
-    const region = body.region || process.env.AWS_REGION || "us-east-1"
+    const { accessKeyId, secretAccessKey, region } = credentials
     const { config } = body
 
     let securityGroupId: string | undefined

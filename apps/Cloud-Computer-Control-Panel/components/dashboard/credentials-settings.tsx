@@ -8,29 +8,89 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Key, ExternalLink, AlertCircle, X, LogOut } from "lucide-react"
+import { Key, ExternalLink, AlertCircle, X, Trash2, Loader2, ShieldCheck } from "lucide-react"
+import { DEFAULT_AWS_REGION } from "@/lib/constants"
 
-interface CredentialsSettingsProps {
-  credentials: {
-    accessKeyId: string
-    secretAccessKey: string
-  }
-  onUpdate: (credentials: any) => void
-  onClose: () => void
-  onDisconnect: () => void
+export interface StoredCredentials {
+  provider: string
+  label: string
+  region: string
+  /** Only the masked key id ever reaches the browser — never the secret. */
+  accessKeyIdMasked: string
+  updatedAt?: string | null
+  lastVerifiedAt?: string | null
 }
 
-export function CredentialsSettings({ credentials, onUpdate, onClose, onDisconnect }: CredentialsSettingsProps) {
+interface CredentialsSettingsProps {
+  stored: StoredCredentials | null
+  hasServerCredentials: boolean
+  onSaved: () => void | Promise<void>
+  /** Omitted while the user has no credentials at all — the form can't be dismissed then. */
+  onClose?: () => void
+}
+
+export function CredentialsSettings({
+  stored,
+  hasServerCredentials,
+  onSaved,
+  onClose,
+}: CredentialsSettingsProps) {
   const [formData, setFormData] = useState({
-    accessKeyId: credentials.accessKeyId === "env" ? "" : credentials.accessKeyId,
-    secretAccessKey: credentials.secretAccessKey === "env" ? "" : credentials.secretAccessKey,
+    accessKeyId: "",
+    secretAccessKey: "",
+    region: stored?.region || DEFAULT_AWS_REGION,
   })
+  const [saving, setSaving] = useState(false)
+  const [removing, setRemoving] = useState(false)
+  const [error, setError] = useState("")
 
-  const isUsingEnv = credentials.accessKeyId === "env"
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    onUpdate(formData)
+    setSaving(true)
+    setError("")
+
+    try {
+      const response = await fetch("/api/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setError(data.message || "Failed to save credentials")
+        return
+      }
+
+      setFormData({ accessKeyId: "", secretAccessKey: "", region: data.credentials?.region || formData.region })
+      await onSaved()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save credentials")
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleRemove = async () => {
+    setRemoving(true)
+    setError("")
+
+    try {
+      const response = await fetch("/api/credentials", { method: "DELETE" })
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        setError(data.message || "Failed to remove credentials")
+        return
+      }
+
+      await onSaved()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to remove credentials")
+    } finally {
+      setRemoving(false)
+    }
   }
 
   return (
@@ -41,19 +101,45 @@ export function CredentialsSettings({ credentials, onUpdate, onClose, onDisconne
             <Key className="h-5 w-5" />
             IAM Credentials Management
           </CardTitle>
-          <CardDescription>Update your AWS credentials</CardDescription>
+          <CardDescription>
+            {stored
+              ? "Replace the AWS credentials stored for your account"
+              : "Save AWS credentials to your account"}
+          </CardDescription>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="h-4 w-4" />
-        </Button>
+        {onClose && (
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="h-4 w-4" />
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
-        {isUsingEnv && (
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {stored && (
           <Alert className="mb-6 bg-green-500/5 border-green-500/20">
-            <AlertCircle className="h-4 w-4 text-green-500" />
-            <AlertTitle className="text-green-500">Using Environment Variables</AlertTitle>
+            <ShieldCheck className="h-4 w-4 text-green-500" />
+            <AlertTitle className="text-green-500">Credentials saved</AlertTitle>
             <AlertDescription className="text-sm">
-              Currently using AWS credentials from environment variables. You can override them below if needed.
+              Using <span className="font-mono">{stored.accessKeyIdMasked}</span> in{" "}
+              <span className="font-mono">{stored.region}</span>. The secret key is encrypted at rest and is only
+              decrypted on the server when a request is made on your behalf.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {!stored && hasServerCredentials && (
+          <Alert className="mb-6 bg-blue-500/5 border-blue-500/20">
+            <AlertCircle className="h-4 w-4 text-blue-500" />
+            <AlertTitle className="text-blue-500">Using environment variables</AlertTitle>
+            <AlertDescription className="text-sm">
+              This server has AWS credentials in its environment. Save your own below to use them instead.
             </AlertDescription>
           </Alert>
         )}
@@ -86,15 +172,17 @@ export function CredentialsSettings({ credentials, onUpdate, onClose, onDisconne
           </AlertDescription>
         </Alert>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form id="credentials-form" onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="accessKeyId">AWS Access Key ID</Label>
             <Input
               id="accessKeyId"
               value={formData.accessKeyId}
               onChange={(e) => setFormData({ ...formData, accessKeyId: e.target.value })}
-              placeholder={isUsingEnv ? "Using environment variable" : "AKIAXXXXXXXXXXXXXXXX"}
+              placeholder="AKIAXXXXXXXXXXXXXXXX"
               className="font-mono"
+              autoComplete="off"
+              required
             />
           </div>
           <div className="space-y-2">
@@ -104,23 +192,40 @@ export function CredentialsSettings({ credentials, onUpdate, onClose, onDisconne
               type="password"
               value={formData.secretAccessKey}
               onChange={(e) => setFormData({ ...formData, secretAccessKey: e.target.value })}
-              placeholder={isUsingEnv ? "Using environment variable" : "Your AWS secret access key"}
+              placeholder="Your AWS secret access key"
+              className="font-mono"
+              autoComplete="off"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="region">Default Region</Label>
+            <Input
+              id="region"
+              value={formData.region}
+              onChange={(e) => setFormData({ ...formData, region: e.target.value })}
+              placeholder={DEFAULT_AWS_REGION}
               className="font-mono"
             />
           </div>
         </form>
       </CardContent>
       <CardFooter className="flex gap-2">
-        <Button onClick={handleSubmit} className="flex-1">
-          Update Credentials
+        <Button type="submit" form="credentials-form" className="flex-1" disabled={saving}>
+          {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          {saving ? "Verifying with AWS…" : stored ? "Replace credentials" : "Save credentials"}
         </Button>
-        <Button variant="destructive" onClick={onDisconnect}>
-          <LogOut className="h-4 w-4 mr-2" />
-          Disconnect
-        </Button>
-        <Button variant="outline" onClick={onClose}>
-          Cancel
-        </Button>
+        {stored && (
+          <Button variant="destructive" onClick={handleRemove} disabled={removing}>
+            {removing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Trash2 className="h-4 w-4 mr-2" />}
+            Remove
+          </Button>
+        )}
+        {onClose && (
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        )}
       </CardFooter>
     </Card>
   )

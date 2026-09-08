@@ -1,70 +1,41 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Cloud, ExternalLink, AlertCircle, Cpu, HardDrive, CheckCircle, BookOpen, BarChart3 } from "lucide-react"
+import {
+  Cloud,
+  ExternalLink,
+  AlertCircle,
+  Cpu,
+  HardDrive,
+  CheckCircle,
+  BookOpen,
+  BarChart3,
+  ShieldCheck,
+  LogIn,
+} from "lucide-react"
 import { Select, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Textarea } from "@/components/ui/textarea"
+import { ThemeDropdown } from "@/components/theme/theme-dropdown"
+import { useSession } from "@/lib/auth-client"
 
 export default function HomePage() {
   const router = useRouter()
-  const [formData, setFormData] = useState({
-    accessKeyId: "",
-    secretAccessKey: "",
-  })
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+  const { data: session, isPending } = useSession()
 
+  // Someone who is already signed in belongs in the dashboard.
   useEffect(() => {
-    const checkSavedCredentials = async () => {
-      try {
-        const savedCredentials = localStorage.getItem("awsCredentials")
-        if (savedCredentials) {
-          const creds = JSON.parse(savedCredentials)
-          sessionStorage.setItem("awsCredentials", savedCredentials)
-          router.push("/dashboard")
-          return
-        }
-      } catch (err) {
-        console.error("Error checking saved credentials:", err)
-      }
-    }
-
-    checkSavedCredentials()
-  }, [router])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-
-    try {
-      const credentialsJson = JSON.stringify(formData)
-      sessionStorage.setItem("awsCredentials", credentialsJson)
-      localStorage.setItem("awsCredentials", credentialsJson)
-
+    if (session?.user) {
       router.push("/dashboard")
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred")
-    } finally {
-      setLoading(false)
     }
-  }
+  }, [session, router])
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,6 +65,11 @@ export default function HomePage() {
               <BarChart3 className="h-4 w-4" />
               Tool Rankings
             </a>
+            <ThemeDropdown />
+            <Button size="sm" onClick={() => router.push("/login")} disabled={isPending}>
+              <LogIn className="h-4 w-4 mr-2" />
+              Sign in
+            </Button>
           </div>
         </div>
       </div>
@@ -115,53 +91,32 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Main Card */}
+        {/* Sign in call to action */}
         <Card className="border-border/50">
-          <CardContent className="pt-6">
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="flex items-end gap-3">
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor="accessKeyId">AWS Access Key ID</Label>
-                  <Input
-                    id="accessKeyId"
-                    name="accessKeyId"
-                    value={formData.accessKeyId}
-                    onChange={handleChange}
-                    placeholder="AKIAXXXXXXXXXXXXXXXX"
-                    className="font-mono"
-                    required
-                  />
-                </div>
-                <div className="flex-1 space-y-2">
-                  <Label htmlFor="secretAccessKey">AWS Secret Access Key</Label>
-                  <Input
-                    id="secretAccessKey"
-                    name="secretAccessKey"
-                    type="password"
-                    value={formData.secretAccessKey}
-                    onChange={handleChange}
-                    placeholder="Your AWS secret access key"
-                    className="font-mono"
-                    required
-                  />
-                </div>
-                <Button type="submit" size="lg" disabled={loading} className="px-8">
-                  {loading ? "Connecting..." : "Connect to AWS"}
-                </Button>
+          <CardContent className="pt-6 space-y-4">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1">
+                <h2 className="text-xl font-semibold">Sign in to connect your AWS account</h2>
+                <p className="text-sm text-muted-foreground">
+                  Create an account, then save your IAM keys once — they are encrypted and stored against your
+                  account, so you never paste them again.
+                </p>
               </div>
-            </form>
-
-            <div className="text-sm text-muted-foreground text-center mt-4">
-              Your credentials are stored in your browser's localStorage and never saved on our servers
+              <Button size="lg" className="px-8 shrink-0" onClick={() => router.push("/login")}>
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign in / Sign up
+              </Button>
             </div>
+
+            <Alert className="bg-green-500/5 border-green-500/20">
+              <ShieldCheck className="h-4 w-4 text-green-500" />
+              <AlertTitle className="text-green-500">Credentials are encrypted at rest</AlertTitle>
+              <AlertDescription className="text-sm">
+                Your secret access key is sealed with AES-256-GCM before it is written to the database, is
+                decrypted only on the server while running a request you asked for, and is never sent back to your
+                browser.
+              </AlertDescription>
+            </Alert>
           </CardContent>
         </Card>
 

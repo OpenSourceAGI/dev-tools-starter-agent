@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { describeInstances } from "@/lib/aws-ec2-client"
+import { resolveAwsCredentialsFromHeaders } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 const AWS_REGIONS = [
   "us-east-1",
@@ -32,12 +34,19 @@ export const dynamic = "force-dynamic"
 
 export async function GET(request: Request) {
   try {
-    const accessKeyId = request.headers.get("x-aws-access-key-id") || process.env.AWS_ACCESS_KEY_ID
-    const secretAccessKey = request.headers.get("x-aws-secret-access-key") || process.env.AWS_SECRET_ACCESS_KEY
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
 
-    if (!accessKeyId || !secretAccessKey) {
+    // Real keys sent by the browser, else the signed-in user's stored keys, else the server's
+    const credentials = await resolveAwsCredentialsFromHeaders(request.headers)
+
+    if (!credentials) {
       return NextResponse.json({ message: "AWS credentials are required" }, { status: 400 })
     }
+
+    const { accessKeyId, secretAccessKey } = credentials
 
     const allInstances = await Promise.all(
       AWS_REGIONS.map(async (region) => {
