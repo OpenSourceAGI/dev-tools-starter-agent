@@ -126,3 +126,20 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 ```
 
 See [skills/README.md](skills/README.md) for the full index.
+
+### ✅ Tests
+
+Three packages carry suites today. Each exposes a `test:ci` script that writes a
+`junit.xml` (and lcov coverage where its runner can produce one) for
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
+Test Analytics, which tracks run times, failure rates and flaky tests, and comments
+the failing ones on the pull request.
+
+| Package | Runner | Run locally |
+| --- | --- | --- |
+| [git0-repo-downloader](packages/git0-repo-downloader/) | `bun test` | `bun test` |
+| [web2mobile-wrapper](packages/web2mobile-wrapper/) | Jest | `npm test` |
+| [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |
+
+Wiring up another package means adding a `test:ci` script that writes `junit.xml`
+into the package directory, then adding a matrix entry to that workflow.
