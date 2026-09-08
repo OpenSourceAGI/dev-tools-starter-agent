@@ -26,6 +26,6 @@ packages/template-fumadocs/.next/*
 .next/
 .claude/
 .svelte-kit/
-# Test coverage & Turborepo cache
+# Test result / coverage artifacts uploaded to Codecov by .github/workflows/tests.yml
+junit.xml
 coverage/
-.turbo/

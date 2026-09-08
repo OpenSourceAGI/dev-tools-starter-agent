@@ -41,6 +41,9 @@
 **[Cloud-Computer-Control-Panel](apps/Cloud-Computer-Control-Panel/)** - Open-source cloud infrastructure management platform. Automates Dokploy deployment for container orchestration on AWS EC2 — provision servers, manage containers, and monitor services from a single dashboard.
 `bun dev` · `npm run dev`
 
+**[cccp-vscode-ext](apps/cccp-vscode-ext/)** - The Cloud Computer Control Panel dashboard in the VS Code sidebar. Imports CCCP's own React components unchanged and routes their `/api` calls through the extension host, so provisioning EC2 instances, installing Dokploy and managing encrypted AWS credentials all happen without leaving the editor.
+`bun run compile` · `bun run test`
+
 **[vscode-cloud](apps/vscode-cloud/)** - Per-user VS Code (code-server) instances on Cloudflare Containers. Each user gets a fully isolated environment: Cloudflare Access handles SSO, a Durable Object stores the per-user password in SQLite, and a Worker routes traffic to the right container.
 `bun deploy` · `wrangler deploy`
 
@@ -127,38 +130,19 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 
 See [skills/README.md](skills/README.md) for the full index.
 
-### 🧪 Monorepo Tasks, Tests & Coverage
+### ✅ Tests
 
-The repo is a [Turborepo](https://turborepo.com): `packages/*` and `apps/*` are
-workspaces, and `turbo.json` defines the shared `build`, `dev`, `lint`,
-`typecheck`, `test` and `coverage` tasks. Run them from the root, across every
-workspace at once or scoped to one:
+Three packages carry suites today. Each exposes a `test:ci` script that writes a
+`junit.xml` (and lcov coverage where its runner can produce one) for
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
+Test Analytics, which tracks run times, failure rates and flaky tests, and comments
+the failing ones on the pull request.
 
-```bash
-bun install            # single hoisted install for the whole workspace
-bun run build          # turbo run build
-bun run test           # turbo run test
-bun run coverage       # turbo run coverage
-bunx turbo run coverage --filter=./packages/git0-repo-downloader
-```
+| Package | Runner | Run locally |
+| --- | --- | --- |
+| [git0-repo-downloader](packages/git0-repo-downloader/) | `bun test` | `bun test` |
+| [web2mobile-wrapper](packages/web2mobile-wrapper/) | Jest | `npm test` |
+| [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |
 
-Testing is [Vitest](https://vitest.dev), configured **per package** rather than
-once at the root: each package owns a `vitest.config.ts` (or `.mjs`) that picks
-its own environment (`node` or `jsdom`), its own test glob, and the source globs
-that count toward coverage. Every package exposes the same three scripts:
-
-```bash
-bun run test           # vitest run
-bun run test:watch     # vitest
-bun run coverage       # vitest run --coverage
-```
-
-Coverage is written to that package's own `coverage/lcov.info`. CI
-([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs one job per
-package and uploads its report to [Codecov](https://codecov.io) under a flag
-named after the package directory, so `codecov.yml` reports per-package flags
-and components instead of one repo-wide number.
-
-Adding a package? Copy a `vitest.config.*` from a neighbour, add the three
-scripts, then add the package to the CI matrix and to the `flags` and
-`individual_components` lists in `codecov.yml`.
+Wiring up another package means adding a `test:ci` script that writes `junit.xml`
+into the package directory, then adding a matrix entry to that workflow.

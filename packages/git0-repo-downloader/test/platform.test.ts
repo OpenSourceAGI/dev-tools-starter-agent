@@ -1,29 +1,26 @@
-import { describe, test, expect, afterEach, vi } from 'vitest';
+import { describe, test, expect, mock, afterAll } from 'bun:test';
+import os from 'os';
 
-/**
- * `getCurrentPlatform` reads `os.platform()`/`os.arch()` at call time, so each
- * case swaps in a stubbed `os` module and re-imports the module under test.
- * `vi.doMock` (rather than `vi.mock`) is used because it is not hoisted and can
- * therefore vary per test.
- */
-async function loadWith(platform: string, arch: string) {
-  vi.resetModules();
-  vi.doMock('os', () => {
-    const stub = { platform: () => platform, arch: () => arch };
-    return { ...stub, default: stub };
-  });
-  const mod = await import('../src/platform.ts');
-  return mod.getCurrentPlatform;
+// `mock.module` is process-global and is never rolled back on its own, so a
+// bare `{ platform, arch }` stub here would follow us into every test file
+// that bun happens to run afterwards (download.test.ts calls os.tmpdir()).
+// Keep the real module underneath the two functions we override, and put the
+// untouched module back once this file is done.
+const realOs = os;
+
+function mockPlatform(platform: string, arch: string) {
+  mock.module('os', () => ({ ...realOs, default: { ...realOs, platform: () => platform, arch: () => arch } }));
 }
 
-afterEach(() => {
-  vi.doUnmock('os');
-  vi.resetModules();
+afterAll(() => {
+  mock.module('os', () => ({ ...realOs, default: realOs }));
 });
 
 describe('getCurrentPlatform', () => {
   test('maps darwin/x64 → macos/x86_64', async () => {
-    const p = (await loadWith('darwin', 'x64'))();
+    mockPlatform('darwin', 'x64');
+    const fn = await load();
+    const p = fn();
     expect(p.os).toBe('macos');
     expect(p.arch).toBe('x86_64');
     expect(p.platform).toBe('darwin');
@@ -31,31 +28,41 @@ describe('getCurrentPlatform', () => {
   });
 
   test('maps win32/ia32 → windows/i386', async () => {
-    const p = (await loadWith('win32', 'ia32'))();
+    mockPlatform('win32', 'ia32');
+    const fn = await load();
+    const p = fn();
     expect(p.os).toBe('windows');
     expect(p.arch).toBe('i386');
   });
 
   test('maps linux/arm64 → linux/arm64', async () => {
-    const p = (await loadWith('linux', 'arm64'))();
+    mockPlatform('linux', 'arm64');
+    const fn = await load();
+    const p = fn();
     expect(p.os).toBe('linux');
     expect(p.arch).toBe('arm64');
   });
 
   test('maps darwin/arm64 → macos/arm64 (Apple Silicon)', async () => {
-    const p = (await loadWith('darwin', 'arm64'))();
+    mockPlatform('darwin', 'arm64');
+    const fn = await load();
+    const p = fn();
     expect(p.os).toBe('macos');
     expect(p.arch).toBe('arm64');
   });
 
   test('passes through unknown platform/arch as-is', async () => {
-    const p = (await loadWith('freebsd', 'mips'))();
+    mockPlatform('freebsd', 'mips');
+    const fn = await load();
+    const p = fn();
     expect(p.os).toBe('freebsd');
     expect(p.arch).toBe('mips');
   });
 
   test('returns raw platform and architecture fields alongside mapped ones', async () => {
-    const p = (await loadWith('linux', 'x64'))();
+    mockPlatform('linux', 'x64');
+    const fn = await load();
+    const p = fn();
     expect(p.platform).toBe('linux');
     expect(p.architecture).toBe('x64');
   });

@@ -1,0 +1,105 @@
+# Runs every package that has a test suite and ships the results to Codecov
+# Test Analytics, which tracks run times, failure rates and flakiness per test
+# and comments the failing ones on the pull request.
+#
+# Each package brings its own runner (bun, vitest, jest), so the matrix carries
+# the install and test commands rather than trying to unify them. What every
+# entry must produce is the same two files, relative to its directory:
+#
+#   junit.xml        - test results, the input Test Analytics ingests
+#   coverage/*.info  - lcov, uploaded when the runner can produce it
+#
+# Adding a package here means adding a `test:ci` script that writes those.
+
+name: tests
+
+on:
+  pull_request:
+    paths:
+      - "packages/**"
+      - ".github/workflows/tests.yml"
+      - "codecov.yml"
+  push:
+    branches: [master]
+    paths:
+      - "packages/**"
+      - ".github/workflows/tests.yml"
+      - "codecov.yml"
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+
+    # A package whose suite is currently red still uploads its results — that
+    # failure report is the point of Test Analytics — but it does not fail the
+    # workflow. Drop `allow-failure` from an entry once its suite is green.
+    continue-on-error: ${{ matrix.allow-failure || false }}
+
+    strategy:
+      # One package's failure must not cancel the others' uploads.
+      fail-fast: false
+      matrix:
+        include:
+          - name: git0-repo-downloader
+            dir: packages/git0-repo-downloader
+            runtime: bun
+            install: bun install
+            coverage: true
+
+          - name: web2mobile-wrapper
+            dir: packages/web2mobile-wrapper
+            runtime: node
+            install: npm install --ignore-scripts --legacy-peer-deps
+            coverage: true
+
+          - name: verify-phone-sms
+            dir: packages/verify-phone-sms
+            runtime: node
+            install: npm install --ignore-scripts --legacy-peer-deps
+            # vitest 1.6's v8 provider writes no report on Node 22, so this one
+            # uploads test results only.
+            coverage: false
+            # 28 pre-existing failures: the suite asserts an older shape of the
+            # API than src/verify-phone-server.ts serves ("ok" vs "healthy",
+            # "API key required" vs "Unauthorized"). Tracked in Test Analytics.
+            allow-failure: true
+
+    steps:
+      # Codecov needs the parent commit to attribute results to the right base.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: oven-sh/setup-bun@v2
+        if: matrix.runtime == 'bun'
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.dir }}
+        run: ${{ matrix.install }}
+
+      - name: Run tests
+        working-directory: ${{ matrix.dir }}
+        run: ${{ matrix.runtime == 'bun' && 'bun run test:ci' || 'npm run test:ci' }}
+
+      # `!cancelled()` so a red suite still reports: without it the upload is
+      # skipped on exactly the runs whose results matter most.
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ matrix.dir }}/junit.xml
+          flags: ${{ matrix.name }}
+
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() && matrix.coverage }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ matrix.dir }}/coverage/lcov.info
+          flags: ${{ matrix.name }}

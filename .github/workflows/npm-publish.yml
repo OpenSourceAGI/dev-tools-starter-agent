@@ -21,12 +21,40 @@ jobs:
           node-version: 20
           registry-url: "https://registry.npmjs.org"
 
+      # Node 20 ships npm 10, which cannot use npm's OIDC trusted publishing.
+      # npm >= 11.5.1 picks up the id-token permission above automatically for
+      # any package configured with a trusted publisher on npmjs.com, and falls
+      # back to NODE_AUTH_TOKEN for the rest.
+      - name: Upgrade npm
+        run: npm install -g npm@^11
+
       - uses: oven-sh/setup-bun@v2
 
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Publishing takes ~3 minutes of installs and builds before the first
+      # `npm publish` runs, so bad credentials used to surface as a wall of
+      # identical E404s at the very end. Check them up front instead.
+      - name: Check npm credentials
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::notice::NPM_TOKEN is not set - assuming trusted publishing (OIDC) is configured on npmjs.com for every package."
+            exit 0
+          fi
+
+          if ! whoami_out=$(npm whoami --registry=https://registry.npmjs.org 2>&1); then
+            echo "::error::The NPM_TOKEN secret is set but the registry rejected it: $whoami_out"
+            echo "::error::npm answers 404 (not 403) on publish when a token cannot write a package, so this shows up as 'E404 Not Found - PUT' for every package."
+            echo "::error::Fix: create a new automation/granular token at https://www.npmjs.com/settings/~/tokens with read+write on these packages and update the NPM_TOKEN repository secret, or configure trusted publishing for each package and delete the secret."
+            exit 1
+          fi
+
+          echo "Authenticated to npm as $whoami_out"
 
       - name: Publish all non-private packages
         env:
@@ -72,6 +100,15 @@ jobs:
             ) || {
               echo "❌ Failed to publish $name"
               failed_packages="$failed_packages $name"
+
+              # Nothing was published, so drop the version bump instead of
+              # committing it below — otherwise the repo drifts ahead of the
+              # registry by one patch version per failed run.
+              if [ -f "$dir/package-lock.json" ]; then
+                git checkout -- "$dir/package.json" "$dir/package-lock.json"
+              else
+                git checkout -- "$dir/package.json"
+              fi
             }
           done
 

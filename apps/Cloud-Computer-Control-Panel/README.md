@@ -28,6 +28,7 @@ CCCP (Cloud Computer Control Panel) lets you manage your own personal cloud and 
 - **Encrypted Credential Storage**: AWS keys are sealed with AES-256-GCM and stored per user in a libSQL/SQLite database — the secret key is never sent back to the browser
 - **Multi-tenant**: Every user drives their own AWS account; API routes resolve credentials server-side from the signed-in session
 - **API Documentation**: Built-in Scalar API reference for programmatic access
+- **VS Code Extension**: The same dashboard runs in the editor sidebar via [`apps/cccp-vscode-ext`](../cccp-vscode-ext/), which imports these components directly rather than reimplementing them
 
 ## Tech Stack
 
@@ -36,6 +37,7 @@ starter template, which supplies the auth, database and theming layers.
 
 - **Frontend**: Next.js 16, React 19, TypeScript
 - **UI Components**: Radix UI, Tailwind CSS, shadcn/ui, [shadcn-theme-menu](../../packages/shadcn-theme-menu)
+- **Design tokens**: `app/theme-tokens.css`, kept separate from `app/globals.css` so the VS Code extension can import the palette without re-importing Tailwind
 - **Auth**: Better Auth (email + password, Google OAuth, magic links, anonymous dev login)
 - **Database**: Drizzle ORM over libSQL — a local SQLite file by default, or Turso in production
 - **AWS Integration**: AWS SDK for JavaScript (EC2, SSM, credentials)

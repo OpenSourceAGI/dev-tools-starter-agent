@@ -1,158 +1,52 @@
-# Codecov configuration — https://docs.codecov.com/docs/codecov-yaml
+# Codecov config for the packages wired up in .github/workflows/tests.yml.
 #
-# Every package under packages/* owns its own Vitest config and writes its own
-# coverage/lcov.info. CI (.github/workflows/test.yml) runs one matrix job per
-# package and uploads that package's report under a matching flag, so the
-# Codecov UI attributes a change to the library it actually landed in.
+# Only a few of the ~16 packages have suites today, so coverage numbers here
+# describe those packages, not the monorepo. The statuses are informational for
+# that reason — they annotate a pull request without ever blocking it. Test
+# Analytics (the failed-test comment and the flake dashboard) is the part meant
+# to be acted on.
 
 codecov:
-  require_ci_to_pass: true
+  # The publish workflow runs on master only, so a pull request has no CI to
+  # wait on before Codecov reports.
+  require_ci_to_pass: false
 
 coverage:
-  precision: 2
-  round: down
-  range: "40...90"
   status:
     project:
       default:
         target: auto
-        # Small refactors should not fail the build over rounding noise.
-        threshold: 2%
+        threshold: 1%
         informational: true
     patch:
       default:
-        target: 60%
-        threshold: 5%
         informational: true
 
-# One flag per package. `carryforward` keeps the last known coverage for the
-# packages a given PR did not touch, since each package is uploaded separately.
+# One flag per package, so a package that skips a run (its paths were untouched)
+# keeps its last known coverage instead of reading as a drop.
 flag_management:
   default_rules:
     carryforward: true
-
-flags:
-  about-system-info:
-    paths:
-      - packages/about-system-info/src
-  api2ai-mcp-generator:
-    paths:
-      - packages/api2ai-mcp-generator/lib
-      - packages/api2ai-mcp-generator/hooks
-  cloudflare-to-claude-fix:
-    paths:
-      - packages/cloudflare-to-claude-fix/src
-  code-tree-graph:
-    paths:
-      - packages/code-tree-graph/lib
-      - packages/code-tree-graph/components
-  create-cloud-db:
-    paths:
-      - packages/create-cloud-db
-  create-starter-app:
-    paths:
-      - packages/create-starter-app/bin
-  export-svg-icons-typescript:
-    paths:
-      - packages/export-svg-icons-typescript
-  git0-repo-downloader:
-    paths:
-      - packages/git0-repo-downloader/src
-  manage-storage:
-    paths:
-      - packages/manage-storage/src
-  native-app-wrapper:
-    paths:
-      - packages/native-app-wrapper/bin
-      - packages/native-app-wrapper/scripts
-  open-when-ready:
-    paths:
-      - packages/open-when-ready
-  react-app-store-buttons:
-    paths:
-      - packages/react-app-store-buttons/src
-  shadcn-theme-menu:
-    paths:
-      - packages/shadcn-theme-menu/src
-  verify-phone-sms:
-    paths:
-      - packages/verify-phone-sms/src
-  web2mobile-wrapper:
-    paths:
-      - packages/web2mobile-wrapper/src
-
-# Components mirror the flags so the PR comment renders a per-package table and
-# each package gets its own informational status check.
-component_management:
-  default_rules:
-    statuses:
-      - type: project
-        target: auto
-        threshold: 2%
-        informational: true
-  individual_components:
-    - component_id: about-system-info
+  individual_flags:
+    - name: git0-repo-downloader
       paths:
-        - packages/about-system-info/src/**
-    - component_id: api2ai-mcp-generator
+        - packages/git0-repo-downloader/
+    - name: web2mobile-wrapper
       paths:
-        - packages/api2ai-mcp-generator/lib/**
-        - packages/api2ai-mcp-generator/hooks/**
-    - component_id: cloudflare-to-claude-fix
+        - packages/web2mobile-wrapper/
+    - name: verify-phone-sms
       paths:
-        - packages/cloudflare-to-claude-fix/src/**
-    - component_id: code-tree-graph
-      paths:
-        - packages/code-tree-graph/lib/**
-        - packages/code-tree-graph/components/**
-    - component_id: create-cloud-db
-      paths:
-        - packages/create-cloud-db/**
-    - component_id: create-starter-app
-      paths:
-        - packages/create-starter-app/bin/**
-    - component_id: export-svg-icons-typescript
-      paths:
-        - packages/export-svg-icons-typescript/**
-    - component_id: git0-repo-downloader
-      paths:
-        - packages/git0-repo-downloader/src/**
-    - component_id: manage-storage
-      paths:
-        - packages/manage-storage/src/**
-    - component_id: native-app-wrapper
-      paths:
-        - packages/native-app-wrapper/bin/**
-        - packages/native-app-wrapper/scripts/**
-    - component_id: open-when-ready
-      paths:
-        - packages/open-when-ready/**
-    - component_id: react-app-store-buttons
-      paths:
-        - packages/react-app-store-buttons/src/**
-    - component_id: shadcn-theme-menu
-      paths:
-        - packages/shadcn-theme-menu/src/**
-    - component_id: verify-phone-sms
-      paths:
-        - packages/verify-phone-sms/src/**
-    - component_id: web2mobile-wrapper
-      paths:
-        - packages/web2mobile-wrapper/src/**
+        - packages/verify-phone-sms/
 
 comment:
-  layout: "header, diff, flags, components, files, footer"
-  behavior: default
-  require_changes: false
+  layout: "header, diff, flags, files"
+  # Don't post a comment on pull requests that changed nothing Codecov measures.
+  require_changes: true
 
 ignore:
-  - "apps/**"
-  - "starter-templates/**"
-  - "skills/**"
-  - "**/demo/**"
-  - "**/dist/**"
-  - "**/docs/**"
   - "**/test/**"
-  - "**/node_modules/**"
-  - "**/*.d.ts"
-  - "**/*.config.*"
+  - "**/tests/**"
+  - "**/examples/**"
+  - "**/docs/**"
+  - "**/dist/**"
+  - "starter-templates/**"
