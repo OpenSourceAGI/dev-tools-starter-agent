@@ -1,6 +1,6 @@
 {
   "name": "sms-verification-api",
-  "version": "0.9.44",
+  "version": "0.9.45",
   "description": "SMS Phone Verification API using AWS SNS HTTP API with Hono server on Cloudflare Workers",
   "main": "src/verify-phone.ts",
   "type": "module",
