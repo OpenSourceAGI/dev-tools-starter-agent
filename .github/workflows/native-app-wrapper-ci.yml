@@ -1,0 +1,53 @@
+# Guards the one invariant the native-app-wrapper design rests on: every file
+# under src-tauri/ that encodes an app's identity is generated from its profile,
+# so a hand-edit there silently disagrees with the profile it is supposed to
+# come from. Re-running the generator and checking for a diff is the whole test.
+
+name: native-app-wrapper
+
+on:
+  pull_request:
+    paths:
+      - "packages/native-app-wrapper/**"
+      - "packages/about-system-info/native/**"
+      - ".github/workflows/native-app-wrapper-ci.yml"
+  push:
+    branches: [master]
+    paths:
+      - "packages/native-app-wrapper/**"
+      - "packages/about-system-info/native/**"
+
+jobs:
+  generated-files-match-profiles:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app:
+          - packages/native-app-wrapper
+          - packages/about-system-info/native
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check every script parses
+        working-directory: ${{ matrix.app }}
+        run: |
+          for file in bin/cli.js scripts/*.mjs scripts/lib/*.mjs; do
+            node --check "$file"
+          done
+
+      - name: Regenerate from the profile
+        working-directory: ${{ matrix.app }}
+        run: node bin/cli.js configure
+
+      - name: Fail if anything drifted
+        working-directory: ${{ matrix.app }}
+        run: |
+          if ! git diff --exit-code .; then
+            echo "::error::src-tauri/ no longer matches what the profile generates."
+            echo "Edit profiles/<name>.json and run \`node bin/cli.js configure\`, don't edit the generated files."
+            exit 1
+          fi

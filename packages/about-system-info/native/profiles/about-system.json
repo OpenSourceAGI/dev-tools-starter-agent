@@ -1,0 +1,41 @@
+{
+  "appName": "About System",
+  "productName": "About System",
+  "identifier": "com.opensourceagi.aboutsystem",
+  "version": "0.1.0",
+  "mode": "local",
+  "sidecar": {
+    "name": "about-system",
+    "args": [
+      "--json"
+    ],
+    "build": "bun build --compile src/about-system-cli.ts --outfile {out}",
+    "buildCwd": ".."
+  },
+  "iconSource": "../assets/icon-source.png",
+  "placeholderIcon": {
+    "background": [
+      "#134e4a",
+      "#042f2e"
+    ],
+    "accent": "#5eead4"
+  },
+  "copyright": "OpenSourceAGI",
+  "publisher": "OpenSourceAGI",
+  "category": "Utility",
+  "shortDescription": "CPU, memory, disk, network, and installed tooling for this machine, at a glance.",
+  "longDescription": "A desktop window over the about-system CLI: 30+ system metrics \u2014 CPU and GPU, memory and swap, disk usage, uptime, public IP and ISP, containers, open ports, and installed developer tooling \u2014 collected on demand and shown as a single readable panel. Ships the CLI inside the app, so nothing needs to be installed first.",
+  "trustedOrigins": [],
+  "window": {
+    "title": "About System",
+    "width": 1040,
+    "height": 760,
+    "minWidth": 420,
+    "minHeight": 520,
+    "fullscreen": false,
+    "resizable": true
+  },
+  "macos": {
+    "minimumSystemVersion": "10.15"
+  }
+}

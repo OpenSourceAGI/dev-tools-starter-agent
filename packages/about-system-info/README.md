@@ -28,6 +28,20 @@ about-system
 bun x about-system
 ```
 
+### Desktop app
+
+The same information as a window you can leave open, for Windows, macOS, and Linux. The CLI is
+compiled into the app, so it installs and runs on a machine with no Node on it:
+
+```bash
+cd native && npm install && npm run build:desktop   # or grab an installer from Releases
+```
+
+See [`native/README.md`](native/README.md) for prerequisites, per-platform artifacts, and how the
+release workflow builds all three. The app is scaffolded from
+[`packages/native-app-wrapper`](../native-app-wrapper/) and owns its own identity in
+`native/profiles/about-system.json`.
+
 ## Examples
 
 ![systeminfo_greeting](https://i.imgur.com/BX6YsaK.png)

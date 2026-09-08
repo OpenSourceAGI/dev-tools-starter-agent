@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Loading…</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #0b1220; color: #d8d8d8; font-family: system-ui, sans-serif; }
+      body { display: flex; align-items: center; justify-content: center; }
+    </style>
+  </head>
+  <body>
+    <!--
+      In remote mode this file is never shown: the main window's `url` in
+      tauri.conf.json points straight at the configured site. Tauri's bundler
+      still requires `build.frontendDist` to point at a real, non-empty
+      directory, and this doubles as the offline fallback content a future
+      retry/offline screen can build on.
+
+      In local mode this directory IS the app — replace this file with the
+      frontend you want bundled. See ../docs/LOCAL_APPS.md.
+    -->
+    <p>Loading…</p>
+  </body>
+</html>

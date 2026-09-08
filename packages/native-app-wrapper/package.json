@@ -1,0 +1,61 @@
+{
+  "name": "native-app-wrapper",
+  "version": "0.1.0",
+  "description": "Tauri scaffold that packages a website or a bundled CLI as a native desktop + mobile app, configured from a single JSON profile",
+  "private": true,
+  "type": "module",
+  "author": "vtempest",
+  "license": "rights.institute/prosper",
+  "bin": {
+    "native-app-wrapper": "./bin/cli.js"
+  },
+  "scripts": {
+    "init": "node bin/cli.js init",
+    "configure": "node bin/cli.js configure",
+    "icons": "node scripts/generate-icons.mjs",
+    "icons:placeholder": "node scripts/generate-placeholder-icons.mjs",
+    "build:sidecar": "node scripts/build-sidecar.mjs",
+    "predev": "node bin/cli.js configure",
+    "dev": "tauri dev",
+    "prebuild:desktop": "node bin/cli.js configure",
+    "build:desktop": "tauri build",
+    "android:init": "tauri android init",
+    "preandroid:dev": "node bin/cli.js configure",
+    "android:dev": "tauri android dev",
+    "preandroid:build": "node bin/cli.js configure",
+    "android:build": "tauri android build",
+    "ios:init": "tauri ios init",
+    "preios:dev": "node bin/cli.js configure",
+    "ios:dev": "tauri ios dev",
+    "preios:build": "node bin/cli.js configure",
+    "ios:build": "tauri ios build"
+  },
+  "keywords": [
+    "tauri",
+    "desktop-app",
+    "webview",
+    "app-wrapper",
+    "windows",
+    "macos",
+    "linux",
+    "android",
+    "ios",
+    "sidecar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper"
+  },
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-deep-link": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "@tauri-apps/plugin-updater": "^2"
+  }
+}

@@ -1,0 +1,134 @@
+# Builds the About System desktop app for Windows, macOS, and Linux and attaches
+# every installer to one draft GitHub Release.
+#
+# Three runners rather than one because neither half of this build cross-compiles:
+# Tauri needs each OS's own native webview and toolchain, and the sidecar is a
+# `bun build --compile` binary that is likewise per-platform. The macOS job
+# builds both architectures' sidecars so it can produce a universal app.
+
+name: About System desktop
+
+on:
+  push:
+    tags:
+      - "about-system-desktop-v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish the draft release under (e.g. about-system-desktop-v0.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  APP_DIR: packages/about-system-info/native
+  CLI_DIR: packages/about-system-info
+
+jobs:
+  build:
+    strategy:
+      # One platform failing shouldn't throw away the installers the others
+      # already produced — they all attach to the same draft release.
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+            args: ""
+          - platform: macos-latest
+            args: "--target universal-apple-darwin"
+          - platform: windows-latest
+            args: ""
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          # Universal macOS binaries need both architectures' Rust targets; the
+          # other platforms just get their host target.
+          targets: ${{ matrix.platform == 'macos-latest' && 'x86_64-apple-darwin,aarch64-apple-darwin' || '' }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: ${{ env.APP_DIR }}/src-tauri -> target
+
+      - name: Install Linux webview dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev build-essential \
+            curl wget file libssl-dev
+
+      - name: Install the CLI's dependencies
+        # The sidecar is compiled from the CLI's own source, so its node_modules
+        # have to exist before the compile step below.
+        working-directory: ${{ env.CLI_DIR }}
+        run: bun install
+
+      - name: Install the app's dependencies
+        working-directory: ${{ env.APP_DIR }}
+        run: npm install
+
+      - name: Regenerate the Tauri config from the profile
+        # tauri-action invokes the Tauri CLI directly, so the package's own
+        # pre-build npm hooks never run — this is where they happen instead.
+        working-directory: ${{ env.APP_DIR }}
+        run: node bin/cli.js configure
+
+      - name: Build the sidecar
+        if: matrix.platform != 'macos-latest'
+        working-directory: ${{ env.APP_DIR }}
+        run: node scripts/build-sidecar.mjs
+
+      - name: Build both sidecar architectures (macOS universal)
+        # Tauri does not lipo the sidecar, so a universal app needs a binary
+        # named for each architecture's target triple.
+        if: matrix.platform == 'macos-latest'
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          mkdir -p src-tauri/binaries
+          bun build --compile --target=bun-darwin-x64 ../src/about-system-cli.ts \
+            --outfile src-tauri/binaries/about-system-x86_64-apple-darwin
+          bun build --compile --target=bun-darwin-arm64 ../src/about-system-cli.ts \
+            --outfile src-tauri/binaries/about-system-aarch64-apple-darwin
+          chmod +x src-tauri/binaries/about-system-*
+
+      - name: Read the app version from the profile
+        id: version
+        shell: bash
+        run: echo "value=$(node -p "require('./${APP_DIR}/profiles/about-system.json').version")" >> "$GITHUB_OUTPUT"
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signing activates automatically when these exist; unsigned builds
+          # are the default so forks still get working installers.
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        with:
+          projectPath: ${{ env.APP_DIR }}
+          tagName: ${{ github.event.inputs.tag || github.ref_name }}
+          releaseName: About System ${{ steps.version.outputs.value }}
+          releaseBody: |
+            Desktop builds of `about-system`. The CLI is bundled inside the app —
+            nothing needs to be installed first.
+
+            Installers are unsigned, so macOS shows an "unidentified developer"
+            warning and Windows shows a SmartScreen prompt on first launch.
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
