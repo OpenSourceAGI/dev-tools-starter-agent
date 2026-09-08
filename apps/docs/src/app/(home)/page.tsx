@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 import { WebGLShader } from "@/components/ui/web-gl-shader"
+import KineticGrid from "@/components/ui/kinetic-grid"
 import {
   Search,
   Terminal,
@@ -457,103 +458,112 @@ export default function DocsHomepage() {
       <section className="relative overflow-hidden border-b border-border">
         {/* WebGL Shader Background */}
         <WebGLShader className="absolute inset-0 opacity-60" />
-        
-        {/* Animated background overlays */}
-        <div className="absolute inset-0 hero-grid" />
-        <div className="absolute top-1/4 -left-32 size-96 rounded-full bg-brand/8 blur-[100px] orb-1" />
-        <div className="absolute bottom-1/4 -right-32 size-96 rounded-full bg-teal/8 blur-[100px] orb-2" />
 
-        {/* Gradient edge fade */}
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent" />
+        {/* Kinetic grid: warps toward the cursor and ripples on click. It wraps the
+            hero content so pointer events bubble to it, and `fill={false}` keeps the
+            shader visible underneath. */}
+        <KineticGrid
+          variant="section"
+          globalColor="auto"
+          fill={false}
+          className="relative z-[1]"
+        >
+          {/* Animated background overlays */}
+          <div className="absolute top-1/4 -left-32 size-96 rounded-full bg-brand/8 blur-[100px] orb-1 pointer-events-none" />
+          <div className="absolute bottom-1/4 -right-32 size-96 rounded-full bg-teal/8 blur-[100px] orb-2 pointer-events-none" />
 
-        <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
-          <div className="text-center">
-            {/* Pill badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 mb-6">
-              <span className="relative flex size-2">
-                <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-75" />
-                <span className="relative inline-flex size-2 rounded-full bg-brand" />
-              </span>
-              <span className="text-sm font-medium text-brand">
-                {totalPackages} packages available
-              </span>
-            </div>
+          {/* Gradient edge fade */}
+          <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-background to-transparent pointer-events-none" />
 
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-7xl text-balance hero-glow">
-              Developer Tools
-            </h1>
+          <div className="relative mx-auto max-w-7xl px-4 py-20 sm:px-6 sm:py-28 lg:px-8 lg:py-32">
+            <div className="text-center">
+              {/* Pill badge */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-4 py-1.5 mb-6">
+                <span className="relative flex size-2">
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-brand opacity-75" />
+                  <span className="relative inline-flex size-2 rounded-full bg-brand" />
+                </span>
+                <span className="text-sm font-medium text-brand">
+                  {totalPackages} packages available
+                </span>
+              </div>
+
+              <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-7xl text-balance hero-glow">
+                Developer Tools
+              </h1>
             
-            {/* Sparkles effect under title */}
-            <div className="w-full max-w-xl mx-auto h-20 relative mt-2">
-              {/* Gradients */}
-              <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-brand to-transparent h-[2px] w-3/4 blur-sm" />
-              <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-brand to-transparent h-px w-3/4" />
-              <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-teal to-transparent h-[5px] w-1/4 blur-sm" />
-              <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-teal to-transparent h-px w-1/4" />
+              {/* Sparkles effect under title */}
+              <div className="w-full max-w-xl mx-auto h-20 relative mt-2">
+                {/* Gradients */}
+                <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-brand to-transparent h-[2px] w-3/4 blur-sm" />
+                <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-brand to-transparent h-px w-3/4" />
+                <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-teal to-transparent h-[5px] w-1/4 blur-sm" />
+                <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-teal to-transparent h-px w-1/4" />
 
-              {/* Core sparkles component */}
-              <SparklesCore
-                background="transparent"
-                minSize={0.4}
-                maxSize={1}
-                particleDensity={1200}
-                className="w-full h-full"
-                particleColor="#FFFFFF"
-              />
+                {/* Core sparkles component */}
+                <SparklesCore
+                  background="transparent"
+                  minSize={0.4}
+                  maxSize={1}
+                  particleDensity={1200}
+                  className="w-full h-full"
+                  particleColor="#FFFFFF"
+                />
 
-              {/* Radial Gradient to prevent sharp edges */}
-              <div className="absolute inset-0 w-full h-full [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" style={{ backgroundColor: 'var(--background)' }}></div>
-            </div>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-              Comprehensive docs for CLI tools, libraries, apps, and
-              production-ready starter templates. Jumpstart your development.
-            </p>
+                {/* Radial Gradient to prevent sharp edges */}
+                <div className="absolute inset-0 w-full h-full [mask-image:radial-gradient(350px_200px_at_top,transparent_20%,white)]" style={{ backgroundColor: 'var(--background)' }}></div>
+              </div>
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
+                Comprehensive docs for CLI tools, libraries, apps, and
+                production-ready starter templates. Jumpstart your development.
+              </p>
 
-            {/* Stats row */}
-            <div className="mt-10 flex flex-wrap justify-center gap-3">
-              {categories.map((cat) => {
-                const CatIcon = categoryIconMap[cat.iconKey] ?? Package
-                const colorBg: Record<string, string> = {
-                  brand: "border-brand/30 bg-brand/10 text-brand",
-                  teal: "border-teal/30 bg-teal/10 text-teal",
-                  ember: "border-ember/30 bg-ember/10 text-ember",
-                }
-                return (
-                  <div
-                    key={cat.name}
-                    className={`flex items-center gap-2 rounded-full border px-4 py-2 ${colorBg[cat.color] ?? colorBg.brand}`}
-                  >
-                    <CatIcon className="size-4" />
-                    <span className="text-sm font-medium">
-                      {cat.packages.length} {cat.name}
-                    </span>
-                  </div>
-                )
-              })}
-            </div>
+              {/* Stats row */}
+              <div className="mt-10 flex flex-wrap justify-center gap-3">
+                {categories.map((cat) => {
+                  const CatIcon = categoryIconMap[cat.iconKey] ?? Package
+                  const colorBg: Record<string, string> = {
+                    brand: "border-brand/30 bg-brand/10 text-brand",
+                    teal: "border-teal/30 bg-teal/10 text-teal",
+                    ember: "border-ember/30 bg-ember/10 text-ember",
+                  }
+                  return (
+                    <div
+                      key={cat.name}
+                      className={`flex items-center gap-2 rounded-full border px-4 py-2 ${colorBg[cat.color] ?? colorBg.brand}`}
+                    >
+                      <CatIcon className="size-4" />
+                      <span className="text-sm font-medium">
+                        {cat.packages.length} {cat.name}
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
 
-            {/* CTA */}
-            <div className="mt-8 flex justify-center gap-3">
-              <a
-                href="https://github.com/OpenSourceAGI/starter-app-dev-tools"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:bg-foreground/90 transition-colors"
-              >
-                Get Started
-                <ArrowRight className="size-4" />
-              </a>
-              <a
-                href="https://starterdocs.js.org"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
-              >
-                Read Docs
-              </a>
+              {/* CTA */}
+              <div className="mt-8 flex justify-center gap-3">
+                <a
+                  href="https://github.com/OpenSourceAGI/starter-app-dev-tools"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-foreground text-background px-5 py-2.5 text-sm font-medium hover:bg-foreground/90 transition-colors"
+                >
+                  Get Started
+                  <ArrowRight className="size-4" />
+                </a>
+                <a
+                  href="https://starterdocs.js.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
+                >
+                  Read Docs
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </KineticGrid>
       </section>
 
       {/* Search + Category Filter */}
