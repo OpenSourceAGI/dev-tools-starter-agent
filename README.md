@@ -2,8 +2,8 @@
     <img width="350px" src="https://i.imgur.com/OKnr9ns.png" />
 <h3 align="center">
      <a href="https://starterdocs.vtempest.workers.dev">🎮 Demo</a>
-    <a href="https://starterdocs.js.org">📑 Docs</a>
-    <a href="https://starterdocs.js.org/docs/guides/starter-docs#%EF%B8%8F-installation">⬇️ Install </a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/docs/content/docs">📑 Docs</a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/docs/content/docs/(index)/guides/starter-docs.mdx#%EF%B8%8F-installation">⬇️ Install </a>
     <a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
 </h3>
 <p align="center">

@@ -1,8 +1,9 @@
 import { generateDocs } from './generate-docs.js'
+import { syncReadmeDocs } from './sync-readme-docs.js'
 
 async function main() {
   // comment the below to disable openapi generation
-  await Promise.all([generateDocs()])
+  await Promise.all([generateDocs(), syncReadmeDocs()])
 }
 
 await main().catch((e) => {

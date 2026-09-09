@@ -7,6 +7,7 @@
     "build": "bun --bun next build",
     "build:full": "bun run build:pre && next build && bun run build:post",
     "build:pre": "bun ./scripts/pre-build.ts",
+    "docs:sync": "bun ./scripts/sync-readme-docs.ts",
     "build:post": "bun ./scripts/post-build.ts",
     "dev": "bun --bun next dev",
     "start": "bun --bun next start",

@@ -2,6 +2,8 @@
   "pages": [
     "index",
     "guides",
+    "packages",
+    "apps",
     "(api)",
     "..."
   ]

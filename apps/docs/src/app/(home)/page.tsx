@@ -434,9 +434,7 @@ export default function DocsHomepage() {
               Demo
             </a>
             <a
-              href="https://starterdocs.js.org"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"
             >
               Docs
@@ -553,9 +551,7 @@ export default function DocsHomepage() {
                   <ArrowRight className="size-4" />
                 </a>
                 <a
-                  href="https://starterdocs.js.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs"
                   className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
                 >
                   Read Docs
