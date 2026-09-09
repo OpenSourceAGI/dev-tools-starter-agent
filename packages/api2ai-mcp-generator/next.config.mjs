@@ -26,11 +26,12 @@ const nextConfig = {
     'shiki',
   ],
   reactStrictMode: true,
-  experimental: {
-    turbo: {
-      resolveAlias: {
-        'fumadocs-mdx:collections/server': path.resolve(__dirname, '.source/server.ts'),
-      },
+  // Next 16 builds with Turbopack by default and reads this at the top level;
+  // `experimental.turbo` is no longer a recognised key and is ignored with a
+  // warning, which would have dropped the alias below on every build.
+  turbopack: {
+    resolveAlias: {
+      'fumadocs-mdx:collections/server': path.resolve(__dirname, '.source/server.ts'),
     },
   },
   webpack: (config, { isServer }) => {

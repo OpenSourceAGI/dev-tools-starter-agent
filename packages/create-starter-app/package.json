@@ -4,7 +4,7 @@
   "description": "Interactive CLI to scaffold a starter app from curated templates",
   "type": "module",
   "bin": {
-    "create-starter-app": "./bin/create-starter-app.js"
+    "create-starter-app": "bin/create-starter-app.js"
   },
   "scripts": {
     "ship": "npm run build && npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
@@ -35,7 +35,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/create-starter-app"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app",
   "devDependencies": {

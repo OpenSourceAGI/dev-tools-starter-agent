@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/generate.js",
   "bin": {
-    "create-mobile-wrapper": "./bin/cli.js"
+    "create-mobile-wrapper": "bin/cli.js"
   },
   "keywords": [
     "react-native",
@@ -48,7 +48,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/web2mobile-wrapper"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/web2mobile-wrapper"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/web2mobile-wrapper",
   "private": true

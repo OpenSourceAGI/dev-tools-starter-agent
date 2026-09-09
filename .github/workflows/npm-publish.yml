@@ -12,21 +12,33 @@ jobs:
   publish-packages:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/setup-node@v4
+      # 22, not 20: several TanStack packages already declare engines
+      # ">=22.12.0", and actions running on Node 20 are deprecated.
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           registry-url: "https://registry.npmjs.org"
 
-      # Node 20 ships npm 10, which cannot use npm's OIDC trusted publishing.
+      # Node 22 ships npm 10, which cannot use npm's OIDC trusted publishing.
       # npm >= 11.5.1 picks up the id-token permission above automatically for
       # any package configured with a trusted publisher on npmjs.com, and falls
       # back to NODE_AUTH_TOKEN for the rest.
       - name: Upgrade npm
         run: npm install -g npm@^11
+
+      # setup-node writes `always-auth` into the npmrc it generates. npm 11 does
+      # not know the key and warns about it on every single invocation, which is
+      # a few hundred lines of noise across a run. Authentication comes from the
+      # _authToken line, which stays.
+      - name: Drop the deprecated always-auth key from the generated npmrc
+        run: |
+          if [ -f "$NPM_CONFIG_USERCONFIG" ]; then
+            sed -i '/^always-auth[[:space:]]*=/d' "$NPM_CONFIG_USERCONFIG"
+          fi
 
       - uses: oven-sh/setup-bun@v2
 
@@ -34,6 +46,11 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      # Publishing is not reversible, so the code that decides version numbers
+      # is checked before it decides any. These run in well under a second.
+      - name: Test the publish scripts
+        run: node --test .github/scripts/*.test.mjs
 
       # Publishing takes ~3 minutes of installs and builds before the first
       # `npm publish` runs, so bad credentials used to surface as a wall of
@@ -78,14 +95,29 @@ jobs:
             fi
 
             name=$(node -e "const p=require('./$pkg'); console.log(p.name)")
-            echo "📦 Publishing $name ($dir)"
+
+            # Ask the registry what to publish rather than bumping blindly. The
+            # bump commit at the end of this job is best-effort — a failed run,
+            # a push race or a protected branch all skip it — and once the repo
+            # falls behind npm, `npm version patch` produces a version that is
+            # already published and every package fails for good. Resolving
+            # against the registry makes the next run correct on its own.
+            if ! version=$(node .github/scripts/resolve-publish-version.mjs "$dir"); then
+              echo "❌ Could not resolve a version for $name"
+              failed_packages="$failed_packages $name"
+              continue
+            fi
+
+            echo "📦 Publishing $name@$version ($dir)"
 
             (
               cd "$dir"
 
               # --no-workspaces keeps npm operating on this package alone now that
               # the repo root declares a Turborepo/bun workspace.
-              npm version patch --no-git-tag-version --no-workspaces
+              # --allow-same-version because the resolved version is sometimes the
+              # one already in package.json, when a bump was written by hand.
+              npm version "$version" --no-git-tag-version --no-workspaces --allow-same-version
 
               # Skip postinstall hooks (e.g. drizzle-kit push, fumadocs-mdx) that require
               # runtime env vars not available in CI — build script is run explicitly below
@@ -96,7 +128,17 @@ jobs:
                 npm run build
               fi
 
-              npm publish --provenance --access public --no-workspaces
+              # Warns, never fails: a tarball missing its own entry points is a
+              # bug in that package, not a reason to hold up the release.
+              node "$GITHUB_WORKSPACE/.github/scripts/check-package-entrypoints.mjs" .
+
+              # --tag latest is explicit, not implied. npm refuses to apply the
+              # tag implicitly when any higher version exists on the registry,
+              # even one the tag does not point at — api2ai has an abandoned
+              # 1.0.x line sitting above the 0.2.x line it still ships from.
+              # resolve-publish-version.mjs guarantees this version is above the
+              # current `latest`, so the tag can only move forward.
+              npm publish --provenance --access public --no-workspaces --tag latest
             ) || {
               echo "❌ Failed to publish $name"
               failed_packages="$failed_packages $name"
@@ -117,10 +159,30 @@ jobs:
             exit 1
           fi
 
+      # Best-effort bookkeeping. What was published is already published; this
+      # only keeps the tree readable, and the next run resolves versions from
+      # the registry either way.
       - name: Commit version bumps
         if: always()
         run: |
-          git add packages/*/package.json packages/*/package-lock.json
-          git diff --staged --quiet && echo "No version changes to commit" && exit 0
+          git add -- packages/*/package.json packages/*/package-lock.json
+
+          if git diff --staged --quiet; then
+            echo "No version changes to commit"
+            exit 0
+          fi
+
           git commit -m "chore: bump package versions [skip ci]"
-          git push
+
+          # Another push to master during the ~3 minutes of installs and builds
+          # would otherwise reject this one and leave the tree behind again.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $attempt); rebasing onto the current master"
+            git pull --rebase origin master || break
+          done
+
+          echo "::warning::Could not push the version bumps. The packages are published; the tree is behind by one patch each, which the next run resolves from the registry."

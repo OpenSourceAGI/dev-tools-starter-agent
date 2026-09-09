@@ -6,7 +6,7 @@
   "version": "1.0.47",
   "main": "create-cloud-db.js",
   "bin": {
-    "create-cloud-db": "./create-cloud-db.js"
+    "create-cloud-db": "create-cloud-db.js"
   },
   "scripts": {
     "ship": "npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
@@ -17,7 +17,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-cloud-db"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/create-cloud-db"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-cloud-db",
   "keywords": [

@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "about-system": "./dist/about-system-cli.js"
+    "about-system": "dist/about-system-cli.js"
   },
   "type": "module",
   "exports": {
@@ -64,7 +64,8 @@
   "license": "rights.institute/prosper",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system-info"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/about-system-info"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system-info",
   "files": [

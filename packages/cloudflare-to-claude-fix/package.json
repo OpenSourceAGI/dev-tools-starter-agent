@@ -4,7 +4,8 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/cloudflare-to-claude-fix"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/cloudflare-to-claude-fix"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/cloudflare-to-claude-fix",
   "keywords": [

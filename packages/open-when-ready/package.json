@@ -4,7 +4,7 @@
   "description": "Smart dev server launcher: error→AI search, success→auto-open browser. Any CLI tool.",
   "type": "module",
   "bin": {
-    "open-ready": "./open-when-ready.mjs"
+    "open-ready": "open-when-ready.mjs"
   },
   "scripts": {
     "ship": "bun x standard-version --release-as patch;rm CHANGELOG.md; npm publish",
@@ -31,7 +31,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/open-when-ready"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready",
   "devDependencies": {

@@ -25,10 +25,10 @@
         ".": "./dist/cli.js"
     },
     "bin": {
-        "g": "./dist/cli.js",
-        "gg": "./dist/cli.js",
-        "fm": "./src/fm.js",
-        "git0": "./dist/cli.js"
+        "g": "dist/cli.js",
+        "gg": "dist/cli.js",
+        "fm": "src/fm.js",
+        "git0": "dist/cli.js"
     },
     "type": "module",
     "keywords": [
@@ -42,7 +42,8 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader"
+        "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+        "directory": "packages/git0-repo-downloader"
     },
     "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader",
     "devDependencies": {
