@@ -5,24 +5,24 @@
         <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
             alt="Join Discord" />
     </a>
-     <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/starter-app-dev-tools" /></a>
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
+     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
     <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/OpenSourceAGI/starter-app-dev-tools" />
+        src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
 <br />
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/starter-app-dev-tools" />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
-    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/starter-app-dev-tools.svg" alt="GitHub last commit" />
+    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" />
 <br />
     <img src="https://img.shields.io/badge/Next.js-16-black" alt="Next.js" />
     <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
             alt="PRs Welcome" />
     </a>
-    <a href="https://codespaces.new/OpenSourceAGI/starter-app-dev-tools">
+    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent">
     <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
     </a>
 </p>
