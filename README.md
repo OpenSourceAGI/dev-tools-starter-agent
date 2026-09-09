@@ -7,24 +7,24 @@
     <a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
 </h3>
 <p align="center">
-     <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/starter-app-dev-tools" /></a>
+     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" /></a>
      <a href="https://discord.gg/SJdBqBz3tV">
         <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
             alt="Join Discord" />
     </a>
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
     <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/OpenSourceAGI/starter-app-dev-tools" />
+        src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
-    <a href="https://codespaces.new/OpenSourceAGI/starter-app-dev-tools">
+    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent">
     <img src="https://github.com/codespaces/badge.svg" width="150" height="20" alt="GitHub Codespaces" />
     </a>
 <br />
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/starter-app-dev-tools" />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
-    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/starter-app-dev-tools.svg" alt="GitHub last commit" />
+    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" />
     <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
     </a>
@@ -50,11 +50,14 @@
 [![npm downloads](https://img.shields.io/npm/dm/about-system.svg)](https://www.npmjs.com/package/about-system) **[about-system-info](packages/about-system-info/)** - Cross-platform CLI that prints CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line. Add to your shell config (`config.fish`, `.zshrc`) for an instant system snapshot on every terminal launch. Supports Windows, macOS, and Linux. Also ships as a [desktop app](packages/about-system-info/native/) for all three, with the CLI compiled inside it so nothing needs installing first.
 `npx about-system` · `npm install -g about-system`
 
-[![npm downloads](https://img.shields.io/npm/dm/api2ai.svg)](https://www.npmjs.com/package/api2ai) **[api2ai-mcp-generator](packages/api2ai-mcp-generator/)** - Generate production-ready MCP servers from any OpenAPI spec using the mcp-use framework (8k+ GitHub stars). Supports HTTP, SSE, and Streamable HTTP transports; includes a built-in inspector UI at `/inspector`, Zod schema validation, bearer/API-key auth, and Docker/PM2/Kubernetes deployment configs.
+[![npm downloads](https://img.shields.io/npm/dm/api2ai.svg)](https://www.npmjs.com/package/api2ai) **[api2ai-mcp-generator](packages/api2ai-mcp-generator/)** - Generate production-ready MCP servers from any OpenAPI spec using the mcp-use framework (10k+ GitHub stars). Supports HTTP, SSE, and Streamable HTTP transports; includes a built-in inspector UI at `/inspector`, Zod schema validation, bearer/API-key auth, and Docker/PM2/Kubernetes deployment configs.
 `npx api2ai <openapi-spec-url>` · `npm install -g api2ai`
 
 **[cloudflare-to-claude-fix](packages/cloudflare-to-claude-fix/)** - Cloudflare Workers Queue consumer that fires a Claude Code routine automatically whenever a Workers build fails. Subscribes to Cloudflare build events via a Workers Queue and dead-letter queue, then triggers an AI-powered fix routine. Requires Workers Paid plan and Claude Pro.
 `bun deploy` · `wrangler deploy`
+
+[![npm downloads](https://img.shields.io/npm/dm/code-tree-graph.svg)](https://www.npmjs.com/package/code-tree-graph) **[code-tree-graph](packages/code-tree-graph/)** - Interactive code dependency graph and file tree components for Fumadocs + Next.js. `DependencyGraph` renders a pan/zoom Mermaid flowchart from full AST analysis, `FileTreeView` a searchable table with export/JSDoc metadata and GitHub deep links, and `TypeTable` collapsible property tables — all from a local TypeScript/JS parser, no external service.
+`npm install code-tree-graph` · `bun add code-tree-graph`
 
 [![npm downloads](https://img.shields.io/npm/dm/create-cloud-db.svg)](https://www.npmjs.com/package/create-cloud-db) **[create-cloud-db](packages/create-cloud-db/)** - Interactive CLI that creates a Turso edge database and writes `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` directly into your `.env` file. Handles Turso login, database creation, token generation, and env-file patching in one command.
 `npx create-cloud-db [db-name]` · `npm install -g create-cloud-db`
@@ -77,30 +80,30 @@
 [![npm downloads](https://img.shields.io/npm/dm/open-ready.svg)](https://www.npmjs.com/package/open-ready) **[open-when-ready](packages/open-when-ready/)** - Smart dev server wrapper for Next.js, Vite, or any CLI tool. Watches server output, auto-opens the browser when a ready signal is detected, and on error extracts context and launches your AI assistant (Perplexity, ChatGPT, or custom URL) with a pre-filled prompt.
 `npx open-ready <command>` · `npm install -g open-ready`
 
-[![npm downloads](https://img.shields.io/npm/dm/react-app-store-buttons.svg)](https://www.npmjs.com/package/react-app-store-buttons) **[react-native-app-buttons](packages/react-native-app-buttons/)** - React badge components for 8 app store and platform download links: iOS App Store, Google Play, Chrome Web Store, Mac App Store, Microsoft Store, Linux, and Snap Store. Detects the user's OS and highlights the matching button with a golden glow; generates native deep links (`itms-apps://`, `market://`, `ms-windows-store://`) so the store app opens directly. Badges ship as bundled assets — no CDN required.
-`npm install react-native-app-buttons` · `bun add react-native-app-buttons`
+[![npm downloads](https://img.shields.io/npm/dm/react-app-store-buttons.svg)](https://www.npmjs.com/package/react-app-store-buttons) **[react-app-store-buttons](packages/react-app-store-buttons/)** - React badge components for 8 app store and platform download links: iOS App Store, Google Play, Chrome Web Store, Mac App Store, Microsoft Store, Linux, and Snap Store. Detects the user's OS and highlights the matching button with a golden glow; generates native deep links (`itms-apps://`, `market://`, `ms-windows-store://`) so the store app opens directly. Badges ship as bundled assets — no CDN required.
+`npm install react-app-store-buttons` · `bun add react-app-store-buttons`
 
 **[server-shell-setup](packages/server-shell-setup/)** - One-command bootstrap for a modern dev environment: installs fish, nvim, nushell, bun, node, helix, starship, docker, and more. Offers an interactive menu or a fully unattended `all` mode. Includes fish aliases for `service_manager`, `killport`, and `search`. Supports Arch, Ubuntu/Debian, Android (Termux), macOS, Fedora, and Alpine.
 `wget -qO- tinyurl.com/shellsetup | bash`
 
 [![npm downloads](https://img.shields.io/npm/dm/shadcn-theme-menu.svg)](https://www.npmjs.com/package/shadcn-theme-menu) **[shadcn-theme-menu](packages/shadcn-theme-menu/)** - Drop-in theme switcher for shadcn/ui with 24+ color themes, dark/light/system mode toggle, and smooth animations. Includes `ThemeToggle`, `ThemeDropdown`, and `CinematicThemeSwitcher` components. Wrap your app with `ThemeProvider` and import the bundled CSS — no extra config required.
-`npm install shadcn-themes` · `bun add shadcn-themes`
+`npm install shadcn-theme-menu` · `bun add shadcn-theme-menu`
 
 **[verify-phone-sms](packages/verify-phone-sms/)** - SMS phone verification API server built with Hono on Cloudflare Workers, backed by AWS SNS. Sends one-time codes, blocks VoIP numbers, enforces API-key authentication, applies rate limiting, and exposes auto-generated OpenAPI documentation. Includes health-check endpoints and CORS/security-header middleware.
 `bun deploy` · `wrangler deploy`
 
 **[web2mobile-wrapper](packages/web2mobile-wrapper/)** - Transform any website URL into a native mobile app wrapper for iOS and Android. No coding required — generates a React Native project pre-configured with your URL, push notifications, and app store metadata. Boosts discoverability via App Store and Google Play presence.
-`npx create-mobile-wrapper` · `npm install -g create-mobile-wrapper`
+`npm run generate` · `node bin/cli.js`
 
 ### Starter Templates
 
-**[template-svelte-betterauth-drizzle-shadcn](starter-templates/template-svelte-betterauth-drizzle-shadcn/)** - Full-stack SvelteKit app with Better Auth, Drizzle ORM on Cloudflare D1, Stripe payments, and shadcn-svelte components.
+**[template-svelte-betterauth-shadcn-drizzle](starter-templates/template-svelte-betterauth-shadcn-drizzle/)** - Full-stack SvelteKit app with Better Auth, Drizzle ORM on Cloudflare D1, Stripe payments, and shadcn-svelte components.
 `bun create starter-app` · `npx create-starter-app`
 
 **[template-nextjs-betterauth-shadcn-drizzle](starter-templates/template-nextjs-betterauth-shadcn-drizzle/)** - Next.js SaaS boilerplate with PostgreSQL, Better Auth, Stripe subscriptions, and shadcn/ui components.
 `bun create starter-app` · `npx create-starter-app`
 
-**[template-nextjs-betterauth-shadcn-prisma](starter-templates/template-nextjs-betterauth-shadcn-prisma/)** - Lightweight Next.js starter with Prisma ORM, Better Auth, Google OAuth, credential login, and protected routes.
+**[template-vinext-betterauth-shadcn-themes-teams-stripe](starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe/)** - Full Next.js dashboard template with Better Auth (social + SIWE), Stripe subscriptions and billing portal, teams, 50 shadcn color themes, and built-in Fumadocs documentation.
 `bun create starter-app` · `npx create-starter-app`
 
 **[template-fumadocs](starter-templates/template-fumadocs/)** - Documentation site with Fumadocs, Orama search, OpenAPI/Swagger docs, MDX support, and collapsible sidebar.
@@ -122,7 +125,7 @@ See [skills/README.md](skills/README.md) for the full index.
 
 ### ✅ Tests
 
-Three packages carry suites today. Each exposes a `test:ci` script that writes a
+Three packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
 `junit.xml` (and lcov coverage where its runner can produce one) for
 [`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
 Test Analytics, which tracks run times, failure rates and flaky tests, and comments
