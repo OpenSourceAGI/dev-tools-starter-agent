@@ -1,0 +1,26 @@
+{
+  "title": "Packages",
+  "icon": "Package",
+  "description": "Every published CLI, library, and service in the monorepo.",
+  "pages": [
+    "---CLI Tools---",
+    "about-system-info",
+    "api2ai-mcp-generator",
+    "create-cloud-db",
+    "create-starter-app",
+    "git0-repo-downloader",
+    "open-when-ready",
+    "server-shell-setup",
+    "---Libraries---",
+    "code-tree-graph",
+    "export-svg-icons-typescript",
+    "manage-storage",
+    "react-app-store-buttons",
+    "shadcn-theme-menu",
+    "---Infrastructure---",
+    "cloudflare-to-claude-fix",
+    "native-app-wrapper",
+    "verify-phone-sms",
+    "web2mobile-wrapper"
+  ]
+}

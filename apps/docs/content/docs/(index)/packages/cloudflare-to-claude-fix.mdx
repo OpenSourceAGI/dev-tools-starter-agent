@@ -1,0 +1,171 @@
+---
+title: 'cloudflare-to-claude-fix'
+description: 'Cloudflare Workers queue consumer that fires a Claude Code routine whenever a Workers build fails.'
+icon: Zap
+---
+
+{/* Generated from packages/cloudflare-to-claude-fix/README.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
+
+<div align="center">
+    <img width="400px" src="https://i.imgur.com/RQP3lma.png" />
+</div>
+
+A Cloudflare Workers **Queue consumer** that fires a **Claude Code routine** whenever a Workers build fails. Required Workers Paid and Claude Pro.
+
+---
+
+## Setup
+
+### 1. Clone / copy this project
+
+```bash
+git clone <your-repo>
+cd cloudflare-to-claude-fix
+npm install
+```
+
+### 2. Create the Cloudflare Queue
+
+```bash
+# Main queue
+wrangler queues create workers-build-events
+
+# Dead-letter queue (catches messages that fail all 3 retries)
+wrangler queues create workers-build-events-dlq
+```
+
+### 3. Enable Event Subscriptions on your target Worker
+
+In the Cloudflare dashboard:
+
+1. Open **Workers & Pages** → select the Worker you want to monitor
+2. Go to **Settings** → **Event Subscriptions**
+3. Set the queue to `workers-build-events`
+4. Enable: **Build started**, **Build succeeded**, **Build failed**, **Build cancelled**
+
+This Worker only acts on `status === "failed"` events; the rest are acknowledged and discarded.
+
+### 4. Create a Claude Code routine
+
+1. Go to [claude.ai/code/routines](https://claude.ai/code/routines)
+2. Click **New routine**
+3. Configure:
+   - **Prompt:** e.g. *"A Cloudflare Workers build has failed. The build ID, branch, commit, author and error log are below. Investigate the error, identify the root cause, and push a fix to the branch. Summarise what you changed."*
+   - **Repository:** the repo that this Worker is deployed from
+4. Under **Select a trigger** → **Add another trigger** → choose **API**
+5. Click **Generate token** — copy the token (shown **once**)
+6. Copy the full fire URL shown in the modal (format: `https://api.anthropic.com/v1/claude_code/routines/trig_<id>/fire`)
+
+### 5. Store secrets in Wrangler
+
+```bash
+# Required
+wrangler secret put ROUTINE_FIRE_URL
+# paste: https://api.anthropic.com/v1/claude_code/routines/trig_<id>/fire
+
+wrangler secret put ROUTINE_FIRE_TOKEN
+# paste: sk-ant-oat01-...
+
+# Optional — post session link to Slack or Discord
+wrangler secret put NOTIFY_WEBHOOK_URL
+# paste: https://hooks.slack.com/services/... (Slack)
+#    or: https://discord.com/api/webhooks/...  (Discord)
+```
+
+> **Never** commit secrets to source control or paste them in plaintext anywhere.
+
+### 6. Deploy
+
+```bash
+wrangler deploy
+```
+
+---
+
+## How it works
+
+1. Cloudflare Builds publishes a `BuildEvent` message to `workers-build-events` when a build status changes.
+2. This consumer Worker receives the batch. Non-failure messages are `ack()`-ed immediately.
+3. For `status === "failed"` messages the Worker:
+   - Formats the `build_id`, `worker_name`, `branch`, `commit_hash`, `author`, `timestamp`, and `error_messages` into a single plaintext block (≤ 65,536 chars).
+   - POSTs that block to the Claude Code routine `/fire` endpoint.
+   - If `NOTIFY_WEBHOOK_URL` is set, posts the resulting `claude_code_session_url` to Slack/Discord so your team can watch the live debugging session.
+4. If the fire request fails, the message is `retry()`-ed up to 3 times (configured in `wrangler.toml`). After 3 failures the message lands in `workers-build-events-dlq`.
+
+---
+
+## Claude Code routine `/fire` API quick-reference
+
+```
+POST https://api.anthropic.com/v1/claude_code/routines/{routine_id}/fire
+Authorization: Bearer sk-ant-oat01-...
+anthropic-version: 2023-06-01
+anthropic-beta: experimental-cc-routine-2026-04-01
+Content-Type: application/json
+
+{ "text": "<up to 65,536 chars of context>" }
+```
+
+**Response:**
+
+```json
+{
+  "type": "routine_fire",
+  "claude_code_session_id": "session_01...",
+  "claude_code_session_url": "https://claude.ai/code/session_01..."
+}
+```
+
+| Status  | Cause                                                          |
+| ------- | -------------------------------------------------------------- |
+| `400` | Missing beta header, text > 65 536 chars, or routine is paused |
+| `401` | Wrong or missing bearer token                                  |
+| `403` | Account doesn't have Claude Code on the web                    |
+| `404` | Routine ID not found                                           |
+| `429` | Daily run allowance exhausted                                  |
+
+---
+
+## Revoking / rotating the routine token
+
+1. Open [claude.ai/code/routines](https://claude.ai/code/routines) → edit the routine
+2. Click the API trigger → **Generate token** (this immediately revokes the old one)
+3. Update the secret: `wrangler secret put ROUTINE_FIRE_TOKEN`
+
+---
+
+## Local testing
+
+Send a synthetic failed-build message to the queue:
+
+```bash
+wrangler queues publish workers-build-events \
+  --message '{
+    "build_id": "build_test001",
+    "status": "failed",
+    "worker_name": "my-api",
+    "branch": "feat/new-endpoint",
+    "commit_hash": "abc1234",
+    "author": "alex@example.com",
+    "error_messages": ["Error: Cannot find module '\''./utils'\''", "    at Object.<anonymous> (src/index.ts:3:1)"],
+    "timestamp": "2026-05-01T19:00:00Z"
+  }'
+```
+
+Then tail logs to verify:
+
+```bash
+wrangler tail cloudflare-to-claude-fix
+```
+
+---
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟
+
+---
+
+Source: [`packages/cloudflare-to-claude-fix/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/cloudflare-to-claude-fix/README.md)
