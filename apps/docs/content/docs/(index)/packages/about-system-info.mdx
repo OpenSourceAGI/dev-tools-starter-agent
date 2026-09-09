@@ -36,17 +36,49 @@ bun x about-system
 
 ### Desktop app
 
-The same information as a window you can leave open, for Windows, macOS, and Linux. The CLI is
-compiled into the app, so it installs and runs on a machine with no Node on it:
+The same 30+ metrics as a window you can leave open, built natively for every desktop OS. The CLI
+is compiled into the app as a [Tauri sidecar](https://v2.tauri.app/develop/sidecar/), so an
+installer runs on a machine with no Node, no Bun, and no package manager on it.
+
+#### Download an installer
+
+Every tagged release attaches a native build for each desktop system
+([Releases](https://github.com/OpenSourceAGI/dev-tools-starter-agent/releases?q=about-system-desktop)):
+
+| System | Architecture | Installer |
+| --- | --- | --- |
+| Windows 10 1803+ / 11 | x86_64 | `About System_<version>_x64_en-US.msi`, `About System_<version>_x64-setup.exe` |
+| macOS 10.15+ | Apple Silicon + Intel (universal) | `About System_<version>_universal.dmg` |
+| Linux (Debian/Ubuntu) | x86_64, aarch64 | `About System_<version>_amd64.deb`, `About System_<version>_arm64.deb` |
+| Linux (Fedora/RHEL) | x86_64, aarch64 | `About System-<version>-1.x86_64.rpm`, `About System-<version>-1.aarch64.rpm` |
+| Linux (any distro) | x86_64, aarch64 | `About System_<version>_amd64.AppImage`, `About System_<version>_aarch64.AppImage` |
+
+Installers are unsigned by default, so macOS shows an "unidentified developer" warning and Windows
+shows a SmartScreen prompt on first launch.
+
+#### Build it yourself
+
+Needs [Rust](https://rustup.rs) 1.77.2+, Node 18+, [Bun](https://bun.sh), and your platform's
+[Tauri prerequisites](https://v2.tauri.app/start/prerequisites/):
 
 ```bash
-cd native && npm install && npm run build:desktop   # or grab an installer from Releases
+bun install                # the CLI's dependencies — the sidecar is compiled from its source
+cd native
+npm install
+npm run build:desktop      # regenerates config, compiles the sidecar, builds the installers
 ```
 
-See [`native/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/about-system-info/native/README.md) for prerequisites, per-platform artifacts, and how the
-release workflow builds all three. The app is scaffolded from
-[`packages/native-app-wrapper`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper/) and owns its own identity in
-`native/profiles/about-system.json`.
+Artifacts land in `native/src-tauri/target/release/bundle/`. **Each installer must be built on its
+own OS and architecture** — neither Tauri nor the `bun build --compile` sidecar cross-compiles,
+which is why `.github/workflows/about-system-desktop.yml` runs the same two commands on a Windows,
+a macOS, an x86_64 Linux, and an aarch64 Linux runner and attaches every artifact to one release.
+
+The app is scaffolded from [`packages/native-app-wrapper`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper/) — a Tauri shell
+that turns one JSON profile into a native app — and owns its whole identity (name, bundle id,
+version, window, sidecar command) in `native/profiles/about-system.json`. See
+[`native/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/about-system-info/native/README.md) for the development loop, the universal-macOS build, and the
+known limitations (no Windows-on-ARM build, since Bun has no `windows-arm64` compile target; and no
+mobile build, since Android and iOS don't let an app spawn a bundled executable).
 
 ## Examples
 

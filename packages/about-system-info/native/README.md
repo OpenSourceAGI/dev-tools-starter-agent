@@ -54,15 +54,18 @@ npm run build:desktop  # regenerates config, compiles the sidecar, builds the in
 
 Installers land in `src-tauri/target/release/bundle/`:
 
-| Platform | Artifacts |
-|---|---|
-| Windows | `msi/About System_<version>_x64_en-US.msi`, `nsis/About System_<version>_x64-setup.exe` |
-| macOS | `dmg/About System_<version>_<arch>.dmg`, `macos/About System.app` |
-| Linux | `deb/*.deb`, `rpm/*.rpm`, `appimage/*.AppImage` |
+| Platform | Architecture | Artifacts |
+|---|---|---|
+| Windows | x86_64 | `msi/About System_<version>_x64_en-US.msi`, `nsis/About System_<version>_x64-setup.exe` |
+| macOS | universal (Apple Silicon + Intel) | `dmg/About System_<version>_universal.dmg`, `macos/About System.app` |
+| Linux | x86_64 | `deb/About System_<version>_amd64.deb`, `rpm/About System-<version>-1.x86_64.rpm`, `appimage/About System_<version>_amd64.AppImage` |
+| Linux | aarch64 | `deb/About System_<version>_arm64.deb`, `rpm/About System-<version>-1.aarch64.rpm`, `appimage/About System_<version>_aarch64.AppImage` |
 
-**Each installer must be built on its own OS** — Tauri does not cross-compile, and neither does the
-sidecar. That's what `.github/workflows/about-system-desktop.yml` is for: it runs the same two
-commands on a Windows, macOS, and Linux runner and attaches every artifact to one GitHub Release.
+**Each installer must be built on its own OS and architecture** — Tauri does not cross-compile, and
+neither does the sidecar. That's what `.github/workflows/about-system-desktop.yml` is for: it runs
+the same two commands on a Windows, a macOS, an x86_64 Linux (`ubuntu-22.04`), and an aarch64 Linux
+(`ubuntu-22.04-arm`) runner, and attaches every artifact to one GitHub Release. The sidecar build
+reads the host Rust target triple, so the arm64 runner needs no extra configuration.
 
 For a universal macOS build, compile both sidecar architectures first (Tauri does not `lipo` the
 sidecar for you) and then build for the universal target:
@@ -95,7 +98,8 @@ that the IPC bridge is missing and says so instead of failing silently.
    installer's metadata — the CLI's own npm version in `../package.json` is separate and moves on
    its own schedule).
 2. Commit, then tag: `git tag about-system-desktop-v0.2.0 && git push origin about-system-desktop-v0.2.0`.
-3. The workflow builds all three platforms and attaches them to a draft release. Review and publish.
+3. The workflow builds every desktop target — Windows x64, macOS universal, Linux x86_64, Linux
+   aarch64 — and attaches them to a draft release. Review and publish.
 
 Installers are unsigned by default, so first launch shows an "unidentified developer" warning on
 macOS and a SmartScreen prompt on Windows. `docs/BUILDING.md` lists the secrets that turn signing
@@ -109,6 +113,9 @@ Releases.
   binary has no such disk path, so the lookup fails and the fields come back empty — the app hides
   empty fields, so they simply don't appear. Every other field works. Fixing it means having the
   CLI import those JSON files as modules instead of reading them by path.
+- **No Windows on ARM build.** Bun has no `windows-arm64` `--compile` target, so the sidecar can't
+  be produced for it. Windows on ARM runs the x64 installer under emulation instead. Every other
+  desktop OS/architecture is built natively.
 - **Desktop only.** Android and iOS don't let an app spawn a bundled executable, so there is no
   mobile build of this app. See the wrapper's `docs/MOBILE.md`.
 - **The app is large** (~100 MB installed) because the compiled CLI carries a JavaScript runtime.

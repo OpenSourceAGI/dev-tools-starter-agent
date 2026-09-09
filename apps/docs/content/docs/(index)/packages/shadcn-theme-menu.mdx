@@ -12,22 +12,22 @@ icon: Palette
     <a href="https://discord.gg/SJdBqBz3tV">
         <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat" alt="Join Discord" />
     </a>
-     <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/starter-app-dev-tools" /></a>
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-    <img alt="GitHub Discussions" src="https://img.shields.io/github/discussions/OpenSourceAGI/starter-app-dev-tools" />
+     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
+    <img alt="GitHub Discussions" src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
 <br />
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/starter-app-dev-tools" />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" />
     </a>
-    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/starter-app-dev-tools.svg" alt="GitHub last commit" />
+    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" />
 <br />
     <img src="https://img.shields.io/badge/Next.js-16-black" alt="Next.js" />
     <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
     </a>
-    <a href="https://codespaces.new/OpenSourceAGI/starter-app-dev-tools">
+    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent">
     <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
     </a>
 </div>
@@ -231,7 +231,10 @@ import type { ThemeProviderProps } from "shadcn-theme-menu";
 
 ## Demo
 
-Run the interactive demo:
+An interactive page in [`demo/`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/shadcn-theme-menu/demo) exercises every export against this
+package's source — the theme gallery, the per-theme fonts, all four switchers
+wired to their callbacks, injected `Button`/`DropdownMenu` primitives, and the
+shadcn dashboard block re-themed end to end.
 
 ```bash
 pnpm demo
@@ -242,8 +245,11 @@ Or manually:
 ```bash
 cd demo
 pnpm install
-pnpm dev
+pnpm dev      # http://localhost:3001
 ```
+
+See [`demo/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/shadcn-theme-menu/demo/README.md) for what each section covers and for
+the Vite/Tailwind wiring that lets a demo consume the package from source.
 
 ---
 
