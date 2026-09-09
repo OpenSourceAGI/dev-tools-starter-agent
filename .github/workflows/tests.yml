@@ -47,6 +47,12 @@ jobs:
             install: bun install
             coverage: true
 
+          - name: about-system-info
+            dir: packages/about-system-info
+            runtime: node
+            install: npm install --ignore-scripts --legacy-peer-deps
+            coverage: true
+
           - name: web2mobile-wrapper
             dir: packages/web2mobile-wrapper
             runtime: node

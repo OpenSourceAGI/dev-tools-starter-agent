@@ -28,6 +28,9 @@ flag_management:
   default_rules:
     carryforward: true
   individual_flags:
+    - name: about-system-info
+      paths:
+        - packages/about-system-info/
     - name: git0-repo-downloader
       paths:
         - packages/git0-repo-downloader/
