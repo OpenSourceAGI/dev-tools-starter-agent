@@ -1,10 +1,11 @@
 # Builds the About System desktop app for Windows, macOS, and Linux and attaches
 # every installer to one draft GitHub Release.
 #
-# Three runners rather than one because neither half of this build cross-compiles:
-# Tauri needs each OS's own native webview and toolchain, and the sidecar is a
-# `bun build --compile` binary that is likewise per-platform. The macOS job
-# builds both architectures' sidecars so it can produce a universal app.
+# One runner per desktop OS/architecture rather than one for all of them, because
+# neither half of this build cross-compiles: Tauri needs each OS's own native
+# webview and toolchain, and the sidecar is a `bun build --compile` binary that is
+# likewise per-platform. The macOS job builds both architectures' sidecars so it
+# can produce a universal app; Linux gets an x86_64 and an aarch64 runner.
 
 name: About System desktop
 
@@ -35,6 +36,9 @@ jobs:
         include:
           - platform: ubuntu-22.04
             args: ""
+          # GitHub's arm64 Linux runner: same build, aarch64 .deb/.rpm/.AppImage.
+          - platform: ubuntu-22.04-arm
+            args: ""
           - platform: macos-latest
             args: "--target universal-apple-darwin"
           - platform: windows-latest
@@ -62,7 +66,7 @@ jobs:
           workspaces: ${{ env.APP_DIR }}/src-tauri -> target
 
       - name: Install Linux webview dependencies
-        if: matrix.platform == 'ubuntu-22.04'
+        if: startsWith(matrix.platform, 'ubuntu')
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev \
