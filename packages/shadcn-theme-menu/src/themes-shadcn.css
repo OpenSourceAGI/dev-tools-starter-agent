@@ -81,7 +81,7 @@ html[class*="theme-"] body {
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #3b82f6;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -120,7 +120,7 @@ html[class*="theme-"] body {
   --sidebar-border: #404040;
   --sidebar-ring: #3b82f6;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -1010,7 +1010,7 @@ html[class*="theme-"] body {
   --sidebar-border: #e5e0d4;
   --sidebar-ring: #9db18c;
   --font-sans: Merriweather, serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.425rem;
   --shadow-color: hsl(88 22% 35% / 0.15);
@@ -1055,7 +1055,7 @@ html[class*="theme-"] body {
   --sidebar-border: #5a5345;
   --sidebar-ring: #8a9f7b;
   --font-sans: Merriweather, serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -1177,7 +1177,7 @@ html[class*="theme-"] body {
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #e05d38;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.75rem;
   --shadow-color: hsl(0 0% 0%);
@@ -1222,7 +1222,7 @@ html[class*="theme-"] body {
   --sidebar-border: #3d4354;
   --sidebar-ring: #e05d38;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -1590,7 +1590,7 @@ html[class*="theme-"] body {
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #f59e0b;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.375rem;
   --shadow-color: hsl(0 0% 0%);
@@ -1637,7 +1637,7 @@ html[class*="theme-"] body {
   --sidebar-border: #404040;
   --sidebar-ring: #f59e0b;
   --font-sans: Inter, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -2094,7 +2094,7 @@ html[class*="theme-"] body {
   --sidebar-border: #e9d8fd;
   --sidebar-ring: #a78bfa;
   --font-sans: Open Sans, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: IBM Plex Mono, monospace;
   --shadow-color: hsl(0 0% 0%);
   --shadow-opacity: 0.08;
@@ -2139,7 +2139,7 @@ html[class*="theme-"] body {
   --sidebar-border: #3f324a;
   --sidebar-ring: #c0aafd;
   --font-sans: Open Sans, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: IBM Plex Mono, monospace;
 }
 
@@ -2660,7 +2660,7 @@ html[class*="theme-"] body {
   --sidebar-border: #d4d4d4;
   --sidebar-ring: #34a85a;
   --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 
@@ -2699,7 +2699,7 @@ html[class*="theme-"] body {
   --sidebar-border: #444444;
   --sidebar-ring: #34a85a;
   --font-sans: Plus Jakarta Sans, sans-serif;
-  --font-serif: Source Serif 4, serif;
+  --font-serif: "Source Serif 4", serif;
   --font-mono: JetBrains Mono, monospace;
 }
 

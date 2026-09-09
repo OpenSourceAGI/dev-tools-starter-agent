@@ -227,7 +227,10 @@ import type { ThemeProviderProps } from "shadcn-theme-menu";
 
 ## Demo
 
-Run the interactive demo:
+An interactive page in [`demo/`](./demo) exercises every export against this
+package's source — the theme gallery, the per-theme fonts, all four switchers
+wired to their callbacks, injected `Button`/`DropdownMenu` primitives, and the
+shadcn dashboard block re-themed end to end.
 
 ```bash
 pnpm demo
@@ -238,8 +241,11 @@ Or manually:
 ```bash
 cd demo
 pnpm install
-pnpm dev
+pnpm dev      # http://localhost:3001
 ```
+
+See [`demo/README.md`](./demo/README.md) for what each section covers and for
+the Vite/Tailwind wiring that lets a demo consume the package from source.
 
 ---
 

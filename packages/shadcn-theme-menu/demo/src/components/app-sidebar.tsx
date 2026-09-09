@@ -3,7 +3,7 @@ import * as React from "react"
 import { NavDocuments } from "@/components/nav-documents"
 import { NavMain } from "@/components/nav-main"
 import { NavSecondary } from "@/components/nav-secondary"
-import { NavUser } from "@/components/nav-user"
+import { SidebarUserMenu } from "shadcn-theme-menu"
 import {
   Sidebar,
   SidebarContent,
@@ -195,7 +195,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {/* The package's own account menu, in the slot it was built for. */}
+        <SidebarUserMenu user={{ name: data.user.name, email: data.user.email, image: data.user.avatar }} />
       </SidebarFooter>
     </Sidebar>
   )

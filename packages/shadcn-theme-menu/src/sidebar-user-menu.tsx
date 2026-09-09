@@ -86,6 +86,13 @@ export function SidebarUserMenu({ user: userProp, onSignOut }: SidebarUserMenuPr
     .toUpperCase()
     .substring(0, 2) || "GU"
 
+  // The stored color theme is only readable on the client, so — like every other
+  // switcher in this package — hold the menu back until after mount rather than
+  // render a checkmark the server could not have known about.
+  if (!mounted) {
+    return null
+  }
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>

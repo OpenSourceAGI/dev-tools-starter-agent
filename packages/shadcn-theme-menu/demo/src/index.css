@@ -1,7 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+
+/* next-themes toggles a `dark` class on <html>; without this the v4 `dark:`
+   variant would follow the OS preference instead and every dark: utility in the
+   demo — and in the package's own components — would ignore the switchers. */
+@custom-variant dark (&:where(.dark, .dark *));
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+
+/* Tailwind v4 only scans this Vite root, and the package we are demoing lives
+   outside it — without this its utilities (max-h-[400px], w-56, …) are never
+   generated and its menus render half-styled. */
+@source "../../src";
 
 @theme inline {
   --color-background: var(--background);
