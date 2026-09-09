@@ -7,7 +7,7 @@
   "author": "vtempest",
   "license": "rights.institute/prosper",
   "bin": {
-    "native-app-wrapper": "./bin/cli.js"
+    "native-app-wrapper": "bin/cli.js"
   },
   "scripts": {
     "init": "node bin/cli.js init",
@@ -47,7 +47,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/native-app-wrapper"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper",
   "devDependencies": {

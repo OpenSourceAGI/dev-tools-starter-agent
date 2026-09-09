@@ -28,7 +28,15 @@ const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_URL?.split("//")[1] || "localhost
 export const auth = betterAuth({
   baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   // basePath: "/api/auth", // better-auth defaults to this, but keeping it explicit if user wants
-  secret: process.env.BETTER_AUTH_SECRET || process.env.AUTH_SECRET || "your-secret-key",
+  // better-auth rejects a secret shorter than 32 characters, and the previous
+  // 15-character placeholder tripped that on every build with no secret set —
+  // including CI, where it turned static generation into a page of errors.
+  // Set BETTER_AUTH_SECRET (`openssl rand -base64 32`) anywhere real; this
+  // value only exists so a local run without one still boots.
+  secret:
+    process.env.BETTER_AUTH_SECRET ||
+    process.env.AUTH_SECRET ||
+    "development-only-insecure-secret-do-not-use-in-production",
   database: drizzleAdapter(db, {
     provider: "sqlite",
     schema: {

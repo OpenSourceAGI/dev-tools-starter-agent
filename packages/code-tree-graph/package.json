@@ -4,7 +4,8 @@
   "description": "Code dependency graph and file tree visualization components",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/code-tree-graph"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph",
   "keywords": [

@@ -24,7 +24,8 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/manage-storage"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/manage-storage"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/manage-storage",
   "dependencies": {

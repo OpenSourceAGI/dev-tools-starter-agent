@@ -14,7 +14,7 @@
     "coverage": "vitest run --coverage"
   },
   "bin": {
-    "export-svg-typescript": "./export-svg-typescript.js"
+    "export-svg-typescript": "export-svg-typescript.js"
   },
   "keywords": [
     "svg",
@@ -26,7 +26,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/export-svg-icons-typescript"
   },
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript",
   "devDependencies": {
