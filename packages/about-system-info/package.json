@@ -39,6 +39,7 @@
     "app:dev": "cd native && npm run dev",
     "app:build": "cd native && npm run build:desktop",
     "test": "vitest run",
+    "test:ci": "vitest run --reporter=junit --outputFile=./junit.xml --coverage --coverage.reporter=lcov",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage"
   },
