@@ -1,6 +1,6 @@
 {
   "name": "about-system",
-  "version": "0.0.70",
+  "version": "0.0.71",
   "description": "A Node.js script to display key system information with emojis. Cross-platform support for Windows, macOS, and Linux with customizable output and caching.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
