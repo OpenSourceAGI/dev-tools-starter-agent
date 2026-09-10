@@ -101,5 +101,5 @@ Its `.gitignore` is stored as `gitignore`, without the dot, because npm strips
 
 ## Related skills
 
-- [`ask-github-actions-setup`](../../skills/ask-github-actions-setup/SKILL.md) — the workflows: what each needs, how each fails
-- [`ask-git-badges`](../../skills/ask-git-badges/SKILL.md) — the badge block: every badge's setup and failure modes
+- [`github-actions-setup`](../../skills/github-actions-setup/SKILL.md) — the workflows: what each needs, how each fails
+- [`git-badges`](../../skills/git-badges/SKILL.md) — the badge block: every badge's setup and failure modes
