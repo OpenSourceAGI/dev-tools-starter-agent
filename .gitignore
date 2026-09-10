@@ -29,3 +29,6 @@ packages/template-fumadocs/.next/*
 # Test result / coverage artifacts uploaded to Codecov by .github/workflows/tests.yml
 junit.xml
 coverage/
+
+# Turborepo local cache and task logs
+.turbo

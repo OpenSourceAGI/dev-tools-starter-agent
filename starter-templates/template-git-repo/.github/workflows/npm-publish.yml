@@ -1,0 +1,394 @@
+# Publishes every non-private workspace package whose *content* changed, and
+# commits the resulting version bumps back to the default branch.
+#
+# The design rule here is: never ask a human to remember a version number.
+# Each package's tarball is compared against what is already on the registry;
+# identical content is skipped, changed content gets the next free patch.
+name: Publish to npm
+
+on:
+  push:
+    branches: [{{DEFAULT_BRANCH}}]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  # Required for trusted publishing (OIDC). Harmless when NPM_TOKEN is used.
+  id-token: write
+
+concurrency:
+  group: npm-publish
+  cancel-in-progress: false
+
+jobs:
+  publish-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - uses: oven-sh/setup-bun@v2
+
+      # setup-node writes "always-auth=false" into the .npmrc it generates, but
+      # npm 10+ no longer knows that option and prints
+      # `npm warn Unknown user config "always-auth"` on every npm command.
+      - name: Remove deprecated always-auth npm config
+        run: |
+          if [ -n "${NPM_CONFIG_USERCONFIG:-}" ] && [ -f "$NPM_CONFIG_USERCONFIG" ]; then
+            sed -i '/^always-auth[ =]/d' "$NPM_CONFIG_USERCONFIG"
+          fi
+
+      # Some published dependencies ship a `prepare: "husky install"` in their
+      # package.json (fuse.js, among others). When npm reconciles bun's linked
+      # node_modules store it runs that hook, which dies with "husky: not found"
+      # (exit 127) — and npm's --ignore-scripts does NOT suppress it for
+      # bun-linked packages. A no-op `husky` on PATH turns it harmless.
+      - name: Neutralize unused husky hooks
+        run: |
+          mkdir -p "$RUNNER_TEMP/husky-shim"
+          printf '#!/bin/sh\nexit 0\n' > "$RUNNER_TEMP/husky-shim/husky"
+          chmod +x "$RUNNER_TEMP/husky-shim/husky"
+          echo "$RUNNER_TEMP/husky-shim" >> "$GITHUB_PATH"
+
+      # A credential that no longer authorizes writes is the likeliest reason
+      # for this workflow to fail, and it fails *late*: npm answers an
+      # unauthorized PUT with `E404 ... could not be found or you do not have
+      # permission to access it`, which reads like a missing package. Every
+      # package gets built (minutes) before the first one hits it, and each
+      # failed attempt still signs a provenance statement into the public
+      # sigstore transparency log. Check the credential up front instead.
+      #
+      # Two supported credentials, in order of preference:
+      #   1. Trusted publishing (OIDC). No secret: npm >= 11.5.1 trades this
+      #      job's id-token for a short-lived publish token. Nothing to rotate,
+      #      but each package must name this repo + workflow as its trusted
+      #      publisher (npmjs.com/package/<name>/access).
+      #   2. An NPM_TOKEN secret. Granular tokens expire (90 days max); classic
+      #      automation tokens no longer work for direct publishing.
+      # Setting the secret picks (2); leaving it unset picks (1).
+      - name: Verify npm publish credentials
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -uo pipefail
+
+          if [ -n "${NODE_AUTH_TOKEN:-}" ]; then
+            if whoami=$(npm whoami 2>&1); then
+              echo "🔑 Publishing as npm user '$whoami' (NPM_TOKEN)"
+              # Authenticating says nothing about *write* access: a read-only or
+              # differently scoped token gets the same E404 on PUT. Report what
+              # it can write to, without failing — `npm access` is not available
+              # to every token type, and the publish loop reports the truth.
+              if writable=$(npm access list packages --json 2>/dev/null); then
+                echo "$writable" | node -e "
+                  let s = '';
+                  process.stdin.on('data', d => s += d).on('end', () => {
+                    let perms = {};
+                    try { perms = JSON.parse(s) || {}; } catch { return; }
+                    const rw = Object.keys(perms).filter(k => perms[k] === 'read-write');
+                    console.log(rw.length
+                      ? '🔓 Token has write access to ' + rw.length + ' package(s)'
+                      : '::warning title=npm token may be read-only::The NPM_TOKEN secret authenticates but reports no packages with read-write access. Publishes will fail with E404.');
+                  });
+                "
+              fi
+              exit 0
+            fi
+            echo "$whoami"
+            echo "::error title=npm token rejected::The NPM_TOKEN secret no longer authenticates with registry.npmjs.org — it expired, was revoked, or was replaced. Mint a new token with write access at npmjs.com/settings/<user>/tokens and update the NPM_TOKEN repository secret, or remove the secret entirely and configure trusted publishing."
+            exit 1
+          fi
+
+          # No secret: trusted publishing. Make sure npm is new enough and that
+          # nothing left a half-configured empty token in the generated .npmrc,
+          # which would make npm try (and fail) to authenticate with it.
+          npm_version=$(npm --version)
+          if ! node -e "
+            const need = [11, 5, 1];
+            const have = '$npm_version'.split('.').map(Number);
+            for (let i = 0; i < 3; i++) {
+              if ((have[i] || 0) !== need[i]) process.exit((have[i] || 0) > need[i] ? 0 : 1);
+            }
+          "; then
+            echo "⏫ npm $npm_version is older than 11.5.1 — upgrading for trusted publishing (OIDC)"
+            npm install -g npm@latest
+          fi
+
+          if [ -n "${NPM_CONFIG_USERCONFIG:-}" ] && [ -f "$NPM_CONFIG_USERCONFIG" ]; then
+            sed -i '/_authToken/d' "$NPM_CONFIG_USERCONFIG"
+          fi
+          echo "🔑 No NPM_TOKEN secret — publishing via trusted publishing (OIDC) with npm $(npm --version)"
+
+      # Install the whole workspace once with bun. bun understands the
+      # "workspace:*" protocol and links local packages, so every package gets
+      # its devDependencies and can be built. Plain `npm install` cannot do this
+      # inside a bun workspace — it dies on sibling "workspace:*" deps
+      # (EUNSUPPORTEDPROTOCOL), leaving devDependencies uninstalled and builds
+      # failing with "vite: not found".
+      - name: Install workspace dependencies
+        run: bun install --ignore-scripts
+
+      # Build everything up front, in dependency order, so a package that
+      # imports a sibling through its built `dist` finds real files instead of
+      # `exports` entries pointing at nothing. Turbo derives that order from the
+      # workspace graph, so nothing here needs maintaining by hand.
+      - name: Build all packages
+        run: bunx turbo run build
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish non-private packages with new content
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # GitHub runs `run:` steps with `bash -e -o pipefail`, so omitting
+          # `set -e` does not disable errexit. With it on, the first package
+          # whose publish fails kills the step and every later package goes
+          # unreleased without even being evaluated. Turn it off explicitly;
+          # per-package outcomes travel through $rc, and the run still exits
+          # non-zero at the end if anything failed.
+          set -uo pipefail
+          set +e
+
+          failed_packages=""
+          skipped_builds=""
+          unauthorized_packages=""
+          unattempted_packages=""
+          auth_broken=""
+
+          for dir in packages/*/ apps/*/; do
+            pkg="${dir}package.json"
+            [ -f "$pkg" ] || continue
+
+            is_private=$(node -e "const p=require('./$pkg'); console.log(!!p.private)")
+            name=$(node -e "const p=require('./$pkg'); console.log(p.name || '')")
+
+            if [ "$is_private" = "true" ] || [ -z "$name" ]; then
+              echo "⏭ Skipping $dir (private or unnamed)"
+              continue
+            fi
+
+            # One rejected PUT means the credential cannot write, and every
+            # remaining package would fail the same way — after another build
+            # each, and after signing a provenance statement for a version that
+            # will never exist. Stop attempting them; the run still fails.
+            if [ -n "$auth_broken" ]; then
+              echo "⏭ Skipping $name (npm rejected the publish credential — see above)"
+              unattempted_packages="$unattempted_packages $name"
+              continue
+            fi
+
+            echo "📦 Evaluating $name from $dir"
+
+            # Each package runs in a subshell with its own `set -e`, so a failing
+            # step lands in $rc instead of killing the loop.
+            (
+              set -e
+              cd "$dir"
+
+              # npm keeps the literal "workspace:*" protocol in the tarball,
+              # which consumers cannot resolve. Replace each one with a real
+              # semver range taken from the referenced local package; drop
+              # local packages that are not published. Only the version field
+              # of this edit is committed back, in the final step.
+              node -e "
+                const fs = require('fs');
+                const path = require('path');
+                const localVersions = {};
+                for (const root of ['../../packages', '../../apps']) {
+                  if (!fs.existsSync(root)) continue;
+                  for (const d of fs.readdirSync(root)) {
+                    const sib = path.join(root, d, 'package.json');
+                    if (!fs.existsSync(sib)) continue;
+                    try {
+                      const sp = JSON.parse(fs.readFileSync(sib, 'utf8'));
+                      if (sp.name && sp.version && !sp.private) localVersions[sp.name] = sp.version;
+                    } catch {}
+                  }
+                }
+                const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+                for (const s of ['dependencies', 'devDependencies', 'peerDependencies']) {
+                  if (!p[s]) continue;
+                  for (const [k, v] of Object.entries(p[s])) {
+                    if (typeof v !== 'string' || !v.startsWith('workspace:')) continue;
+                    if (localVersions[k]) {
+                      p[s][k] = '^' + localVersions[k];
+                      console.log('Pinned workspace dependency', k, '->', p[s][k]);
+                    } else {
+                      delete p[s][k];
+                      console.log('Removed unresolved workspace dependency:', k);
+                    }
+                  }
+                }
+                fs.writeFileSync('package.json', JSON.stringify(p, null, 2));
+              "
+
+              version=$(node -e "const p=require('./package.json'); console.log(p.version)")
+              latest=$(npm view "$name" version 2>/dev/null || echo "")
+              already=$(npm view "$name@$version" version 2>/dev/null || echo "")
+
+              # If the local version has fallen behind the registry (a bump
+              # commit that never landed back), publishing fails with "Cannot
+              # implicitly apply the latest tag". Sync forward first, then let
+              # the content comparison decide whether to release at all.
+              if [ -z "$already" ] && [ -n "$latest" ]; then
+                behind=$(node -e "
+                  const cmp = (x, y) => { const a = x.split('.').map(Number), b = y.split('.').map(Number); for (let i = 0; i < 3; i++) { if ((a[i]||0) !== (b[i]||0)) return (a[i]||0) - (b[i]||0); } return 0; };
+                  console.log(cmp('$version', '$latest') < 0);
+                ")
+                if [ "$behind" = "true" ]; then
+                  echo "⏫ $name local version $version is behind npm latest $latest — syncing"
+                  npm version "$latest" --no-git-tag-version --no-workspaces
+                  version="$latest"
+                  already="$latest"
+                fi
+              fi
+
+              if [ -n "$already" ]; then
+                # This exact version is on npm. Publish anyway only if the
+                # content changed: npm tarballs are reproducible (normalized
+                # mtimes), so pack integrity is comparable against the registry.
+                local_integrity=$(npm pack --dry-run --ignore-scripts --json 2>/dev/null | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s)[0].integrity))")
+                remote_integrity=$(npm view "$name@$version" dist.integrity 2>/dev/null || echo "")
+
+                if [ "$local_integrity" = "$remote_integrity" ]; then
+                  echo "⏭ $name@$version already on npm with identical content — nothing new to release"
+                  exit 0
+                fi
+
+                next=$(node "$GITHUB_WORKSPACE/.github/scripts/next-free-version.mjs" "$name" "$version")
+                echo "🔼 $name content changed since $version — bumping to $next"
+                # --no-workspaces stops npm doing workspace-aware processing
+                # against bun's symlinks, which would raise EUNSUPPORTEDPROTOCOL.
+                npm version "$next" --no-git-tag-version --no-workspaces
+                version="$next"
+              fi
+
+              # --ignore-scripts: the build already ran, in dependency order.
+              # Exit 43 for an authorization failure so the loop can stop early.
+              #
+              # A version the registry has reserved but does not list is still
+              # possible (a reservation can land between the query above and the
+              # PUT), so E409 "cannot publish over" retries at the next free
+              # version. The attempt cap keeps a registry that rejects
+              # everything from looping forever.
+              log="$RUNNER_TEMP/npm-publish.log"
+              attempt=1
+
+              while :; do
+                echo "Publishing $name@$version"
+                if npm publish --provenance --access public --ignore-scripts 2>&1 | tee "$log"; then
+                  exit 0
+                fi
+
+                if grep -qE "npm error code (E401|E404|ENEEDAUTH|EAUTHUNKNOWN|EOTP)" "$log"; then
+                  exit 43
+                fi
+                if grep -q "npm error code E403" "$log" && ! grep -qi "cannot publish over" "$log"; then
+                  exit 43
+                fi
+                if ! grep -qi "cannot publish over" "$log"; then
+                  exit 1
+                fi
+                if [ "$attempt" -ge 5 ]; then
+                  echo "⚠ npm refused $attempt versions in a row for $name — giving up"
+                  exit 1
+                fi
+
+                next=$(node "$GITHUB_WORKSPACE/.github/scripts/next-free-version.mjs" "$name" "$version")
+                echo "↩ npm has $name@$version reserved — retrying as $next"
+                npm version "$next" --no-git-tag-version --no-workspaces
+                version="$next"
+                attempt=$((attempt + 1))
+              done
+            )
+            rc=$?
+
+            if [ "$rc" = "42" ]; then
+              skipped_builds="$skipped_builds $name"
+            elif [ "$rc" = "43" ]; then
+              unauthorized_packages="$unauthorized_packages $name"
+              auth_broken="1"
+            elif [ "$rc" != "0" ]; then
+              failed_packages="$failed_packages $name"
+            fi
+          done
+
+          if [ -n "$skipped_builds" ]; then
+            echo "::warning::Skipped (build failed, not published):$skipped_builds"
+          fi
+
+          if [ -n "$unattempted_packages" ]; then
+            echo "⏭ Not attempted (the credential was already rejected):$unattempted_packages"
+          fi
+
+          if [ -n "$unauthorized_packages" ]; then
+            echo "❌ Not authorized to publish:$unauthorized_packages"
+            echo "::error title=npm rejected the publish credential::npm answers an unauthorized PUT with E404 ('could not be found or you do not have permission to access it'), so this reads as a missing package — the packages exist, the write was refused. The NPM_TOKEN secret is read-only, scoped to a different set of packages, or expired; or, with trusted publishing, this repo + workflow is not yet named as the trusted publisher for these packages."
+          fi
+
+          if [ -n "$failed_packages" ]; then
+            echo "❌ Failed to publish:$failed_packages"
+          fi
+
+          if [ -n "$failed_packages" ] || [ -n "$unauthorized_packages" ] || [ -n "$unattempted_packages" ]; then
+            exit 1
+          fi
+
+      - name: Commit version bumps
+        if: success()
+        run: |
+          # Version bumps made during publish must land back in the repo so the
+          # next run sees them. Restore the workspace:* pinning done for the
+          # tarballs first — only the "version" field should be committed.
+          node -e "
+            const fs = require('fs');
+            const cp = require('child_process');
+            for (const root of ['packages', 'apps']) {
+              if (!fs.existsSync(root)) continue;
+              for (const d of fs.readdirSync(root)) {
+                const f = root + '/' + d + '/package.json';
+                if (!fs.existsSync(f)) continue;
+                const now = JSON.parse(fs.readFileSync(f, 'utf8'));
+                let raw;
+                try {
+                  raw = cp.execSync('git show HEAD:' + f, { encoding: 'utf8' });
+                } catch { continue; }
+                const orig = JSON.parse(raw);
+                if (orig.version !== now.version) {
+                  // Patch only the version string so the file keeps whatever
+                  // formatting it had. Matching on a literal '\"version\": \"x\"'
+                  // would miss a package.json written without the space after
+                  // the colon, and silently drop the bump while claiming to
+                  // keep it — so match the field, then assert it changed.
+                  const before = raw;
+                  raw = raw.replace(
+                    /(\"version\"\s*:\s*\")[^\"]*(\")/,
+                    (m, open_, close) => open_ + now.version + close
+                  );
+                  if (raw === before) {
+                    console.log('::error title=Version bump lost::Could not rewrite the version field in ' + f + '. ' + now.name + ' was published as ' + now.version + ' but the repo still says ' + orig.version + '.');
+                    process.exitCode = 1;
+                    continue;
+                  }
+                  console.log('Keeping version bump for', now.name, '->', now.version);
+                }
+                fs.writeFileSync(f, raw);
+              }
+            }
+          "
+          git add packages/*/package.json apps/*/package.json 2>/dev/null || true
+          git diff --staged --quiet && echo "No version changes to commit" && exit 0
+          # [skip ci] so the bump commit does not retrigger this workflow.
+          git commit -m "chore: bump published package versions [skip ci]"
+          git push

@@ -1,0 +1,116 @@
+# Runs every workspace package that has a `test:ci` script and ships the results
+# to Codecov Test Analytics, which tracks run time, failure rate and flakiness
+# per test and comments the failing ones on the pull request.
+#
+# The matrix is discovered at run time rather than hand-maintained: adding a
+# package with a `test:ci` script is all it takes to get it tested here. That
+# script must write, relative to the package directory:
+#
+#   junit.xml         - test results, the input Test Analytics ingests
+#   coverage/lcov.info - coverage, uploaded when the runner can produce it
+#
+# For Vitest that is:
+#   "test:ci": "vitest run --reporter=junit --outputFile=junit.xml --coverage"
+name: tests
+
+on:
+  pull_request:
+  push:
+    branches: [{{DEFAULT_BRANCH}}]
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Emits the list of packages to test. Kept separate so the test job below can
+  # stay a plain matrix — GitHub cannot compute a matrix inside the job that
+  # uses it.
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.list.outputs.packages }}
+      any: ${{ steps.list.outputs.any }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: list
+        name: Find packages with a test:ci script
+        run: |
+          node --input-type=module -e '
+            import { readdirSync, readFileSync, existsSync, appendFileSync } from "node:fs";
+            const out = [];
+            for (const root of ["packages", "apps"]) {
+              if (!existsSync(root)) continue;
+              for (const dir of readdirSync(root)) {
+                const file = `${root}/${dir}/package.json`;
+                if (!existsSync(file)) continue;
+                let pkg;
+                try { pkg = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
+                if (!pkg.scripts?.["test:ci"]) continue;
+                out.push({ name: pkg.name ?? dir, dir: `${root}/${dir}` });
+              }
+            }
+            out.sort((a, b) => a.dir.localeCompare(b.dir));
+            appendFileSync(process.env.GITHUB_OUTPUT, `packages=${JSON.stringify(out)}\n`);
+            appendFileSync(process.env.GITHUB_OUTPUT, `any=${out.length > 0}\n`);
+            console.log(out.length ? out.map((p) => p.dir).join("\n") : "No package defines a test:ci script.");
+          '
+
+  test:
+    needs: discover
+    if: needs.discover.outputs.any == 'true'
+    name: ${{ matrix.package.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      # One package's failure must not cancel the others' uploads.
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(needs.discover.outputs.packages) }}
+    steps:
+      # Codecov needs the parent commit to attribute results to the right base.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: oven-sh/setup-bun@v2
+
+      # Postinstall hooks in a workspace tend to need env vars CI does not have
+      # (database URLs, Tauri toolchains, doc generators) and none of them
+      # affect the tests, so they are skipped.
+      - name: Install workspace dependencies
+        run: bun install --ignore-scripts
+
+      # `turbo run` builds this package's workspace dependencies first, so a
+      # package that imports a sibling through its built `dist` output finds it.
+      - name: Run tests
+        run: bunx turbo run test:ci --filter=./${{ matrix.package.dir }}
+
+      # `!cancelled()` so a red suite still reports: without it the upload is
+      # skipped on exactly the runs whose results matter most.
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ matrix.package.dir }}/junit.xml
+          flags: ${{ matrix.package.name }}
+
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ matrix.package.dir }}/coverage/lcov.info
+          flags: ${{ matrix.package.name }}
+          fail_ci_if_error: false
+
+      - name: Upload coverage artifact
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ matrix.package.name }}
+          path: ${{ matrix.package.dir }}/coverage/
+          retention-days: 7
+          if-no-files-found: ignore
