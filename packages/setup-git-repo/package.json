@@ -43,6 +43,7 @@
   "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/setup-git-repo",
   "devDependencies": {
     "@vitest/coverage-v8": "^4.1.0",
-    "vitest": "^4.1.0"
+    "vitest": "^4.1.0",
+    "yaml": "^2.9.0"
   }
 }

@@ -7,6 +7,13 @@ on:
     branches: [{{DEFAULT_BRANCH}}]
   workflow_dispatch:
 
+# Two pushes in quick succession would otherwise race `wrangler deploy`, and the
+# report that wins is whichever upload finishes last, not whichever commit is
+# newer. Cancel the older run instead.
+concurrency:
+  group: test-reports
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Generate & Deploy Test Reports

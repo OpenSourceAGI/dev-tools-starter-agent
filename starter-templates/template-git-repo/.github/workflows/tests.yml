@@ -3,8 +3,10 @@
 # per test and comments the failing ones on the pull request.
 #
 # The matrix is discovered at run time rather than hand-maintained: adding a
-# package with a `test:ci` script is all it takes to get it tested here. That
-# script must write, relative to the package directory:
+# package with a `test:ci` script is all it takes to get it tested here. The
+# packages searched come from the root package.json `workspaces` globs, so a
+# repo laid out as `libs/*` is covered without editing this file. That script
+# must write, relative to the package directory:
 #
 #   junit.xml         - test results, the input Test Analytics ingests
 #   coverage/lcov.info - coverage, uploaded when the runner can produce it
@@ -36,27 +38,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - id: list
-        name: Find packages with a test:ci script
-        run: |
-          node --input-type=module -e '
-            import { readdirSync, readFileSync, existsSync, appendFileSync } from "node:fs";
-            const out = [];
-            for (const root of ["packages", "apps"]) {
-              if (!existsSync(root)) continue;
-              for (const dir of readdirSync(root)) {
-                const file = `${root}/${dir}/package.json`;
-                if (!existsSync(file)) continue;
-                let pkg;
-                try { pkg = JSON.parse(readFileSync(file, "utf8")); } catch { continue; }
-                if (!pkg.scripts?.["test:ci"]) continue;
-                out.push({ name: pkg.name ?? dir, dir: `${root}/${dir}` });
-              }
-            }
-            out.sort((a, b) => a.dir.localeCompare(b.dir));
-            appendFileSync(process.env.GITHUB_OUTPUT, `packages=${JSON.stringify(out)}\n`);
-            appendFileSync(process.env.GITHUB_OUTPUT, `any=${out.length > 0}\n`);
-            console.log(out.length ? out.map((p) => p.dir).join("\n") : "No package defines a test:ci script.");
-          '
+        name: Find packages with a test script
+        run: node .github/scripts/list-test-packages.mjs
 
   test:
     needs: discover
@@ -85,7 +68,7 @@ jobs:
       # `turbo run` builds this package's workspace dependencies first, so a
       # package that imports a sibling through its built `dist` output finds it.
       - name: Run tests
-        run: bunx turbo run test:ci --filter=./${{ matrix.package.dir }}
+        run: bunx turbo run ${{ matrix.package.script }} --filter=./${{ matrix.package.dir }}
 
       # `!cancelled()` so a red suite still reports: without it the upload is
       # skipped on exactly the runs whose results matter most.
