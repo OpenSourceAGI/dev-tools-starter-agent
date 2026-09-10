@@ -19,8 +19,8 @@ jobs:
   maintain-pull-requests:
     runs-on: ubuntu-latest
     env:
-      GH_TOKEN: ${{ secrets.GIT_TOKEN }}
-      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+      GH_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
       BASE_BRANCH: ${{ github.event.repository.default_branch }}
     steps:
       - name: Merge eligible existing pull requests
@@ -33,15 +33,21 @@ jobs:
             --repo "$REPOSITORY" \
             --state open \
             --json number,isDraft,mergeStateStatus,reviewDecision,statusCheckRollup \
-            --jq '.[] | select(.isDraft == false) | select(.mergeStateStatus == "CLEAN") | select((.reviewDecision == "APPROVED") or (.reviewDecision == "")) | select(all(.statusCheckRollup[]?; (.conclusion == "SUCCESS" or .conclusion == "SKIPPED" or .conclusion == "NEUTRAL"))) | .number' \
-          | while read -r pr_number; do
-              echo "Attempting to merge PR #${pr_number}"
-              gh pr merge "$pr_number" \
-                --repo "$REPOSITORY" \
-                --merge \
-                --delete-branch \
-                --auto || echo "Could not merge PR #${pr_number}; it may require review, checks, or conflict resolution."
-            done
+            --jq '.[] | select(.isDraft == false) | select(.mergeStateStatus == "CLEAN") | select((.reviewDecision // "") as $decision | $decision == "APPROVED" or $decision == "") | select(all(.statusCheckRollup[]?; (.conclusion == "SUCCESS" or .conclusion == "SKIPPED" or .conclusion == "NEUTRAL"))) | .number' \
+            > "$RUNNER_TEMP/mergeable-prs.txt"
+
+          # The numbers go through a file rather than a pipe: a piped `while`
+          # runs in a subshell that shares its stdin with `gh`, and a pipeline
+          # under `pipefail` fails the step for a producer that merely had
+          # nothing to say.
+          while read -r pr_number; do
+            echo "Attempting to merge PR #${pr_number}"
+            gh pr merge "$pr_number" \
+              --repo "$REPOSITORY" \
+              --merge \
+              --delete-branch \
+              --auto || echo "Could not merge PR #${pr_number}; it may require review, checks, or conflict resolution."
+          done < "$RUNNER_TEMP/mergeable-prs.txt"
 
       - name: Create pull requests for branches without one
         env:
@@ -57,28 +63,39 @@ jobs:
 
           base_sha="$(git rev-parse "origin/${BASE_BRANCH}")"
 
+          # Not `for-each-ref | grep | while`: `grep` exits 1 when it filters
+          # every ref out, and `pipefail` turns that into a failed run on the
+          # ordinary "only the default branch is left" case. The refs go
+          # through a file, and the ones to leave alone are skipped inside the
+          # loop, so an empty list is a no-op.
           git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
-            | grep -Ev "^(HEAD|${BASE_BRANCH})$" \
-            | while read -r branch; do
-                open_pr="$(gh pr list --repo "$REPOSITORY" --state open --head "$branch" --json number --jq 'length')"
-                merged_pr="$(gh pr list --repo "$REPOSITORY" --state merged --head "$branch" --json number --jq 'length')"
-                branch_sha="$(git rev-parse "origin/${branch}")"
+            > "$RUNNER_TEMP/branches.txt"
 
-                if [ "$open_pr" -gt 0 ] || [ "$merged_pr" -gt 0 ]; then
-                  echo "Skipping ${branch}: a pull request already exists or was previously merged."
-                  continue
-                fi
+          while read -r branch; do
+            if [ "$branch" = "HEAD" ] || [ "$branch" = "$BASE_BRANCH" ]; then
+              continue
+            fi
 
-                if git merge-base --is-ancestor "$branch_sha" "$base_sha"; then
-                  echo "Skipping ${branch}: it is already contained in ${BASE_BRANCH}."
-                  continue
-                fi
+            open_pr="$(gh pr list --repo "$REPOSITORY" --state open --head "$branch" --json number --jq 'length')"
+            merged_pr="$(gh pr list --repo "$REPOSITORY" --state merged --head "$branch" --json number --jq 'length')"
+            branch_sha="$(git rev-parse "origin/${branch}")"
 
-                echo "Creating PR for ${branch} -> ${BASE_BRANCH}"
-                gh pr create \
-                  --repo "$REPOSITORY" \
-                  --head "$branch" \
-                  --base "$BASE_BRANCH" \
-                  --title "Merge ${branch} into ${BASE_BRANCH}" \
-                  --body "Automated pull request for branch \`${branch}\`."
-              done
+            if [ "$open_pr" -gt 0 ] || [ "$merged_pr" -gt 0 ]; then
+              echo "Skipping ${branch}: a pull request already exists or was previously merged."
+              continue
+            fi
+
+            if git merge-base --is-ancestor "$branch_sha" "$base_sha"; then
+              echo "Skipping ${branch}: it is already contained in ${BASE_BRANCH}."
+              continue
+            fi
+
+            echo "Creating PR for ${branch} -> ${BASE_BRANCH}"
+            gh pr create \
+              --repo "$REPOSITORY" \
+              --head "$branch" \
+              --base "$BASE_BRANCH" \
+              --title "Merge ${branch} into ${BASE_BRANCH}" \
+              --body "Automated pull request for branch \`${branch}\`." \
+              || echo "Could not open a PR for ${branch}."
+          done < "$RUNNER_TEMP/branches.txt"
