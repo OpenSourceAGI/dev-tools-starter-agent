@@ -1,5 +1,12 @@
 # SMS Verification API Server
 
+<p align="center">
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dm/verify-phone-sms.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dt/verify-phone-sms.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/v/verify-phone-sms.svg" alt="npm version" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/LICENSE.md"><img src="https://img.shields.io/npm/l/verify-phone-sms.svg" alt="license" /></a>
+</p>
+
 A complete Hono-based server for SMS verification using AWS SNS. Built for Cloudflare Workers with comprehensive API documentation and security features.
 
 ## Features
@@ -34,7 +41,13 @@ A complete Hono-based server for SMS verification using AWS SNS. Built for Cloud
 
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Install
+
+```bash
+npm install verify-phone-sms   # use verifyPhone() from your own backend
+```
+
+Or clone the repo and install its dependencies to run the server itself:
 
 ```bash
 npm install

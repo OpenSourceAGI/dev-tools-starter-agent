@@ -5,7 +5,7 @@ description: Guide to the SMS verification API in packages/verify-phone-sms — 
 
 # Working With verify-phone-sms
 
-The service in `packages/verify-phone-sms` (npm name `sms-verification-api`). Two layers: a `verifyPhone()` function that sends an SMS through AWS SNS's HTTP API, and a Hono server (`@hono/zod-openapi`) that exposes it on Cloudflare Workers with auth, rate limiting, and Swagger docs. Exact request/response schemas and options live in [API.md](API.md).
+The service in `packages/verify-phone-sms` (npm name `verify-phone-sms`). Two layers: a `verifyPhone()` function that sends an SMS through AWS SNS's HTTP API, and a Hono server (`@hono/zod-openapi`) that exposes it on Cloudflare Workers with auth, rate limiting, and Swagger docs. Exact request/response schemas and options live in [API.md](API.md).
 
 ## The one thing to know first
 
@@ -38,8 +38,8 @@ wrangler secret put API_KEY
 
 | You want | Use |
 | --- | --- |
-| Send a code from your own backend | `import verifyPhone from "sms-verification-api"` — default export, `verifyPhone({ phoneNumber, code, … })` |
-| Just a VoIP check | `import { isPhoneNumberVoip } from "sms-verification-api"` |
+| Send a code from your own backend | `import verifyPhone from "verify-phone-sms"` — default export, `verifyPhone({ phoneNumber, code, … })` |
+| Just a VoIP check | `import { isPhoneNumberVoip } from "verify-phone-sms"` |
 | A hosted endpoint | `POST /api/send` with `X-API-Key` |
 | Any non-verification SMS | `POST /api/sms` with `message` |
 | Interactive docs | `GET /docs` (Swagger UI); `GET /` and `GET /health` are unauthenticated health checks |
