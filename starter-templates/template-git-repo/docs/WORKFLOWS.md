@@ -16,7 +16,7 @@ the part that costs hours if you meet them cold.
 
 ## tests.yml
 
-Discovers every workspace package with a `test:ci` script, runs each as its own
+Discovers every workspace package with a test script, runs each as its own
 matrix job, and uploads results to Codecov Test Analytics and coverage to
 Codecov.
 
@@ -25,6 +25,12 @@ goes stale the first time someone adds a package and forgets to edit the
 workflow — the package silently has no CI. A `discover` job emits the list as
 JSON; the `test` job consumes it through `fromJSON`. GitHub cannot compute a
 matrix inside the job that uses it, which is why it is two jobs.
+
+**Where it looks.** `.github/scripts/list-test-packages.mjs` expands the root
+package.json `workspaces` globs, so a repo laid out as `libs/*` is covered with
+no edit here. It prefers `test:ci`, falling back to `test:coverage` and then
+`test`, and the job runs whichever it found — a package with only a plain `test`
+script is tested rather than skipped.
 
 **What your package must produce.** Relative to the package directory:
 
@@ -56,7 +62,7 @@ For Vitest:
 
 | Symptom | Cause → fix |
 | --- | --- |
-| A package you added never appears as a job | It has no `test:ci` script, or it lives outside `packages/`, `apps/` |
+| A package you added never appears as a job | It has no `test:ci`, `test:coverage` or `test` script, or it lives outside the root package.json `workspaces` globs |
 | `Error: Unable to process file command 'output'` in `discover` | A package name contains a newline or the JSON exceeded the 1MB output cap |
 | Codecov shows the run but no coverage | The runner wrote no `lcov.info` — `--coverage` missing, or a provider that writes nothing on your Node version |
 | Coverage drops to 0% for an untouched package | `carryforward` is off for that flag in `codecov.yml` |
@@ -93,6 +99,14 @@ provenance statement into the public sigstore transparency log.
 
 **Details that matter:**
 
+- Packages are walked in dependency order, from
+  `.github/scripts/workspace-build-order.mjs`, not in shell-glob (alphabetical)
+  order. Workspace siblings are symlinked into `node_modules`, so one that has
+  not been built yet has no `dist/` and its package.json `types` entries point
+  at files that do not exist — the package that sorts earlier fails its
+  declaration build with `Cannot find module '<sibling>'`. Dependency order also
+  means a sibling's `workspace:*` pin is rewritten to the version that sibling
+  just published, not the one it had before its own bump.
 - `set +e` in the publish loop. GitHub runs `run:` steps with `bash -e -o
   pipefail`, so *not* writing `set -e` does not disable errexit — the first
   failing package would kill the step and leave every later package unevaluated.
@@ -100,21 +114,27 @@ provenance statement into the public sigstore transparency log.
 - Exit 43 means "npm rejected the credential". The loop stops attempting further
   packages: they would all fail the same way, after another build and another
   provenance signature each.
-- `workspace:*` dependencies are rewritten to real semver ranges before packing.
-  npm keeps the literal protocol in the tarball, and consumers cannot resolve it.
-  Only the `version` field of that edit is committed back.
+- `workspace:*` dependencies are rewritten to real semver ranges before packing
+  (`.github/scripts/pin-workspace-deps.mjs`). npm keeps the literal protocol in
+  the tarball, and consumers cannot resolve it. A dependency on a *private*
+  sibling is dropped rather than pinned — pinning it produces a tarball that
+  cannot install at all. An explicit `workspace:^1.0.0` keeps the range its
+  author chose. Only the `version` field of that edit is committed back.
 - A local version *behind* the registry is synced forward first, otherwise the
   publish fails with "Cannot implicitly apply the latest tag".
 - `E409 cannot publish over previously staged version` is retried at the next
   free version, up to five times. `latest` lags versions an interrupted publish
   reserved; `.github/scripts/next-free-version.mjs` reads the full version list
   *and* the release timeline, which is where those numbers appear.
-- The final step rewrites only the `version` field back into each
-  `package.json`, by regex rather than by re-serializing the parsed object, so
-  the file keeps its own formatting. It matches `"version"\s*:\s*"..."` rather
-  than a literal `"version": "x"`, and fails the step if the replace found
-  nothing — a package.json written without the space after the colon would
-  otherwise silently lose the bump while the log claimed to keep it.
+- The final step (`.github/scripts/restore-pinned-deps.mjs`) rewrites only the
+  `version` field back into each `package.json`, by regex rather than by
+  re-serializing the parsed object, so the file keeps its own formatting. It
+  matches `"version"\s*:\s*"..."` rather than a literal `"version": "x"`, and
+  reports a failure if the replace found nothing — a package.json written
+  without the space after the colon would otherwise silently lose the bump while
+  the log claimed to keep it. One unrewritable file is reported and the step
+  fails at the end, rather than aborting the loop and leaving every later
+  package still carrying its pinned dependencies.
 - The bump commit ends in `[skip ci]` so it does not retrigger the workflow.
 - A no-op `husky` is put on PATH. Some published dependencies ship
   `prepare: "husky install"`; when npm reconciles bun's linked `node_modules` it
@@ -203,3 +223,27 @@ it fetches them into an empty workspace rather than paying for a full checkout.
 - **`main` instead of `master`.** Every `branches:` filter in this template is
   written by `setup-git-repo` from your repo's actual default branch. If you
   rename the branch later, grep the workflows for the old name.
+
+## .github/scripts/
+
+The workflows' logic lives here rather than in inline `node -e` heredocs, so it
+can be unit tested — these run in *your* CI with nobody watching, and a bug in
+one surfaces as a failed workflow rather than a failed test. They are covered by
+`packages/setup-git-repo/test/template-scripts.test.mjs` in the repo this
+template comes from.
+
+| Script | Called by | Does |
+| --- | --- | --- |
+| `list-test-packages.mjs` | `tests.yml` | Emits the test matrix from the root `workspaces` globs |
+| `workspace-build-order.mjs` | `npm-publish.yml` | Topologically sorts the workspace so a package is built after its siblings |
+| `pin-workspace-deps.mjs` | `npm-publish.yml` | Rewrites `workspace:*` to real ranges at pack time |
+| `next-free-version.mjs` | `npm-publish.yml` | Picks a version the registry has not already spent |
+| `restore-pinned-deps.mjs` | `npm-publish.yml` | Undoes the pinning, keeping only the version bumps |
+
+Each takes its roots as arguments and prints to stdout, so you can run any of
+them locally against your own repo to see what CI will see:
+
+```bash
+node .github/scripts/list-test-packages.mjs
+node .github/scripts/workspace-build-order.mjs packages apps
+```

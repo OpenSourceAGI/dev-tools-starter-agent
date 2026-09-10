@@ -166,7 +166,14 @@ jobs:
           unattempted_packages=""
           auth_broken=""
 
-          for dir in packages/*/ apps/*/; do
+          # Dependency order, not shell-glob (alphabetical) order: a sibling
+          # that has not been built yet has no dist/, so a package that sorts
+          # earlier fails its declaration build on every sibling it imports.
+          build_order=$(node "$GITHUB_WORKSPACE/.github/scripts/workspace-build-order.mjs" packages apps)
+          echo "📋 Build order:"
+          echo "$build_order" | sed 's/^/   /'
+
+          for dir in $build_order; do
             pkg="${dir}package.json"
             [ -f "$pkg" ] || continue
 
@@ -201,37 +208,7 @@ jobs:
               # semver range taken from the referenced local package; drop
               # local packages that are not published. Only the version field
               # of this edit is committed back, in the final step.
-              node -e "
-                const fs = require('fs');
-                const path = require('path');
-                const localVersions = {};
-                for (const root of ['../../packages', '../../apps']) {
-                  if (!fs.existsSync(root)) continue;
-                  for (const d of fs.readdirSync(root)) {
-                    const sib = path.join(root, d, 'package.json');
-                    if (!fs.existsSync(sib)) continue;
-                    try {
-                      const sp = JSON.parse(fs.readFileSync(sib, 'utf8'));
-                      if (sp.name && sp.version && !sp.private) localVersions[sp.name] = sp.version;
-                    } catch {}
-                  }
-                }
-                const p = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-                for (const s of ['dependencies', 'devDependencies', 'peerDependencies']) {
-                  if (!p[s]) continue;
-                  for (const [k, v] of Object.entries(p[s])) {
-                    if (typeof v !== 'string' || !v.startsWith('workspace:')) continue;
-                    if (localVersions[k]) {
-                      p[s][k] = '^' + localVersions[k];
-                      console.log('Pinned workspace dependency', k, '->', p[s][k]);
-                    } else {
-                      delete p[s][k];
-                      console.log('Removed unresolved workspace dependency:', k);
-                    }
-                  }
-                }
-                fs.writeFileSync('package.json', JSON.stringify(p, null, 2));
-              "
+              node "$GITHUB_WORKSPACE/.github/scripts/pin-workspace-deps.mjs" . ../../packages ../../apps
 
               version=$(node -e "const p=require('./package.json'); console.log(p.version)")
               latest=$(npm view "$name" version 2>/dev/null || echo "")
@@ -351,42 +328,7 @@ jobs:
           # Version bumps made during publish must land back in the repo so the
           # next run sees them. Restore the workspace:* pinning done for the
           # tarballs first — only the "version" field should be committed.
-          node -e "
-            const fs = require('fs');
-            const cp = require('child_process');
-            for (const root of ['packages', 'apps']) {
-              if (!fs.existsSync(root)) continue;
-              for (const d of fs.readdirSync(root)) {
-                const f = root + '/' + d + '/package.json';
-                if (!fs.existsSync(f)) continue;
-                const now = JSON.parse(fs.readFileSync(f, 'utf8'));
-                let raw;
-                try {
-                  raw = cp.execSync('git show HEAD:' + f, { encoding: 'utf8' });
-                } catch { continue; }
-                const orig = JSON.parse(raw);
-                if (orig.version !== now.version) {
-                  // Patch only the version string so the file keeps whatever
-                  // formatting it had. Matching on a literal '\"version\": \"x\"'
-                  // would miss a package.json written without the space after
-                  // the colon, and silently drop the bump while claiming to
-                  // keep it — so match the field, then assert it changed.
-                  const before = raw;
-                  raw = raw.replace(
-                    /(\"version\"\s*:\s*\")[^\"]*(\")/,
-                    (m, open_, close) => open_ + now.version + close
-                  );
-                  if (raw === before) {
-                    console.log('::error title=Version bump lost::Could not rewrite the version field in ' + f + '. ' + now.name + ' was published as ' + now.version + ' but the repo still says ' + orig.version + '.');
-                    process.exitCode = 1;
-                    continue;
-                  }
-                  console.log('Keeping version bump for', now.name, '->', now.version);
-                }
-                fs.writeFileSync(f, raw);
-              }
-            }
-          "
+          node .github/scripts/restore-pinned-deps.mjs packages apps
           git add packages/*/package.json apps/*/package.json 2>/dev/null || true
           git diff --staged --quiet && echo "No version changes to commit" && exit 0
           # [skip ci] so the bump commit does not retrigger this workflow.

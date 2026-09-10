@@ -69,8 +69,13 @@ that uses it. A hand-maintained matrix is the thing this replaces: it goes stale
 the first time someone adds a package and forgets, and that package silently has
 no CI.
 
-**Publishing** — nothing to edit either. `npm-publish.yml` walks
-`packages/*` and `apps/*`, skips `private: true`, and decides per package by
+`.github/scripts/list-test-packages.mjs` does the finding, off the root
+package.json `workspaces` globs — so `libs/*` works without editing the
+workflow. `test:ci` is preferred, then `test:coverage`, then `test`.
+
+**Publishing** — nothing to edit either. `npm-publish.yml` walks the workspace
+in dependency order (`.github/scripts/workspace-build-order.mjs`), skips
+`private: true`, and decides per package by
 comparing `npm pack --dry-run --json` integrity against
 `npm view <pkg>@<version> dist.integrity`. npm tarballs are reproducible, so
 identical hashes mean nothing to release; a different hash means bump the patch
