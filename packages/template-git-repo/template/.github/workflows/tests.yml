@@ -1,0 +1,100 @@
+# Runs every workspace package that has a test suite, and ships both coverage
+# and test results to Codecov.
+#
+# The matrix is discovered rather than hand-maintained: a first job reads the
+# workspace globs out of the root package.json and emits one matrix entry per
+# package that declares a `test:coverage` (or `test`) script. Adding a package
+# to the repo therefore adds it to CI with no edit here — the failure mode of a
+# hand-written matrix is a package that silently stops being tested.
+#
+# Each entry is expected to produce, relative to its own directory:
+#
+#   coverage/lcov.info   coverage, uploaded under a Codecov flag named for the package
+#   junit.xml            test results, ingested by Codecov Test Analytics
+#
+# Neither is required — a package that writes only one still uploads that one.
+
+name: tests
+
+on:
+  push:
+    branches: [{{DEFAULT_BRANCH}}]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    name: Discover packages
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.list.outputs.matrix }}
+      empty: ${{ steps.list.outputs.empty }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: list
+        name: List packages with a test script
+        run: node scripts/list-test-packages.mjs >> "$GITHUB_OUTPUT"
+
+  test:
+    name: ${{ matrix.flag }}
+    needs: discover
+    if: needs.discover.outputs.empty != 'true'
+    runs-on: ubuntu-latest
+
+    # A package whose suite is currently red still uploads its results — that
+    # report is the point of Test Analytics — but it does not fail the run.
+    # Set `"ci": { "allowFailure": true }` in the package's package.json to
+    # opt into that, and drop it once the suite is green.
+    continue-on-error: ${{ matrix.allowFailure }}
+
+    strategy:
+      # One package's failure must not cancel the others' uploads.
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      # --ignore-scripts: a dependency's postinstall has no business running in
+      # CI, and some published packages ship a `prepare: "husky install"` that
+      # dies with exit 127 when husky is not a dependency of this repo.
+      - name: Install dependencies
+        run: {{PACKAGE_MANAGER}} install --ignore-scripts
+
+      # Workspace libraries that siblings consume through their built `dist`
+      # must exist before anything imports them. Turbo resolves the dependency
+      # order; packages with no build script are a no-op.
+      - name: Build workspace dependencies
+        run: bunx turbo build --filter=${{ matrix.name }}^... || echo "No buildable dependencies for ${{ matrix.name }}"
+
+      - name: Run tests
+        working-directory: ${{ matrix.dir }}
+        run: {{PACKAGE_MANAGER}} run ${{ matrix.script }}
+
+      # `!cancelled()` rather than `always()`: a cancelled run has nothing worth
+      # uploading, but a *failed* one is exactly when the report matters most.
+      - name: Upload coverage to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/codecov-action@v5
+        with:
+          files: ${{ matrix.dir }}/coverage/lcov.info
+          flags: ${{ matrix.flag }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          # Codecov being down must not turn a green suite red.
+          fail_ci_if_error: false
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          files: ${{ matrix.dir }}/junit.xml
+          flags: ${{ matrix.flag }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false

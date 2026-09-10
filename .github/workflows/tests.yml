@@ -47,6 +47,12 @@ jobs:
             install: bun install
             coverage: true
 
+          - name: template-git-repo
+            dir: packages/template-git-repo
+            runtime: bun
+            install: bun install
+            coverage: true
+
           - name: about-system-info
             dir: packages/about-system-info
             runtime: node

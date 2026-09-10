@@ -1,0 +1,102 @@
+# A twice-daily sweep that keeps branches from being forgotten: it merges every
+# open PR that is already green and unblocked, then opens a PR for any branch
+# that does not have one.
+#
+# This is the backstop for agent sessions that push a branch and never open a
+# PR, and for PRs whose merge was skipped because a check finished after the
+# per-PR auto-merge workflow had already run.
+
+name: Auto-merge PRs and create missing PRs
+
+on:
+  schedule:
+    # 00:00 and 12:00 UTC. Scheduled workflows can be delayed under high
+    # GitHub Actions load — this is a sweep, not a deadline.
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-and-create-prs
+  cancel-in-progress: false
+
+jobs:
+  maintain-pull-requests:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
+      BASE_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Merge eligible existing pull requests
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # Only PRs that are non-draft, cleanly mergeable, not blocked by a
+          # requested change, and whose every check concluded SUCCESS, SKIPPED
+          # or NEUTRAL. A pending check means "not yet", not "merge it".
+          gh pr list \
+            --repo "$REPOSITORY" \
+            --state open \
+            --json number,isDraft,mergeStateStatus,reviewDecision,statusCheckRollup \
+            --jq '.[] | select(.isDraft == false) | select(.mergeStateStatus == "CLEAN") | select((.reviewDecision == "APPROVED") or (.reviewDecision == "")) | select(all(.statusCheckRollup[]?; (.conclusion == "SUCCESS" or .conclusion == "SKIPPED" or .conclusion == "NEUTRAL"))) | .number' \
+          | while read -r pr_number; do
+              echo "Attempting to merge PR #${pr_number}"
+              gh pr merge "$pr_number" \
+                --repo "$REPOSITORY" \
+                --squash \
+                --delete-branch \
+                --auto || echo "Could not merge PR #${pr_number}; it may require review, checks, or conflict resolution."
+            done
+
+      - name: Create pull requests for branches without one
+        env:
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # No actions/checkout above: this needs every remote branch, and a
+          # normal checkout fetches one. Fetching all refs into a bare-ish
+          # workspace is cheaper than checkout with fetch-depth: 0.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git init -q "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE"
+          git remote add origin "https://x-access-token:${GIT_TOKEN}@github.com/${REPOSITORY}.git"
+          git fetch --quiet origin '+refs/heads/*:refs/remotes/origin/*'
+
+          base_sha="$(git rev-parse "origin/${BASE_BRANCH}")"
+
+          git for-each-ref --format='%(refname:strip=3)' refs/remotes/origin \
+            | grep -Ev "^(HEAD|${BASE_BRANCH})$" \
+            | while read -r branch; do
+                open_pr="$(gh pr list --repo "$REPOSITORY" --state open --head "$branch" --json number --jq 'length')"
+                # `merged` too: a branch whose PR was merged but which was never
+                # deleted would otherwise get a fresh PR opened on every sweep.
+                merged_pr="$(gh pr list --repo "$REPOSITORY" --state merged --head "$branch" --json number --jq 'length')"
+                branch_sha="$(git rev-parse "origin/${branch}")"
+
+                if [ "$open_pr" -gt 0 ] || [ "$merged_pr" -gt 0 ]; then
+                  echo "Skipping ${branch}: a pull request already exists or was previously merged."
+                  continue
+                fi
+
+                # An ancestor of the base branch has nothing to contribute; a PR
+                # for it would be empty.
+                if git merge-base --is-ancestor "$branch_sha" "$base_sha"; then
+                  echo "Skipping ${branch}: it is already contained in ${BASE_BRANCH}."
+                  continue
+                fi
+
+                echo "Creating PR for ${branch} -> ${BASE_BRANCH}"
+                gh pr create \
+                  --repo "$REPOSITORY" \
+                  --head "$branch" \
+                  --base "$BASE_BRANCH" \
+                  --title "Merge ${branch} into ${BASE_BRANCH}" \
+                  --body "Automated pull request for branch \`${branch}\`."
+              done

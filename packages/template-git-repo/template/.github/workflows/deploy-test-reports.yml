@@ -1,0 +1,98 @@
+# Publishes the HTML test report to Cloudflare Workers on every push to the
+# default branch, so the "Test Report" badge in the README links to something
+# current rather than to a workflow log.
+#
+# Requires an `apps/test-reports/` (or equivalent) directory with a
+# wrangler.toml whose `assets.directory` is `dist`, and a root `test:report`
+# script that writes the Vitest HTML reporter output there.
+
+name: Test Reports
+
+on:
+  push:
+    branches: [{{DEFAULT_BRANCH}}]
+  workflow_dispatch:
+
+concurrency:
+  group: test-reports
+  cancel-in-progress: true
+
+env:
+  REPORT_DIR: apps/test-reports
+
+jobs:
+  deploy:
+    name: Generate & deploy test reports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: {{PACKAGE_MANAGER}} install --ignore-scripts
+
+      - name: Build workspace dependencies
+        run: bunx turbo build || echo "No build tasks"
+
+      # A red suite is exactly when the report is worth reading, so the run is
+      # allowed to fail here and still deploy.
+      - name: Run tests with the HTML reporter
+        run: {{PACKAGE_MANAGER}} run test:report
+        continue-on-error: true
+
+      # What the step above must not do is leave dist/ missing: wrangler treats
+      # an absent `assets.directory` as a hard error, so the run would end on a
+      # config error instead of on the test signal. Publish a placeholder rather
+      # than lose the deploy.
+      - name: Ensure a report exists to deploy
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -f "$REPORT_DIR/dist/index.html" ]; then
+            exit 0
+          fi
+          echo "::warning::The test runner wrote no HTML report; deploying a placeholder page."
+          mkdir -p "$REPORT_DIR/dist"
+          cat > "$REPORT_DIR/dist/index.html" <<HTML
+          <!doctype html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Test report unavailable</title>
+          <style>
+          :root { color-scheme: light dark; }
+          body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+                 font: 16px/1.6 system-ui, sans-serif; padding: 24px; }
+          main { max-width: 34rem; }
+          h1 { font-size: 1.25rem; margin: 0 0 .75rem; }
+          p { margin: 0 0 .75rem; opacity: .85; }
+          </style>
+          </head>
+          <body>
+          <main>
+          <h1>Test report unavailable</h1>
+          <p>The last run of the test suite ended before the HTML reporter could
+          write a report, so there is nothing to show here yet.</p>
+          <p><a href="$RUN_URL">Open the workflow run</a> for the full output.</p>
+          <p>Commit $GITHUB_SHA</p>
+          </main>
+          </body>
+          </html>
+          HTML
+
+      - name: Deploy to Cloudflare Workers
+        working-directory: ${{ env.REPORT_DIR }}
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Upload report artifact
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: ${{ env.REPORT_DIR }}/dist/
+          if-no-files-found: ignore
