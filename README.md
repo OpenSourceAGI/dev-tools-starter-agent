@@ -7,29 +7,30 @@
     <a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
 </h3>
 <p align="center">
-     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" /></a>
-     <a href="https://discord.gg/SJdBqBz3tV">
-        <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
-            alt="Join Discord" />
-    </a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" />
-    </a>
-    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent">
-    <img src="https://github.com/codespaces/badge.svg" width="150" height="20" alt="GitHub Codespaces" />
-    </a>
+    <a href="https://deepwiki.com/OpenSourceAGI/dev-tools-starter-agent"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+    <a href="https://starterdocs.vtempest.workers.dev"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://www.npmjs.com/~vtempest"><img src="https://img.shields.io/badge/npm-packages-CB3837?logo=npm&logoColor=white" alt="npm packages" /></a>
+    <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent"><img src="https://github.com/codespaces/badge.svg" height="20" alt="Open in GitHub Codespaces" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
 <br />
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" />
-    </a>
-    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" />
-    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" />
-    </a>
-    <br />
-    <img src="https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=fff" alt="Claude AI"> <img src="https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white" alt="Cloudflare"> <img src="https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff" alt="shadcn/ui"> <img src="https://img.shields.io/badge/Next.js-black" alt="Next.js" />
+    <a href="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent"><img src="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/graph/badge.svg" alt="Coverage" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml"><img src="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml/badge.svg?branch=master" alt="Tests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/npm-publish.yml"><img src="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/npm-publish.yml/badge.svg?branch=master" alt="Publish to npm" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/graphs/contributors"><img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/dev-tools-starter-agent" alt="Commit Activity" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="Last Commit" /></a>
+<br />
+    <a href="https://discord.gg/SJdBqBz3tV"><img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat" alt="Join Discord" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+    <a href="./LICENSE.md"><img src="https://img.shields.io/badge/License-PROSPER%201.0-blue.svg" alt="License: PROSPER 1.0" /></a>
+<br />
+    <img src="https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=fff" alt="Claude AI" />
+    <img src="https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white" alt="Cloudflare" />
+    <img src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white" alt="Turborepo" />
+    <img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Next.js-black?logo=nextdotjs&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff" alt="shadcn/ui" />
     <a href="https://better-auth.com/docs/introduction" target="_blank"><img src="https://i.imgur.com/eaGdjBq.png" alt="better-auth" /></a>
 </p>
 
