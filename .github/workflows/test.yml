@@ -32,7 +32,6 @@ jobs:
           - package: open-when-ready
           - package: react-app-store-buttons
           - package: setup-git-repo
-          - package: shadcn-theme-menu
           - package: template-git-repo
           # TODO: this suite predates the current /api/send + /api/verify routes
           # and fails against them. Non-blocking until the tests are rewritten.

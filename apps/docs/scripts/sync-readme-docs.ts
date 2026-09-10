@@ -93,11 +93,6 @@ const PACKAGES: Entry[] = [
     icon: 'Smartphone',
   },
   {
-    dir: 'packages/shadcn-theme-menu',
-    title: 'shadcn-theme-menu',
-    icon: 'Palette',
-  },
-  {
     category: 'Infrastructure',
     dir: 'packages/cloudflare-to-claude-fix',
     title: 'cloudflare-to-claude-fix',
