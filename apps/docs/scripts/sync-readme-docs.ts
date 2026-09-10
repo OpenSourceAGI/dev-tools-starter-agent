@@ -112,7 +112,7 @@ const PACKAGES: Entry[] = [
   },
   {
     dir: 'packages/verify-phone-sms',
-    title: 'sms-verification-api',
+    title: 'verify-phone-sms',
     icon: 'Shield',
   },
   {

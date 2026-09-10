@@ -92,8 +92,8 @@
 [![npm downloads](https://img.shields.io/npm/dm/template-git-repo.svg)](https://www.npmjs.com/package/template-git-repo) **[template-git-repo](packages/template-git-repo/)** - One command to give a repo the CI setup from qwksearch-research-agent: GitHub Actions for a discovered per-package test matrix, content-based npm publishing, agent PR auto-merge and hosted test reports, plus `turbo.json`, `codecov.yml` and a README badge block. Detects the repo slug, default branch, package manager and workspace layout; skips badges it has no input for instead of rendering them broken.
 `bunx template-git-repo` · `bunx template-git-repo --dry-run`
 
-**[verify-phone-sms](packages/verify-phone-sms/)** - SMS phone verification API server built with Hono on Cloudflare Workers, backed by AWS SNS. Sends one-time codes, blocks VoIP numbers, enforces API-key authentication, applies rate limiting, and exposes auto-generated OpenAPI documentation. Includes health-check endpoints and CORS/security-header middleware.
-`bun deploy` · `wrangler deploy`
+[![npm downloads](https://img.shields.io/npm/dm/verify-phone-sms.svg)](https://www.npmjs.com/package/verify-phone-sms) **[verify-phone-sms](packages/verify-phone-sms/)** - SMS phone verification API server built with Hono on Cloudflare Workers, backed by AWS SNS. Sends one-time codes, blocks VoIP numbers, enforces API-key authentication, applies rate limiting, and exposes auto-generated OpenAPI documentation. Includes health-check endpoints and CORS/security-header middleware.
+`npm install verify-phone-sms` · `wrangler deploy`
 
 [![npm downloads](https://img.shields.io/npm/dm/setup-git-repo.svg)](https://www.npmjs.com/package/setup-git-repo) **[setup-git-repo](packages/setup-git-repo/)** - One command to give a repo its whole GitHub setup: Turborepo, five CI workflows (auto-discovering test matrix to Codecov, content-hash npm publishing, agent PR auto-merge, Cloudflare-deployed test reports), the centered README badge block filled in from your git remote, and docs explaining how to set up every badge, workflow and secret.
 `bunx setup-git-repo` · `npx setup-git-repo`
