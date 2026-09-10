@@ -1,0 +1,46 @@
+# Codecov configuration.
+#
+# Every workspace package uploads its own lcov report under its own flag (see
+# .github/workflows/tests.yml), so the dashboard shows a per-package percentage
+# alongside the project total.
+
+codecov:
+  require_ci_to_pass: false
+
+coverage:
+  precision: 2
+  round: down
+  range: "50...90"
+
+  status:
+    project:
+      default:
+        # Report coverage without failing the build while the suites are still
+        # being filled in. Drop `informational` once the numbers settle and you
+        # want a coverage drop to actually block a merge.
+        target: auto
+        threshold: 2%
+        informational: true
+    patch:
+      default:
+        target: 70%
+        threshold: 5%
+        informational: true
+
+# `carryforward` keeps a package's last known coverage when a PR does not touch
+# it. Without it, every package not covered by the current upload reads as 0%
+# and the project total collapses on every partial run.
+flag_management:
+  default_rules:
+    carryforward: true
+    statuses:
+      - type: project
+        target: auto
+        threshold: 2%
+        informational: true
+
+comment:
+  layout: "condensed_header, diff, flags, components, condensed_files"
+  behavior: default
+  require_changes: true
+  hide_project_coverage: false

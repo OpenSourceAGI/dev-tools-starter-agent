@@ -1,0 +1,56 @@
+{
+  "name": "template-git-repo",
+  "version": "0.1.0",
+  "description": "One command to set up a repo with GitHub Actions, README badges, Turborepo and Codecov \u2014 the CI setup from qwksearch-research-agent, as a template",
+  "type": "module",
+  "bin": {
+    "template-git-repo": "bin/template-git-repo.js"
+  },
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./badges": "./src/badges.js"
+  },
+  "scripts": {
+    "docs:badges": "node scripts/generate-badge-docs.mjs",
+    "test": "vitest run",
+    "test:ci": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage",
+    "coverage": "vitest run --coverage",
+    "test:watch": "vitest"
+  },
+  "files": [
+    "bin",
+    "src",
+    "template",
+    "docs"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "github-actions",
+    "template",
+    "badges",
+    "shields",
+    "turborepo",
+    "monorepo",
+    "codecov",
+    "npm-publish",
+    "ci",
+    "scaffold"
+  ],
+  "author": "vtempest",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/template-git-repo"
+  },
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/template-git-repo",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0",
+    "yaml": "^2.9.0"
+  }
+}

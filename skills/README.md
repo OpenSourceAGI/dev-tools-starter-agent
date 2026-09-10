@@ -36,8 +36,10 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 | [ask-manage-storage](./ask-manage-storage/SKILL.md) | `manage-storage` | S3 / R2 / B2 through one call, provider detection, edge credentials |
 | [ask-native-app-wrapper](./ask-native-app-wrapper/SKILL.md) | `native-app-wrapper` | Website or CLI → native Tauri app: profiles, the sidecar bridge, icons, per-OS builds |
 | [ask-open-ready](./ask-open-ready/SKILL.md) | `open-when-ready` | Dev-server wrapper: ready/error detection, flags, log locations |
+| [ask-repo-badges](./ask-repo-badges/SKILL.md) | `template-git-repo` | The README badge template: which badges, which rows, what each needs set up outside the repo |
 | [ask-server-shell-setup](./ask-server-shell-setup/SKILL.md) | `server-shell-setup` | The bootstrap installer, components, fish aliases |
 | [ask-shadcn-theme-menu](./ask-shadcn-theme-menu/SKILL.md) | `shadcn-theme-menu` | Theme provider and switchers, color themes vs dark mode |
+| [ask-template-git-repo](./ask-template-git-repo/SKILL.md) | `template-git-repo` | One-command repo setup: workflows, helper scripts, turbo.json, codecov.yml, badge block |
 | [ask-verify-phone-sms](./ask-verify-phone-sms/SKILL.md) | `verify-phone-sms` | SNS-backed SMS verification, endpoints, auth, VoIP blocking |
 | [ask-web2mobile](./ask-web2mobile/SKILL.md) | `web2mobile-wrapper` | Website → Expo WebView app, asset generation, EAS build/submit |
 
