@@ -10,7 +10,6 @@ async function createNextConfig(): Promise<NextConfig> {
   await jiti.import('./src/env')
 
   const nextConfig: NextConfig = {
-    transpilePackages: ['shadcn-theme-menu'],
     reactStrictMode: true,
     poweredByHeader: false,
     productionBrowserSourceMaps: process.env.SOURCE_MAPS === 'true',

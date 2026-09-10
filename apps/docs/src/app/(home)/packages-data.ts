@@ -129,13 +129,6 @@ export const categories: Category[] = [
         path: "packages/react-native-app-buttons/"
       },
       {
-        name: "shadcn-theme-menu",
-        icon: "Palette",
-        description: "Drop-in theme switcher for shadcn/ui with 24+ color themes, dark/light/system mode toggle, and smooth animations.",
-        commands: ["npm install shadcn-themes", "bun add shadcn-themes"],
-        path: "packages/shadcn-theme-menu/"
-      },
-      {
         name: "export-svg-icons-typescript",
         icon: "Image",
         description: "Convert a folder of SVG icons into a color-customizable, tree-shakable TypeScript index that works with any component framework.",

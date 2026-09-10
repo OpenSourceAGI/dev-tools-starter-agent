@@ -24,21 +24,6 @@ A complete Hono-based server for SMS verification using AWS SNS. Built for Cloud
 
 
 
-## Other Verifications
-
-- add with persona api inergration $250/month (includes 166 verification )
-
-- auto-sign in api with phone of registered users
-- sell corps ability to verify their customers are real
-- past addresses are better than legal id which can be ai-gen or reused
-- demographic info for ads
-
-- [Leaderboard](https://pages.nist.gov/frvt/html/frvt11.html)
-- [Liveliness Check](https://github.com/Faceplugin-ltd/FaceRecognition-Android)
-- [Face Check](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK)
-- [FaceLivenessDetection-SDK](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK)
-
-
 ## Quick Start
 
 ### 1. Install
@@ -474,6 +459,40 @@ Common HTTP status codes:
 │ - API Client    │    │ - Validation    │    │ - Error Handling│
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
+
+## Roadmap: Identity Verification
+
+Phone verification proves control of a number. The next tier proves the person
+behind that number is real — and turns that proof into something businesses pay
+for.
+
+### Planned integrations
+
+- **Persona API** — document and selfie identity verification. Entry plan is
+  **$250/month, including 166 verifications** (~$1.50 each); volume past the
+  included allowance is billed per verification.
+- **Auto sign-in by phone** — once a registered user's number is verified and on
+  file, authenticate them from the phone itself instead of re-sending a code on
+  every login.
+- **Address history over legal ID** — a chain of past addresses is a stronger
+  identity signal than a photo of a government ID, which can be AI-generated or
+  reused across accounts. Treat document capture as corroboration, not proof.
+- **Liveness and face check** — confirm a live human is present at capture time,
+  rather than a printed photo, a replayed video, or a generated face.
+
+### Product opportunities
+
+- **Verification as a service** — sell corporations the ability to confirm their
+  customers are real people, with this stack as the verification backend.
+- **Verified demographics** — verified age, location, and demographic attributes
+  make high-quality ad targeting inventory, subject to user consent and
+  applicable privacy law.
+
+### References
+
+- [NIST FRVT 1:1 leaderboard](https://pages.nist.gov/frvt/html/frvt11.html) — accuracy rankings for face recognition algorithms
+- [Faceplugin FaceRecognition-Android](https://github.com/Faceplugin-ltd/FaceRecognition-Android) — on-device face recognition with liveness check
+- [Doubango FaceLivenessDetection-SDK](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK) — passive face liveness / anti-spoofing
 
 ## Contributing
 

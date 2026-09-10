@@ -86,9 +86,6 @@
 **[server-shell-setup](packages/server-shell-setup/)** - One-command bootstrap for a modern dev environment: installs fish, nvim, nushell, bun, node, helix, starship, docker, and more. Offers an interactive menu or a fully unattended `all` mode. Includes fish aliases for `service_manager`, `killport`, and `search`. Supports Arch, Ubuntu/Debian, Android (Termux), macOS, Fedora, and Alpine.
 `wget -qO- tinyurl.com/shellsetup | bash`
 
-[![npm downloads](https://img.shields.io/npm/dm/shadcn-theme-menu.svg)](https://www.npmjs.com/package/shadcn-theme-menu) **[shadcn-theme-menu](packages/shadcn-theme-menu/)** - Drop-in theme switcher for shadcn/ui with 24+ color themes, dark/light/system mode toggle, and smooth animations. Includes `ThemeToggle`, `ThemeDropdown`, and `CinematicThemeSwitcher` components. Wrap your app with `ThemeProvider` and import the bundled CSS — no extra config required.
-`npm install shadcn-theme-menu` · `bun add shadcn-theme-menu`
-
 [![npm downloads](https://img.shields.io/npm/dm/template-git-repo.svg)](https://www.npmjs.com/package/template-git-repo) **[template-git-repo](packages/template-git-repo/)** - One command to give a repo the CI setup from qwksearch-research-agent: GitHub Actions for a discovered per-package test matrix, content-based npm publishing, agent PR auto-merge and hosted test reports, plus `turbo.json`, `codecov.yml` and a README badge block. Detects the repo slug, default branch, package manager and workspace layout; skips badges it has no input for instead of rendering them broken.
 `bunx template-git-repo` · `bunx template-git-repo --dry-run`
 

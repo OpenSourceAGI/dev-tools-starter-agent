@@ -16,7 +16,6 @@
     "export-svg-icons-typescript",
     "manage-storage",
     "react-app-store-buttons",
-    "shadcn-theme-menu",
     "---Infrastructure---",
     "cloudflare-to-claude-fix",
     "native-app-wrapper",
