@@ -1,6 +1,6 @@
 {
   "name": "react-app-store-buttons",
-  "version": "0.1.55",
+  "version": "0.1.56",
   "description": "React components for app store and platform download buttons (App Store, Google Play, Chrome Extension, Windows, macOS, Linux)",
   "type": "module",
   "main": "./dist/index.cjs",
