@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "{{REPO}}-test-reports",
+  "compatibility_date": "2026-07-29",
+  "assets": {
+    "directory": "./dist",
+    // Vitest's HTML reporter is a client-routed single page app.
+    "not_found_handling": "single-page-application"
+  }
+}

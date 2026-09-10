@@ -1,0 +1,4 @@
+# Built by `prepack` from starter-templates/template-git-repo — never edit here.
+template/
+coverage/
+junit.xml

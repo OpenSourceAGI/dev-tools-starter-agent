@@ -1,0 +1,48 @@
+{
+  "name": "setup-git-repo",
+  "version": "1.0.0",
+  "description": "One command to set up a GitHub repo: Turborepo, CI workflows, README badges, and the docs for each",
+  "type": "module",
+  "bin": {
+    "setup-git-repo": "bin/setup-git-repo.js"
+  },
+  "scripts": {
+    "sync-template": "node scripts/sync-template.mjs",
+    "prepack": "node scripts/sync-template.mjs",
+    "test": "vitest run",
+    "test:ci": "vitest run --reporter=junit --outputFile=junit.xml --coverage",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "files": [
+    "bin",
+    "src",
+    "template"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "github-actions",
+    "turborepo",
+    "monorepo",
+    "badges",
+    "shields",
+    "codecov",
+    "ci",
+    "scaffold",
+    "template"
+  ],
+  "author": "vtempest <grokthiscontact@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/setup-git-repo"
+  },
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/setup-git-repo",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
+}
