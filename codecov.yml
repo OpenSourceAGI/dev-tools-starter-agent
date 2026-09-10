@@ -34,6 +34,9 @@ flag_management:
     - name: git0-repo-downloader
       paths:
         - packages/git0-repo-downloader/
+    - name: setup-git-repo
+      paths:
+        - packages/setup-git-repo/
     - name: web2mobile-wrapper
       paths:
         - packages/web2mobile-wrapper/

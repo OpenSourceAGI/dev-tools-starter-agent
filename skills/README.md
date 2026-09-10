@@ -30,8 +30,9 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent -
 | [ask-create-cloud-db](./ask-create-cloud-db/SKILL.md) | `create-cloud-db` | Turso database creation and the `.env` rewrite |
 | [ask-create-starter-app](./ask-create-starter-app/SKILL.md) | `create-starter-app` | The template menu, how templates resolve, which ids actually exist |
 | [ask-export-svg-typescript](./ask-export-svg-typescript/SKILL.md) | `export-svg-icons-typescript` | SVG folder → tree-shakable TS barrel, runtime color and size options |
-| [ask-github-actions](./ask-github-actions/SKILL.md) | `template-git-repo` | Setting up the CI workflows: discovered test matrix, content-based npm publish, auto-merge, secrets |
+| [ask-git-badges](./ask-git-badges/SKILL.md) | `setup-git-repo` | The README badge block: Shields grammar, per-badge setup, why a badge renders `invalid` |
 | [ask-git0](./ask-git0/SKILL.md) | `git0-repo-downloader` | Search, download, auto-install, IDE launch, rate limits |
+| [ask-github-actions-setup](./ask-github-actions-setup/SKILL.md) | `setup-git-repo` | The five CI workflows: what each needs, the secrets, and the failure modes worth knowing |
 | [ask-manage-storage](./ask-manage-storage/SKILL.md) | `manage-storage` | S3 / R2 / B2 through one call, provider detection, edge credentials |
 | [ask-native-app-wrapper](./ask-native-app-wrapper/SKILL.md) | `native-app-wrapper` | Website or CLI → native Tauri app: profiles, the sidecar bridge, icons, per-OS builds |
 | [ask-open-ready](./ask-open-ready/SKILL.md) | `open-when-ready` | Dev-server wrapper: ready/error detection, flags, log locations |

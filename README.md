@@ -95,10 +95,16 @@
 **[verify-phone-sms](packages/verify-phone-sms/)** - SMS phone verification API server built with Hono on Cloudflare Workers, backed by AWS SNS. Sends one-time codes, blocks VoIP numbers, enforces API-key authentication, applies rate limiting, and exposes auto-generated OpenAPI documentation. Includes health-check endpoints and CORS/security-header middleware.
 `bun deploy` · `wrangler deploy`
 
+[![npm downloads](https://img.shields.io/npm/dm/setup-git-repo.svg)](https://www.npmjs.com/package/setup-git-repo) **[setup-git-repo](packages/setup-git-repo/)** - One command to give a repo its whole GitHub setup: Turborepo, five CI workflows (auto-discovering test matrix to Codecov, content-hash npm publishing, agent PR auto-merge, Cloudflare-deployed test reports), the centered README badge block filled in from your git remote, and docs explaining how to set up every badge, workflow and secret.
+`bunx setup-git-repo` · `npx setup-git-repo`
+
 **[web2mobile-wrapper](packages/web2mobile-wrapper/)** - Transform any website URL into a native mobile app wrapper for iOS and Android. No coding required — generates a React Native project pre-configured with your URL, push notifications, and app store metadata. Boosts discoverability via App Store and Google Play presence.
 `npm run generate` · `node bin/cli.js`
 
 ### Starter Templates
+
+**[template-git-repo](starter-templates/template-git-repo/)** - The GitHub repo scaffold itself: Turborepo task graph, the five CI workflows, `codecov.yml`, the badge block, and `docs/` covering every badge, workflow and secret. Applied to an existing repo rather than copied into a new one.
+`bunx setup-git-repo`
 
 **[template-svelte-betterauth-shadcn-drizzle](starter-templates/template-svelte-betterauth-shadcn-drizzle/)** - Full-stack SvelteKit app with Better Auth, Drizzle ORM on Cloudflare D1, Stripe payments, and shadcn-svelte components.
 `bun create starter-app` · `npx create-starter-app`
@@ -128,7 +134,7 @@ See [skills/README.md](skills/README.md) for the full index.
 
 ### ✅ Tests
 
-Three packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
+Four packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
 `junit.xml` (and lcov coverage where its runner can produce one) for
 [`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
 Test Analytics, which tracks run times, failure rates and flaky tests, and comments
@@ -136,6 +142,7 @@ the failing ones on the pull request.
 
 | Package | Runner | Run locally |
 | --- | --- | --- |
+| [setup-git-repo](packages/setup-git-repo/) | Vitest | `bun run test` |
 | [git0-repo-downloader](packages/git0-repo-downloader/) | `bun test` | `bun test` |
 | [web2mobile-wrapper](packages/web2mobile-wrapper/) | Jest | `npm test` |
 | [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |

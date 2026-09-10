@@ -47,10 +47,10 @@ jobs:
             install: bun install
             coverage: true
 
-          - name: template-git-repo
-            dir: packages/template-git-repo
+          - name: setup-git-repo
+            dir: packages/setup-git-repo
             runtime: bun
-            install: bun install
+            install: bun install --ignore-scripts
             coverage: true
 
           - name: about-system-info
