@@ -1,6 +1,9 @@
 {
   // ── Core ────────────────────────────────────────────────────────────────────
   "name": "cloudflare-to-claude-fix",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
   "main": "src/index.js",
   "compatibility_date": "2025-11-01",
 
