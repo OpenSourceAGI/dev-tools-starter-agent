@@ -1,6 +1,6 @@
 import { type CoreMessage } from 'ai'
 import { toUIMessageStream } from '@ai-sdk/langchain'
-import { chatModel } from '@/lib/ai/providers'
+import { MissingApiKeyError, getChatModel } from '@/lib/ai/providers'
 import { provideLinks } from '@/lib/ai/tools/provide-links'
 import { searchDocs } from '@/lib/ai/tools/search-docs'
 import { getPageContent } from '@/lib/ai/tools/get-page-content'
@@ -49,6 +49,16 @@ function stringifyContent(content: CoreMessage['content']): string {
 }
 
 export async function POST(request: Request) {
+  let chatModel: ReturnType<typeof getChatModel>
+  try {
+    chatModel = getChatModel()
+  } catch (error) {
+    if (error instanceof MissingApiKeyError) {
+      return new Response(error.message, { status: 503 })
+    }
+    throw error
+  }
+
   const { messages }: { messages: CoreMessage[] } = await request.json()
 
   const tools = [provideLinks, searchDocs, getPageContent]
