@@ -105,3 +105,49 @@ describe('stackChip', () => {
     expect(stackChip('Something Else')).toContain('555555');
   });
 });
+
+describe('package-scoped badges', () => {
+  // In a monorepo the repo-wide numbers are the wrong ones to put on a package
+  // README: they describe sixteen other packages too.
+  const pkgContext = { ...context, npmPackage: 'manage-storage' };
+
+  it('counts downloads for one package, not the workspace', () => {
+    for (const id of ['npm-downloads', 'npm-total-downloads']) {
+      const badge = BADGES.find((entry) => entry.id === id);
+      expect(renderBadge(badge, pkgContext)).toContain('manage-storage');
+    }
+  });
+
+  it('narrows coverage to the package flag', () => {
+    const badge = BADGES.find((entry) => entry.id === 'codecov-flag');
+    const html = renderBadge(badge, { ...pkgContext, codecovFlag: 'manage-storage' });
+
+    expect(html).toContain('flag=manage-storage');
+    // The label has to say which package, or two flagged badges look identical.
+    expect(html).toContain('label=manage-storage%20coverage');
+  });
+
+  it('skips the flagged coverage badge until a flag is named', () => {
+    // Falling back to the repo-wide number here would be worse than no badge:
+    // it reads as this package's coverage while measuring the whole monorepo.
+    const { skipped } = selectBadges(pkgContext);
+    expect(skipped.find((entry) => entry.id === 'codecov-flag')).toEqual({
+      id: 'codecov-flag',
+      missing: ['codecovFlag'],
+    });
+  });
+
+  it('points StackBlitz at the directory it was given', () => {
+    const url = 'https://stackblitz.com/github/acme/widget/tree/main/packages/manage-storage';
+    const badge = BADGES.find((entry) => entry.id === 'stackblitz');
+
+    expect(renderBadge(badge, { ...pkgContext, stackblitzUrl: url })).toContain(`href="${url}"`);
+  });
+
+  it('reports types and install size for the same single package', () => {
+    for (const id of ['npm-types', 'install-size']) {
+      const badge = BADGES.find((entry) => entry.id === id);
+      expect(renderBadge(badge, pkgContext)).toContain('manage-storage');
+    }
+  });
+});

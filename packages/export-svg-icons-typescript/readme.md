@@ -1,21 +1,23 @@
 <p align="center">
     <img  src="https://i.imgur.com/LkLbPYE.png" />
 </p>
+
+<!-- template-git-repo:badges:start -->
 <p align="center">
-     <a href="https://github.com/vtempest/export-svg-typescript/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/vtempest/export-svg-typescript" /></a>
-    <a href="https://npmjs.org/package/export-svg-typescript">
-    <img alt="NPM Version" src="https://img.shields.io/npm/v/export-svg-typescript" />
-    </a>     
-    <img src="https://img.shields.io/github/last-commit/vtempest/export-svg-typescript.svg?style=flat-square" alt="GitHub last commit" />
-    <a href="https://github.com/vtempest/export-svg-typescript/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/vtempest/export-svg-typescript" />
-    </a>
-    <a href="http://makeapullrequest.com">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"/>
-    </a>
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/export-svg-icons-typescript"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/dm/export-svg-typescript.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/v/export-svg-typescript.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/dt/export-svg-typescript.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/types/export-svg-typescript" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=export-svg-typescript"><img src="https://packagephobia.com/badge?p=export-svg-typescript" alt="Install size" /></a>
 </p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill export-svg-typescript` ([what it covers](../../skills/export-svg-typescript/SKILL.md))
+<!-- skills:install:end -->
 
 ## export-svg-typescript
 

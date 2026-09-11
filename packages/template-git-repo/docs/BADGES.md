@@ -27,10 +27,15 @@ package or finish setting up Codecov.
 | [API reference](#api) `api` | apiUrl | `--api <url>` |
 | [YouTube demo](#youtube) `youtube` | youtubeUrl | `--youtube <url>` |
 | [Deploy to Cloudflare Workers](#deploy-cloudflare) `deploy-cloudflare` | cloudflareDeploy | `--cloudflare-deploy` |
+| [Open in StackBlitz](#stackblitz) `stackblitz` | stackblitzUrl | `--stackblitz <url>` |
 | [GitHub stars](#stars) `stars` | — | on by default |
 | [npm monthly downloads](#npm-downloads) `npm-downloads` | npmPackage | `--npm-package <name>` |
 | [npm version](#npm-version) `npm-version` | npmPackage | `--npm-package <name>` |
+| [npm total downloads](#npm-total-downloads) `npm-total-downloads` | npmPackage | `--npm-package <name>` |
+| [TypeScript types](#npm-types) `npm-types` | npmPackage | `--npm-package <name>` |
+| [Install size](#install-size) `install-size` | npmPackage | `--npm-package <name>` |
 | [Code coverage](#codecov) `codecov` | — | on by default |
+| [Coverage for one package](#codecov-flag) `codecov-flag` | codecovFlag | `--codecov-flag <name>` |
 | [CI status](#workflow) `workflow` | workflowFile | `--workflow <file>` |
 | [Hosted test report](#test-report) `test-report` | testReportUrl | `--test-report <url>` |
 | [Uptime](#uptime) `uptime` | uptimeUrl | `--uptime <url>` |
@@ -91,6 +96,14 @@ The repo must contain a wrangler.toml (or wrangler.jsonc) at the path the button
 
 Enable with: `--cloudflare-deploy`
 
+### stackblitz
+
+**Open in StackBlitz**
+
+Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.
+
+Enable with: `--stackblitz <url>`
+
 ## Quality — is it working, is it tested, is it shipped
 
 ### npm-downloads
@@ -109,6 +122,30 @@ Shows the `latest` dist-tag. Publishing under a different tag will not move it.
 
 Enable with: `--npm-package <name>`
 
+### npm-total-downloads
+
+**npm total downloads**
+
+All-time downloads for one package. Worth pairing with the monthly count rather than showing alone: a large total and a flat month say different things, and only the monthly number tells you the project is still being installed.
+
+Enable with: `--npm-package <name>`
+
+### npm-types
+
+**TypeScript types**
+
+Reads the published tarball: it says "TypeScript" when the manifest has a `types`/`typings` field pointing at a real `.d.ts`, and stays grey when the declarations were left out of `files`. Publish once and check it — this is the badge that catches a build that shipped JS without its types.
+
+Enable with: `--npm-package <name>`
+
+### install-size
+
+**Install size**
+
+Nothing to configure, but read what it measures: packagephobia reports what `npm install` writes to disk, dependencies included — not the bundled browser size. A package whose one dependency is an AWS SDK client looks enormous here and tree-shakes to very little in a bundler.
+
+Enable with: `--npm-package <name>`
+
 ### codecov
 
 **Code coverage**
@@ -116,6 +153,14 @@ Enable with: `--npm-package <name>`
 Add the repo at codecov.io, copy its upload token into a CODECOV_TOKEN repository secret, and make sure a workflow uploads `coverage/lcov.info` (tests.yml does). Until the first successful upload the badge reads "unknown", which looks identical to a broken badge — check the Codecov dashboard, not the badge, when debugging.
 
 Included by default — no configuration needed.
+
+### codecov-flag
+
+**Coverage for one package**
+
+The repo-wide number is the wrong one to put on a package README in a monorepo — it mixes in every other package. This one narrows to a single Codecov flag, so it needs that flag to exist: an entry under `flag_management.individual_flags` in codecov.yml, and an upload that passes `flags: <name>` (tests.yml does, from its matrix). The flag name has to match both exactly, or the badge reads "unknown" while the repo-wide badge looks fine.
+
+Enable with: `--codecov-flag <name>`
 
 ### workflow
 

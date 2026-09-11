@@ -56,6 +56,7 @@ Badge inputs (each enables the badge that needs it)
   --youtube <url>            --uptime <url>        --test-report <url>
   --discord-id <id>          --discord-invite <url>
   --stack <A,B,C>            --cloudflare-deploy
+  --stackblitz <url>         --codecov-flag <name>
   --exclude <id,id>          --only <id,id>
 
   Badge ids: ${BADGES.map((b) => b.id).join(', ')}
@@ -116,6 +117,8 @@ function overridesFrom(flags) {
     discordInvite: text('discord-invite'),
     stack: text('stack'),
     cloudflareDeploy: flags['cloudflare-deploy'] ? 'true' : undefined,
+    stackblitzUrl: text('stackblitz'),
+    codecovFlag: text('codecov-flag'),
   };
 }
 

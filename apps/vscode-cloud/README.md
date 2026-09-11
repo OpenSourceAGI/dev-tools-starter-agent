@@ -1,3 +1,9 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/vscode-cloud"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
 # vscode-cloud
 
 Per-user [code-server](https://github.com/coder/code-server) instances on Cloudflare Containers — one isolated VS Code environment per authenticated user, with workspace files persisted to R2, GitHub repos auto-cloned on first boot, a team management dashboard, and WakaTime time tracking pre-installed.

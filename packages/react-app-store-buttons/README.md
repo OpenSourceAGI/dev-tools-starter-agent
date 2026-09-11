@@ -4,7 +4,22 @@
 <b>💍One Code to rule them all — and in the cloud compile them. </b>
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/react-app-store-buttons"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/react-app-store-buttons"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/dm/react-app-store-buttons.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/v/react-app-store-buttons.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/dt/react-app-store-buttons.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/types/react-app-store-buttons" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=react-app-store-buttons"><img src="https://packagephobia.com/badge?p=react-app-store-buttons" alt="Install size" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill app-store-buttons` ([what it covers](../../skills/app-store-buttons/SKILL.md))
+<!-- skills:install:end -->
 
 # react-native-app-buttons
 

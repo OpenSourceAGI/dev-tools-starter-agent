@@ -2,6 +2,18 @@
     <img src="https://i.imgur.com/QTS1kwk.png" >
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/web2mobile-wrapper"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=web2mobile-wrapper&label=web2mobile-wrapper%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill web2mobile` ([what it covers](../../skills/web2mobile/SKILL.md))
+<!-- skills:install:end -->
+
 > **💍One Code to rule them all — and in the cloud compile them.** 
 
 # Web2Mobile - Easy Mobile App Wrapper for Any Website

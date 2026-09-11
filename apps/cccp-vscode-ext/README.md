@@ -1,3 +1,9 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/cccp-vscode-ext"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
 # CCCP for VS Code
 
 The [Cloud Computer Control Panel](../Cloud-Computer-Control-Panel/) dashboard, in the VS Code sidebar.

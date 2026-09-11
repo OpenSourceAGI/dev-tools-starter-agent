@@ -2,16 +2,30 @@
 <p align="center">
     <img width="600px" src="https://i.imgur.com/TTJBLxo.png" />
 </p>
+
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/api2ai-mcp-generator"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/api2ai-mcp-generator"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/api2ai"><img src="https://img.shields.io/npm/dm/api2ai.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/api2ai"><img src="https://img.shields.io/npm/v/api2ai.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/api2ai"><img src="https://img.shields.io/npm/dt/api2ai.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/api2ai"><img src="https://img.shields.io/npm/types/api2ai" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=api2ai"><img src="https://packagephobia.com/badge?p=api2ai" alt="Install size" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill api2ai` ([what it covers](../../skills/api2ai/SKILL.md))
+<!-- skills:install:end -->
+
 <h3 align="center">
   <a href="https://api-2-ai.vercel.app/"> 🌐 Live Site </a> &nbsp;|&nbsp;
   <a href="https://github.com/vtempest/GRAB-URL/tree/master/api2ai/example-petstore"> 🎯 Example MCP Server </a>
 </h3>
 
 
-<p align="center">
-   <a href="https://npmjs.org/package/grab-url"><img alt="NPM Version" src="https://img.shields.io/npm/v/grab-url" /></a><a href="https://github.com/vtempest/GRAB-URL/discussions"><img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/vtempest/GRAB-URL" /></a><a href="https://github.blog/developer-skills/github/beginners-guide-to-github-creating-a-pull-request/"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
-</p>
 
 
 # API2AI: OpenAPI to MCP-Use Server 

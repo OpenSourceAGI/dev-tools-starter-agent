@@ -108,6 +108,18 @@ export const BADGES = [
     height: '24px',
   },
   {
+    id: 'stackblitz',
+    title: 'Open in StackBlitz',
+    group: 'identity',
+    needs: ['stackblitzUrl'],
+    alt: 'Open in StackBlitz',
+    href: (c) => c.stackblitzUrl,
+    img: () => 'https://developer.stackblitz.com/img/open_in_stackblitz.svg',
+    setup:
+      'Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.',
+    height: '20px',
+  },
+  {
     id: 'stars',
     title: 'GitHub stars',
     group: 'community',
@@ -139,6 +151,39 @@ export const BADGES = [
     setup: 'Shows the `latest` dist-tag. Publishing under a different tag will not move it.',
   },
   {
+    id: 'npm-total-downloads',
+    title: 'npm total downloads',
+    group: 'quality',
+    needs: ['npmPackage'],
+    alt: 'NPM Total Downloads',
+    href: (c) => `https://www.npmjs.com/package/${c.npmPackage}`,
+    img: (c) => `https://img.shields.io/npm/dt/${c.npmPackage}.svg`,
+    setup:
+      'All-time downloads for one package. Worth pairing with the monthly count rather than showing alone: a large total and a flat month say different things, and only the monthly number tells you the project is still being installed.',
+  },
+  {
+    id: 'npm-types',
+    title: 'TypeScript types',
+    group: 'quality',
+    needs: ['npmPackage'],
+    alt: 'TypeScript types',
+    href: (c) => `https://www.npmjs.com/package/${c.npmPackage}`,
+    img: (c) => `https://img.shields.io/npm/types/${c.npmPackage}`,
+    setup:
+      'Reads the published tarball: it says "TypeScript" when the manifest has a `types`/`typings` field pointing at a real `.d.ts`, and stays grey when the declarations were left out of `files`. Publish once and check it — this is the badge that catches a build that shipped JS without its types.',
+  },
+  {
+    id: 'install-size',
+    title: 'Install size',
+    group: 'quality',
+    needs: ['npmPackage'],
+    alt: 'Install size',
+    href: (c) => `https://packagephobia.com/result?p=${c.npmPackage}`,
+    img: (c) => `https://packagephobia.com/badge?p=${c.npmPackage}`,
+    setup:
+      'Nothing to configure, but read what it measures: packagephobia reports what `npm install` writes to disk, dependencies included — not the bundled browser size. A package whose one dependency is an AWS SDK client looks enormous here and tree-shakes to very little in a bundler.',
+  },
+  {
     id: 'codecov',
     title: 'Code coverage',
     group: 'quality',
@@ -148,6 +193,20 @@ export const BADGES = [
     img: (c) => `https://codecov.io/gh/${c.repoSlug}/graph/badge.svg`,
     setup:
       'Add the repo at codecov.io, copy its upload token into a CODECOV_TOKEN repository secret, and make sure a workflow uploads `coverage/lcov.info` (tests.yml does). Until the first successful upload the badge reads "unknown", which looks identical to a broken badge — check the Codecov dashboard, not the badge, when debugging.',
+  },
+  {
+    id: 'codecov-flag',
+    title: 'Coverage for one package',
+    group: 'quality',
+    needs: ['codecovFlag'],
+    alt: 'Coverage',
+    href: (c) => `https://app.codecov.io/gh/${c.repoSlug}/flags`,
+    img: (c) =>
+      `https://img.shields.io/codecov/c/github/${c.repoSlug}?flag=${encodeURIComponent(
+        String(c.codecovFlag),
+      )}&label=${encodeURIComponent(`${c.codecovFlag} coverage`)}&logo=codecov&logoColor=white`,
+    setup:
+      'The repo-wide number is the wrong one to put on a package README in a monorepo — it mixes in every other package. This one narrows to a single Codecov flag, so it needs that flag to exist: an entry under `flag_management.individual_flags` in codecov.yml, and an upload that passes `flags: <name>` (tests.yml does, from its matrix). The flag name has to match both exactly, or the badge reads "unknown" while the repo-wide badge looks fine.',
   },
   {
     id: 'workflow',

@@ -1,5 +1,12 @@
-<!-- template-git-repo:badges:start -->
-<p align="center">
+---
+title: 'setup-git-repo'
+description: 'One command to set up a GitHub repo: Turborepo, CI workflows, README badges, and the docs for each'
+icon: Github
+---
+
+{/* Generated from packages/setup-git-repo/README.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
+
+<div align="center">
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/setup-git-repo"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/setup-git-repo"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
     <br />
@@ -9,18 +16,13 @@
     <a href="https://www.npmjs.com/package/setup-git-repo"><img src="https://img.shields.io/npm/types/setup-git-repo" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=setup-git-repo"><img src="https://packagephobia.com/badge?p=setup-git-repo" alt="Install size" /></a>
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=setup-git-repo&label=setup-git-repo%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
-</p>
-<!-- template-git-repo:badges:end -->
+</div>
 
-<!-- skills:install:start -->
 **🤖 Agent skills**
 <br />
-`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill github-actions-setup` ([what it covers](../../skills/github-actions-setup/SKILL.md))
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill github-actions-setup` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/github-actions-setup/SKILL.md))
 <br />
-`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill git-badges` ([what it covers](../../skills/git-badges/SKILL.md))
-<!-- skills:install:end -->
-
-# setup-git-repo
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill git-badges` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/git-badges/SKILL.md))
 
 One command to give a repository the whole GitHub setup: Turborepo, the CI
 workflows, the README badge block, and the docs explaining every part of it.
@@ -112,7 +114,7 @@ value comes from.
 ## Where the template lives
 
 The single source of truth is
-[`starter-templates/template-git-repo/`](../../starter-templates/template-git-repo)
+[`starter-templates/template-git-repo/`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/starter-templates/template-git-repo)
 in this monorepo. `prepack` copies it into `template/` inside the package so the
 published tarball carries it, and the CLI checks that bundled copy first — a CLI
 that only climbs out of its own package works in the repo and breaks the moment
@@ -123,5 +125,9 @@ Its `.gitignore` is stored as `gitignore`, without the dot, because npm strips
 
 ## Related skills
 
-- [`github-actions-setup`](../../skills/github-actions-setup/SKILL.md) — the workflows: what each needs, how each fails
-- [`git-badges`](../../skills/git-badges/SKILL.md) — the badge block: every badge's setup and failure modes
+- [`github-actions-setup`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/github-actions-setup/SKILL.md) — the workflows: what each needs, how each fails
+- [`git-badges`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/git-badges/SKILL.md) — the badge block: every badge's setup and failure modes
+
+---
+
+Source: [`packages/setup-git-repo/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/setup-git-repo/README.md)

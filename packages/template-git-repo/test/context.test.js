@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
+import { execFileSync } from 'node:child_process';
 import {
+  detectDefaultBranch,
   detectPackageManager,
   detectPackagesDir,
   detectNpmPackage,
@@ -54,6 +56,36 @@ describe('findRepoRoot', () => {
 
   it('returns null outside a repo', () => {
     expect(findRepoRoot(scratch())).toBeNull();
+  });
+});
+
+describe('detectDefaultBranch', () => {
+  /** A repo with a remote-tracking branch but no origin/HEAD, as a clone made
+   * with --single-branch or a CI checkout has. */
+  function repoOn(branch, remoteBranches) {
+    const root = scratch();
+    const run = (...args) => execFileSync('git', args, { cwd: root, stdio: 'ignore' });
+
+    run('init', '-q', '-b', branch);
+    run('config', 'user.email', 'test@example.com');
+    run('config', 'user.name', 'Test');
+    fs.writeFileSync(path.join(root, 'file.txt'), 'x');
+    run('add', '.');
+    run('commit', '-qm', 'init');
+
+    for (const name of remoteBranches) run('update-ref', `refs/remotes/origin/${name}`, 'HEAD');
+
+    return root;
+  }
+
+  it('prefers the remote default branch over the branch that happens to be checked out', () => {
+    // Without this, badges generated on a feature branch point `?branch=` at
+    // that branch — a CI badge that reads red forever once the branch is gone.
+    expect(detectDefaultBranch(repoOn('feature/thing', ['master']))).toBe('master');
+  });
+
+  it('falls back to the current branch when the remote has no conventional name', () => {
+    expect(detectDefaultBranch(repoOn('trunk', ['release/1.x']))).toBe('trunk');
   });
 });
 

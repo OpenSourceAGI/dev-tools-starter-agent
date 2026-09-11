@@ -117,7 +117,7 @@ export const categories: Category[] = [
       {
         name: "manage-storage",
         icon: "HardDrive",
-        description: "Unified storage API for AWS S3, Cloudflare R2, and Backblaze B2. Auto-detects provider from env vars. Single function interface.",
+        description: "Unified storage API for AWS S3, Cloudflare R2, and Backblaze B2. Auto-detects provider from env vars. One StorageManager class: upload, download, list, copy, rename, delete.",
         commands: ["npm install manage-storage", "bun add manage-storage"],
         path: "packages/manage-storage/"
       },

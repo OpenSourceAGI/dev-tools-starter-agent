@@ -2,6 +2,22 @@
     <img width="400px" src="https://i.imgur.com/RQP3lma.png" />
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/cloudflare-to-claude-fix"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dm/cloudflare-to-claude-fix.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/v/cloudflare-to-claude-fix.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dt/cloudflare-to-claude-fix.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/types/cloudflare-to-claude-fix" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=cloudflare-to-claude-fix"><img src="https://packagephobia.com/badge?p=cloudflare-to-claude-fix" alt="Install size" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill cloudflare-to-claude-fix` ([what it covers](../../skills/cloudflare-to-claude-fix/SKILL.md))
+<!-- skills:install:end -->
+
 A Cloudflare Workers **Queue consumer** that fires a **Claude Code routine** whenever a Workers build fails. Required Workers Paid and Claude Pro.
 
 ---

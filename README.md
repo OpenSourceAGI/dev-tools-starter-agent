@@ -72,7 +72,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/git0.svg)](https://www.npmjs.com/package/git0) **[git0-repo-downloader](packages/git0-repo-downloader/)** - CLI to search GitHub repositories by keyword, download source archives or platform-matched release binaries, install dependencies, and open the project in your editor. Short aliases `g` and `gg` for speed.
 `npx git0 <repo>` · `npm install -g git0`
 
-[![npm downloads](https://img.shields.io/npm/dm/manage-storage.svg)](https://www.npmjs.com/package/manage-storage) **[manage-storage](packages/manage-storage/)** - Unified storage API for AWS S3, Cloudflare R2, and Backblaze B2 built on AWS SDK v3. Auto-detects the configured provider from environment variables. Single function interface for upload, download, delete, and list — returns data directly with no filesystem dependency, ideal for serverless and edge environments.
+[![npm downloads](https://img.shields.io/npm/dm/manage-storage.svg)](https://www.npmjs.com/package/manage-storage) **[manage-storage](packages/manage-storage/)** - Unified storage API for AWS S3, Cloudflare R2, and Backblaze B2 built on AWS SDK v3. A `StorageManager` class with `.upload()`, `.download()`, `.list()`, `.exists()`, `.copy()`, `.rename()`, `.delete()` and `.deleteAll()`; credentials resolve once from env vars or the constructor, and `list`/`deleteAll` paginate past 1000 keys. Returns data directly with no filesystem dependency, ideal for serverless and edge environments.
 `npm install manage-storage` · `bun add manage-storage`
 
 **[native-app-wrapper](packages/native-app-wrapper/)** - Tauri scaffold that turns one JSON profile into a native desktop (Windows/macOS/Linux) and mobile (Android/iOS) app. Wraps either a website — with a real app icon per platform, a Google-OAuth-compatible login handoff through the system browser, and a fullscreen toggle — or a command-line tool, by bundling the CLI as a sidecar behind a local HTML frontend so the app needs no runtime installed. `init` copies the scaffold next to whatever you're wrapping, generates its Tauri config and icons, and leaves no link back.
@@ -132,7 +132,7 @@ See [skills/README.md](skills/README.md) for the full index.
 
 ### ✅ Tests
 
-Four packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
+Six packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
 `junit.xml` (and lcov coverage where its runner can produce one) for
 [`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
 Test Analytics, which tracks run times, failure rates and flaky tests, and comments
@@ -144,6 +144,40 @@ the failing ones on the pull request.
 | [git0-repo-downloader](packages/git0-repo-downloader/) | `bun test` | `bun test` |
 | [web2mobile-wrapper](packages/web2mobile-wrapper/) | Jest | `npm test` |
 | [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |
+| [manage-storage](packages/manage-storage/) | Vitest | `bun run test` |
+| [template-git-repo](packages/template-git-repo/) | Vitest | `bun run test` |
 
 Wiring up another package means adding a `test:ci` script that writes `junit.xml`
-into the package directory, then adding a matrix entry to that workflow.
+into the package directory, then adding a matrix entry to that workflow. Coverage
+is flagged per package in [`codecov.yml`](codecov.yml), which is also what the
+per-package coverage badge in each README reads.
+
+### 📖 READMEs, badges and docs
+
+Each package README opens with a generated header describing **that package**: a
+badge row (its npm version and download counts, its published tarball's types and
+install size, its own Codecov flag, its docs page, a StackBlitz link to its
+directory) and the one-line command that installs **its** agent skill. Both live
+between markers and are never hand-edited:
+
+```bash
+bun run readmes          # rewrite every package's README header
+bun run readmes:check    # fail if any header is stale (for CI)
+```
+
+The skill line is generated because the command differs per package
+(`--skill <name>`, and a skill is not always named after its package): pasting it
+is how a README ends up advertising another package's skill. The script fails if
+a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
+
+Every package and app README is then published as a docs page under
+[`/docs/packages`](https://starterdocs.vtempest.workers.dev/docs/packages), so the
+README is the single source and the docs site is a view of it:
+
+```bash
+bun run docs:sync       # regenerate apps/docs/content/docs/(index)/{packages,apps}
+```
+
+Edit the README, run `bun run docs:sync`, and commit both. The badge catalog
+itself lives in [`packages/template-git-repo/src/badges.js`](packages/template-git-repo/src/badges.js);
+its setup notes are generated into [`docs/BADGES.md`](packages/template-git-repo/docs/BADGES.md).

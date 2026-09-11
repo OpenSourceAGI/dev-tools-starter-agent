@@ -1,3 +1,13 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/native-app-wrapper"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill native-app-wrapper` ([what it covers](../../skills/native-app-wrapper/SKILL.md))
+<!-- skills:install:end -->
+
 # native-app-wrapper
 
 A [Tauri](https://tauri.app) shell that turns one JSON profile into a native desktop

@@ -10,16 +10,38 @@ icon: HardDrive
     <img width="350px" src="https://i.imgur.com/qEdTwly.png" />
 </div>
 
-Universal cloud storage manager supporting Amazon S3, Cloudflare R2, and Backblaze B2 with automatic provider detection. Built on the official AWS SDK v3 with optimized configuration for multi-cloud compatibility.
+<div align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/manage-storage"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/manage-storage"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/dm/manage-storage.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/v/manage-storage.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/dt/manage-storage.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/types/manage-storage" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=manage-storage"><img src="https://packagephobia.com/badge?p=manage-storage" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=manage-storage&label=manage-storage%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+</div>
+
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill manage-storage` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/manage-storage/SKILL.md))
+
+One class, `StorageManager`, for Amazon S3, Cloudflare R2 and Backblaze B2. It
+resolves credentials once, from the environment or from what you pass it, then
+exposes the bucket as methods: `.upload()`, `.download()`, `.list()`, `.copy()`,
+`.rename()`, `.delete()`, `.deleteAll()`, `.exists()`. Built on the official AWS
+SDK v3, written in TypeScript, and shipped with its declarations, so the key and
+body an operation needs are in its signature rather than in a comment.
+
+[**▶ Open the runnable example in StackBlitz**](https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/manage-storage)
+— it boots this package with its dependencies installed; add your bucket's four
+env vars in the StackBlitz shell and the snippets below run as written.
 
 ## Features
 
-- **Multi-Cloud Support**: Works seamlessly with Amazon S3, Cloudflare R2, and Backblaze B2
-- **Auto-Detection**: Automatically detects the configured provider from environment variables
-- **Modern SDK**: Built on AWS SDK v3 with command pattern for optimal performance
-- **Simple API**: Single function interface for all storage operations
-- **No File System**: Returns data directly - perfect for serverless/edge environments
-- **Minified**: Terser minification for smaller bundle sizes
+- **Multi-cloud**: the same calls against S3, R2 and B2 — only the endpoint differs
+- **Auto-detection**: the provider is read from whichever credential prefix your environment has
+- **Typed end to end**: `.upload(key, body)` and `.list(prefix)` are checked at the call site, not documented in prose
+- **Paginated**: `list()` follows the continuation token and `deleteAll()` batches, so neither stops silently at 1000 keys
+- **Edge-ready**: pass credentials in the constructor where there is no `process.env`; nothing touches the file system
 
 ## Installation
 
@@ -33,44 +55,26 @@ bun i manage-storage
 
 ## Quick Start
 
-```javascript
-import { manageStorage } from "manage-storage";
+```ts
+import { StorageManager } from "manage-storage";
 
-// Upload a file
-await manageStorage("upload", {
-  key: "documents/report.pdf",
-  body: fileContent,
-});
+// Credentials come from the environment; the provider is detected from them.
+const storage = new StorageManager();
 
-// Download a file
-const data = await manageStorage("download", {
-  key: "documents/report.pdf",
-});
+await storage.upload("documents/report.pdf", fileContent);
+const data: string = await storage.download("documents/report.pdf");
+const keys: string[] = await storage.list();
 
-// List all files
-const files = await manageStorage("list");
-
-// Copy a file
-await manageStorage("copy", {
-  key: "documents/report.pdf",
-  destinationKey: "documents/report-backup.pdf",
-});
-
-// Rename a file (copy + delete)
-await manageStorage("rename", {
-  key: "documents/old-name.pdf",
-  destinationKey: "documents/new-name.pdf",
-});
-
-// Delete a file
-await manageStorage("delete", {
-  key: "documents/report.pdf",
-});
+await storage.copy("documents/report.pdf", "documents/report-backup.pdf");
+await storage.rename("documents/old-name.pdf", "documents/new-name.pdf");
+await storage.delete("documents/report.pdf");
 ```
 
 ## Configuration
 
-Set environment variables for your preferred provider. The library will automatically detect which provider to use.
+Set environment variables for your preferred provider. The library detects which
+provider to use from the first prefix whose four variables are all present:
+Cloudflare, then Backblaze, then Amazon.
 
 ### Cloudflare R2
 
@@ -90,6 +94,9 @@ BACKBLAZE_SECRET_ACCESS_KEY=your-application-key
 BACKBLAZE_BUCKET_URL=https://s3.us-west-004.backblazeb2.com
 ```
 
+B2's console calls these two the *application key id* and *application key*;
+`BACKBLAZE_APPLICATION_KEY_ID` and `BACKBLAZE_APPLICATION_KEY` are read too.
+
 ### Amazon S3
 
 ```dotenv
@@ -100,187 +107,187 @@ AMAZON_BUCKET_URL=https://s3.amazonaws.com
 AMAZON_REGION=us-east-1
 ```
 
+Or pass any of it to the constructor, which wins over the environment — the only
+option on an edge runtime, where there is no `process.env` to read:
+
+```ts
+import { StorageManager } from "manage-storage";
+
+const storage = new StorageManager({
+  provider: "cloudflare",
+  bucket: "my-bucket",
+  accessKeyId: "runtime-key-id",
+  secretAccessKey: "runtime-secret",
+  endpoint: "https://account-id.r2.cloudflarestorage.com",
+});
+```
+
 ## API Reference
 
-### `manageStorage(action, options)`
+### `new StorageManager(config?)`
 
-Performs storage operations on your configured cloud provider.
+| Option            | Type                                     | Falls back to                                              |
+| ----------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| `provider`        | `"amazon" \| "cloudflare" \| "backblaze"` | Auto-detected from the environment                         |
+| `bucket`          | `string`                                 | `<PROVIDER>_BUCKET_NAME`                                   |
+| `accessKeyId`     | `string`                                 | `<PROVIDER>_ACCESS_KEY_ID`                                 |
+| `secretAccessKey` | `string`                                 | `<PROVIDER>_SECRET_ACCESS_KEY`                             |
+| `endpoint`        | `string`                                 | `<PROVIDER>_BUCKET_URL`                                    |
+| `region`          | `string`                                 | `AMAZON_REGION`, else `us-east-1`; R2 and B2 are `auto`     |
+| `client`          | `S3Client`                               | A client built from the above — pass one to supply your own |
 
-#### Parameters
+Credentials are checked on the first operation, not in the constructor, so a
+manager can be created at module scope before `dotenv` has run. `storage.provider`
+and `storage.bucket` report what it resolved to.
 
-- **action** `string` - The operation to perform: `'upload'`, `'download'`, `'delete'`, `'list'`, `'deleteAll'`, `'copy'`, or `'rename'`
-- **options** `object` - Operation-specific options
+### Methods
 
-#### Options
+| Method                                    | Returns             | Notes                                                            |
+| ----------------------------------------- | ------------------- | ---------------------------------------------------------------- |
+| `.upload(key, body, options?)`            | `UploadResult`      | `body` is a string, `Buffer`, `Uint8Array` or stream; `options.contentType` sets the stored MIME type |
+| `.download(key)`                          | `string`            | UTF-8 text. Throws if the key does not exist                     |
+| `.downloadBytes(key)`                     | `Uint8Array`        | For anything that is not text                                    |
+| `.list(prefix?)`                          | `string[]`          | Every key, paginated to the end                                  |
+| `.exists(key)`                            | `boolean`           | Exact key match, no download                                     |
+| `.copy(key, destinationKey)`              | `CopyResult`        |                                                                  |
+| `.rename(key, destinationKey)`            | `RenameResult`      | Copy then delete; not atomic                                     |
+| `.delete(key)`                            | `DeleteResult`      | Deleting a missing key succeeds, as it does in S3                |
+| `.deleteAll(prefix?)`                     | `DeleteAllResult`   | Irreversible. Batches of 1000                                    |
 
-| Option           | Type                                | Required                            | Description                                          |
-| ---------------- | ----------------------------------- | ----------------------------------- | ---------------------------------------------------- |
-| `key`            | `string`                            | Yes (except for `list`/`deleteAll`) | The object key/path                                  |
-| `destinationKey` | `string`                            | Yes (for `copy`/`rename`)           | The destination key/path for copy/rename operations  |
-| `body`           | `string\|Buffer\|Stream`            | Yes (for `upload`)                  | The file content to upload                           |
-| `provider`       | `'amazon'\|'cloudflare'\|'backblaze'` | No                                  | Force a specific provider (auto-detected if omitted) |
+Also exported: `detectProvider()`, `resolveConfig(config)`, and the types
+`Provider`, `StorageBody`, `StorageConfig`, `ResolvedConfig`, `UploadResult`,
+`DeleteResult`, `DeleteAllResult`, `CopyResult`, `RenameResult`.
 
 ## Usage Examples
 
 ### 1. Upload Files
 
-```javascript
-// Upload text content
-await manageStorage("upload", {
-  key: "notes/memo.txt",
-  body: "Hello, World!",
+```ts
+import { StorageManager } from "manage-storage";
+
+const storage = new StorageManager();
+
+// Text
+await storage.upload("notes/memo.txt", "Hello, World!", {
+  contentType: "text/plain",
 });
 
-// Upload Buffer
-const buffer = Buffer.from("File contents");
-await manageStorage("upload", {
-  key: "data/file.bin",
-  body: buffer,
-});
+// Buffer
+const buffer: Buffer = Buffer.from("File contents");
+await storage.upload("data/file.bin", buffer);
 
-// Upload JSON
-await manageStorage("upload", {
-  key: "config/settings.json",
-  body: JSON.stringify({ theme: "dark", lang: "en" }),
+// JSON
+await storage.upload("config/settings.json", JSON.stringify({ theme: "dark" }), {
+  contentType: "application/json",
 });
 ```
 
 ### 2. Download Files
 
-```javascript
-// Download and get the raw data
-const data = await manageStorage("download", {
-  key: "notes/memo.txt",
-});
-console.log(data); // "Hello, World!"
+```ts
+const text: string = await storage.download("notes/memo.txt");
+console.log(text); // "Hello, World!"
 
-// Download JSON and parse
-const configData = await manageStorage("download", {
-  key: "config/settings.json",
-});
-const config = JSON.parse(configData);
-console.log(config.theme); // "dark"
+interface Settings {
+  theme: "dark" | "light";
+  lang: string;
+}
+
+const settings: Settings = JSON.parse(await storage.download("config/settings.json"));
+console.log(settings.theme); // "dark"
+
+// Binary stays binary.
+const png: Uint8Array = await storage.downloadBytes("images/logo.png");
 ```
 
 ### 3. List Files
 
-```javascript
-// List all files in the bucket
-const files = await manageStorage("list");
-console.log(files);
-// Output: ['notes/memo.txt', 'data/file.bin', 'config/settings.json']
+```ts
+// Every key in the bucket, across as many pages as it takes.
+const keys: string[] = await storage.list();
 
-// Filter by prefix (folder)
-const notes = files.filter((key) => key.startsWith("notes/"));
-console.log(notes); // ['notes/memo.txt']
+// Keys are flat strings — "notes/" is a prefix, not a folder — so filter server-side.
+const notes: string[] = await storage.list("notes/");
+
+if (await storage.exists("notes/memo.txt")) {
+  // …
+}
 ```
 
-### 4. Copy Files
+### 4. Copy, Rename and Delete
 
-```javascript
-// Copy a file to a new location
-await manageStorage("copy", {
-  key: "documents/report.pdf",
-  destinationKey: "documents/backup/report-2024.pdf",
-});
+```ts
+await storage.copy("documents/report.pdf", "documents/backup/report-2024.pdf");
 
-// Create a backup
-await manageStorage("copy", {
-  key: "config/settings.json",
-  destinationKey: "config/settings.backup.json",
-});
+// Rename is a copy followed by a delete, in that order: a failed copy leaves
+// the original alone.
+await storage.rename("temp/draft.md", "published/article.md");
+
+await storage.delete("notes/memo.txt");
+
+// Everything under a prefix. Irreversible.
+const { count } = await storage.deleteAll("temp/");
+console.log(`Deleted ${count} files`);
 ```
 
-### 5. Rename Files
+### 5. Two Providers at Once
 
-```javascript
-// Rename a file (performs copy + delete)
-await manageStorage("rename", {
-  key: "old-filename.txt",
-  destinationKey: "new-filename.txt",
-});
+Each manager holds its own bucket, so mirroring is two objects rather than a
+flag on every call:
 
-// Move to a different folder
-await manageStorage("rename", {
-  key: "temp/draft.md",
-  destinationKey: "published/article.md",
-});
+```ts
+import { StorageManager } from "manage-storage";
+
+const r2 = new StorageManager({ provider: "cloudflare" });
+const b2 = new StorageManager({ provider: "backblaze" });
+
+const key = "documents/report.pdf";
+await b2.upload(key, await r2.downloadBytes(key));
 ```
 
-### 6. Delete Files
+### 6. Batch Operations
 
-```javascript
-// Delete a single file
-await manageStorage("delete", {
-  key: "notes/memo.txt",
-});
+The methods are ordinary promises and nothing is rate-limited internally:
 
-// Delete all files in the bucket (use with caution!)
-const result = await manageStorage("deleteAll");
-console.log(`Deleted ${result.count} files`);
-```
+```ts
+const files = [
+  { key: "docs/file1.txt", content: "Content 1" },
+  { key: "docs/file2.txt", content: "Content 2" },
+];
 
-### 7. Force a Specific Provider
+await Promise.all(files.map((file) => storage.upload(file.key, file.content)));
 
-```javascript
-// Use Cloudflare R2 even if other providers are configured
-await manageStorage("upload", {
-  key: "test.txt",
-  body: "Hello Cloudflare!",
-  provider: "cloudflare",
-});
-
-// Use Backblaze B2 specifically
-await manageStorage("upload", {
-  key: "test.txt",
-  body: "Hello Backblaze!",
-  provider: "backblaze",
-});
-```
-
-### 8. Runtime Configuration (Override Environment Variables)
-
-```javascript
-// Pass credentials at runtime instead of using env vars
-await manageStorage("upload", {
-  key: "secure/data.json",
-  body: JSON.stringify({ secret: "value" }),
-  provider: "cloudflare",
-  BUCKET_NAME: "my-custom-bucket",
-  ACCESS_KEY_ID: "runtime-key-id",
-  SECRET_ACCESS_KEY: "runtime-secret",
-  BUCKET_URL: "https://custom-account.r2.cloudflarestorage.com",
-});
+const contents: string[] = await Promise.all(
+  files.map((file) => storage.download(file.key)),
+);
 ```
 
 ## Advanced Examples
 
 ### Next.js API Route
 
-```javascript
-// app/api/upload/route.js
-import { manageStorage } from "manage-storage";
+```ts
+// app/api/upload/route.ts
+import { StorageManager } from "manage-storage";
 
-export async function POST(req) {
-  const { fileName, fileContent } = await req.json();
+const storage = new StorageManager();
 
-  const result = await manageStorage("upload", {
-    key: `uploads/${fileName}`,
-    body: fileContent,
-  });
+export async function POST(req: Request): Promise<Response> {
+  const { fileName, fileContent } = (await req.json()) as {
+    fileName: string;
+    fileContent: string;
+  };
 
-  return Response.json(result);
+  return Response.json(await storage.upload(`uploads/${fileName}`, fileContent));
 }
 
-export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const fileName = searchParams.get("file");
+export async function GET(req: Request): Promise<Response> {
+  const fileName = new URL(req.url).searchParams.get("file");
+  if (!fileName) return new Response("file is required", { status: 400 });
 
-  const data = await manageStorage("download", {
-    key: `uploads/${fileName}`,
-  });
+  const bytes = await storage.downloadBytes(`uploads/${fileName}`);
 
-  return new Response(data, {
+  return new Response(bytes, {
     headers: {
       "Content-Type": "application/octet-stream",
       "Content-Disposition": `attachment; filename="${fileName}"`,
@@ -291,48 +298,33 @@ export async function GET(req) {
 
 ### Express.js Endpoint
 
-```javascript
-import express from "express";
-import { manageStorage } from "manage-storage";
+```ts
+import express, { type Request, type Response } from "express";
+import { StorageManager } from "manage-storage";
 
 const app = express();
+const storage = new StorageManager();
 app.use(express.json());
 
-app.post("/api/files", async (req, res) => {
+app.post("/api/files", async (req: Request, res: Response) => {
   try {
-    const { key, content } = req.body;
-    const result = await manageStorage("upload", { key, body: content });
-    res.json(result);
+    const { key, content } = req.body as { key: string; content: string };
+    res.json(await storage.upload(key, content));
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: (error as Error).message });
   }
 });
 
-app.get("/api/files", async (req, res) => {
-  try {
-    const files = await manageStorage("list");
-    res.json({ files });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get("/api/files", async (_req: Request, res: Response) => {
+  res.json({ files: await storage.list() });
 });
 
-app.get("/api/files/:key", async (req, res) => {
-  try {
-    const data = await manageStorage("download", { key: req.params.key });
-    res.send(data);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.get("/api/files/:key", async (req: Request, res: Response) => {
+  res.send(await storage.download(req.params.key));
 });
 
-app.delete("/api/files/:key", async (req, res) => {
-  try {
-    const result = await manageStorage("delete", { key: req.params.key });
-    res.json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+app.delete("/api/files/:key", async (req: Request, res: Response) => {
+  res.json(await storage.delete(req.params.key));
 });
 
 app.listen(3000, () => console.log("Server running on port 3000"));
@@ -340,27 +332,37 @@ app.listen(3000, () => console.log("Server running on port 3000"));
 
 ### Cloudflare Workers
 
-```javascript
-import { manageStorage } from "manage-storage";
+A Worker has no `process.env`, so the bindings go to the constructor. Build the
+manager per request — `env` is only available there:
+
+```ts
+import { StorageManager } from "manage-storage";
+
+interface Env {
+  CLOUDFLARE_BUCKET_NAME: string;
+  CLOUDFLARE_ACCESS_KEY_ID: string;
+  CLOUDFLARE_SECRET_ACCESS_KEY: string;
+  CLOUDFLARE_BUCKET_URL: string;
+}
 
 export default {
-  async fetch(request, env) {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const storage = new StorageManager({
+      provider: "cloudflare",
+      bucket: env.CLOUDFLARE_BUCKET_NAME,
+      accessKeyId: env.CLOUDFLARE_ACCESS_KEY_ID,
+      secretAccessKey: env.CLOUDFLARE_SECRET_ACCESS_KEY,
+      endpoint: env.CLOUDFLARE_BUCKET_URL,
+    });
+
     const url = new URL(request.url);
 
     if (request.method === "POST" && url.pathname === "/upload") {
-      const { key, content } = await request.json();
-
-      const result = await manageStorage("upload", {
-        key,
-        body: content,
-        provider: "cloudflare",
-        BUCKET_NAME: env.CLOUDFLARE_BUCKET_NAME,
-        ACCESS_KEY_ID: env.CLOUDFLARE_ACCESS_KEY_ID,
-        SECRET_ACCESS_KEY: env.CLOUDFLARE_SECRET_ACCESS_KEY,
-        BUCKET_URL: env.CLOUDFLARE_BUCKET_URL,
-      });
-
-      return Response.json(result);
+      const { key, content } = (await request.json()) as {
+        key: string;
+        content: string;
+      };
+      return Response.json(await storage.upload(key, content));
     }
 
     return new Response("Not found", { status: 404 });
@@ -368,91 +370,55 @@ export default {
 };
 ```
 
-### Batch Operations
-
-```javascript
-// Upload multiple files
-const files = [
-  { key: "docs/file1.txt", content: "Content 1" },
-  { key: "docs/file2.txt", content: "Content 2" },
-  { key: "docs/file3.txt", content: "Content 3" },
-];
-
-await Promise.all(
-  files.map((file) =>
-    manageStorage("upload", { key: file.key, body: file.content })
-  )
-);
-
-// Download multiple files
-const keys = ["docs/file1.txt", "docs/file2.txt", "docs/file3.txt"];
-const contents = await Promise.all(
-  keys.map((key) => manageStorage("download", { key }))
-);
-```
-
 ## Return Values
 
-### Upload
+```ts
+// upload / delete
+{ success: true, key: "path/to/file.txt" }      // plus provider metadata (ETag, …)
 
-```javascript
-{
-  success: true,
-  key: 'path/to/file.txt',
-  // ... additional provider-specific metadata
-}
+// download
+"File contents here..."
+
+// list
+["folder/file1.txt", "folder/file2.txt"]
+
+// deleteAll
+{ success: true, count: 42 }
+
+// copy
+{ success: true, sourceKey: "a.pdf", destinationKey: "b.pdf" }
+
+// rename
+{ success: true, oldKey: "old.txt", newKey: "new.txt" }
 ```
 
-### Download
+## Migrating from `manageStorage()`
 
-```javascript
-// Returns the file content as a string
-"File contents here...";
-```
+The action-string function still ships and still works, so nothing breaks on
+upgrade — it is deprecated, and delegates to `StorageManager`. The one breaking
+change is the **default export**, which is now the class: `import manageStorage
+from "manage-storage"` becomes `import { manageStorage } from "manage-storage"`.
 
-### Delete
+| Before                                                       | After                                       |
+| ------------------------------------------------------------ | ------------------------------------------- |
+| `manageStorage("upload", { key, body })`                      | `storage.upload(key, body)`                 |
+| `manageStorage("download", { key })`                          | `storage.download(key)`                     |
+| `manageStorage("list")`                                       | `storage.list()`                            |
+| `manageStorage("copy", { key, destinationKey })`              | `storage.copy(key, destinationKey)`         |
+| `manageStorage("rename", { key, destinationKey })`            | `storage.rename(key, destinationKey)`       |
+| `manageStorage("delete", { key })`                            | `storage.delete(key)`                       |
+| `manageStorage("deleteAll")`                                  | `storage.deleteAll()`                       |
+| `{ provider, BUCKET_NAME, ACCESS_KEY_ID, … }` on every call   | `new StorageManager({ provider, bucket, accessKeyId, … })` once |
 
-```javascript
-{
-  success: true,
-  key: 'path/to/file.txt'
-}
-```
+What the class fixes rather than renames:
 
-### List
-
-```javascript
-["folder/file1.txt", "folder/file2.txt", "another/file3.json"];
-```
-
-### DeleteAll
-
-```javascript
-{
-  success: true,
-  count: 42
-}
-```
-
-### Copy
-
-```javascript
-{
-  success: true,
-  sourceKey: 'documents/report.pdf',
-  destinationKey: 'documents/backup/report-2024.pdf'
-}
-```
-
-### Rename
-
-```javascript
-{
-  success: true,
-  oldKey: 'old-filename.txt',
-  newKey: 'new-filename.txt'
-}
-```
+- **Credentials are resolved once.** The old function rebuilt a client on every
+  call, which is why every call had to repeat the credentials.
+- **`list()` and `deleteAll()` finish.** The old versions issued one request and
+  returned the first 1000 keys, which looked like success on a larger bucket.
+- **Required arguments are in the signature.** `upload` cannot be called without
+  a body, and `copy` cannot be called without a destination, at compile time
+  rather than as a runtime throw.
 
 ## Why AWS SDK v3?
 
