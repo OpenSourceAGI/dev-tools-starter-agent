@@ -1,7 +1,7 @@
 {
   "name": "legal-terms-privacy-policy",
   "version": "0.1.0",
-  "description": "Configurable Terms of Service and Privacy Policy \u2014 a scannable summary and the full legal text, with every section addable, removable and reorderable. React page, plus Markdown/HTML/text renderers and a CLI.",
+  "description": "Configurable Terms of Service and Privacy Policy — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page, plus Markdown/HTML/text renderers and a CLI.",
   "type": "module",
   "author": "vtempest",
   "license": "rights.institute/prosper",
@@ -70,6 +70,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
     "@vitest/coverage-v8": "^4.1.0",
     "lucide-react": "^1.43.0",
     "react": "^19.2.8",
