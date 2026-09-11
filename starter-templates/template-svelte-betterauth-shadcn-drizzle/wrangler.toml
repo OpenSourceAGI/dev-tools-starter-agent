@@ -1,4 +1,7 @@
 name = "starterdocs"
+# Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+# deploy unless keep_vars is set. Secrets are never deleted either way.
+keep_vars = true
 compatibility_date = "2024-02-08"
 compatibility_flags = ["nodejs_compat"]
 main = ".svelte-kit/cloudflare/_worker.js"
