@@ -1,6 +1,6 @@
 {
   "name": "template-git-repo",
-  "version": "0.1.11",
+  "version": "0.1.13",
   "description": "One command to set up a repo with GitHub Actions, README badges, Turborepo and Codecov — the CI setup from qwksearch-research-agent, as a template",
   "type": "module",
   "bin": {
