@@ -1,7 +1,7 @@
 {
     "name": "git0",
     "description": "CLI tool to search GitHub repositories, download source & releases for your system, and instantly set up, then install dependencies and open code editor.",
-    "version": "0.2.77",
+    "version": "0.2.79",
     "author": "vtempest",
     "scripts": {
         "build": "bun build src/cli.ts --outdir dist --target node --format esm --sourcemap",
