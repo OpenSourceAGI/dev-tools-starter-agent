@@ -1,6 +1,17 @@
-# create-cloud-db
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/create-cloud-db"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-cloud-db"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/dm/create-cloud-db.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/v/create-cloud-db.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/dt/create-cloud-db.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/types/create-cloud-db" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=create-cloud-db"><img src="https://packagephobia.com/badge?p=create-cloud-db" alt="Install size" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
 
-[NPM](https://www.npmjs.com/package/create-cloud-db)
+# create-cloud-db
 
 `create-cloud-db` is a small CLI that creates a Turso database and manages the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` values in your local `.env` file.
 

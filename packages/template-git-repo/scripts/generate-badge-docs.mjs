@@ -37,6 +37,8 @@ const FLAG_FOR = {
   cloudflareDeploy: '--cloudflare-deploy',
   npmPackage: '--npm-package <name>',
   workflowFile: '--workflow <file>',
+  stackblitzUrl: '--stackblitz <url>',
+  codecovFlag: '--codecov-flag <name>',
 };
 
 /** @returns {string} the full BADGES.md text */

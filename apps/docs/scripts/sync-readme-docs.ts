@@ -93,6 +93,16 @@ const PACKAGES: Entry[] = [
     icon: 'Smartphone',
   },
   {
+    dir: 'packages/setup-git-repo',
+    title: 'setup-git-repo',
+    icon: 'Github',
+  },
+  {
+    dir: 'packages/template-git-repo',
+    title: 'template-git-repo',
+    icon: 'GitFork',
+  },
+  {
     category: 'Infrastructure',
     dir: 'packages/cloudflare-to-claude-fix',
     title: 'cloudflare-to-claude-fix',

@@ -1,5 +1,12 @@
-<!-- template-git-repo:badges:start -->
-<p align="center">
+---
+title: 'template-git-repo'
+description: 'One command to set up a repo with GitHub Actions, README badges, Turborepo and Codecov — the CI setup from qwksearch-research-agent, as a template'
+icon: GitFork
+---
+
+{/* Generated from packages/template-git-repo/README.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
+
+<div align="center">
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/template-git-repo"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/template-git-repo"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
     <br />
@@ -9,10 +16,7 @@
     <a href="https://www.npmjs.com/package/template-git-repo"><img src="https://img.shields.io/npm/types/template-git-repo" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=template-git-repo"><img src="https://packagephobia.com/badge?p=template-git-repo" alt="Install size" /></a>
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=template-git-repo&label=template-git-repo%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
-</p>
-<!-- template-git-repo:badges:end -->
-
-# template-git-repo
+</div>
 
 One command to give a repository the CI, publishing, badges and Turborepo wiring
 worked out in [qwksearch-research-agent](https://github.com/OpenSourceAGI/qwksearch-research-agent):
@@ -40,8 +44,8 @@ is overwritten without `--force`, and `--dry-run` prints the exact plan.
 | `codecov.yml` | Per-package flags with `carryforward` |
 | `README.md` | The badge block, between markers |
 
-Full setup notes: **[docs/ACTIONS.md](./docs/ACTIONS.md)** (workflows and secrets)
-and **[docs/BADGES.md](./docs/BADGES.md)** (every badge, and what you have to do
+Full setup notes: **[docs/ACTIONS.md](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/template-git-repo/docs/ACTIONS.md)** (workflows and secrets)
+and **[docs/BADGES.md](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/template-git-repo/docs/BADGES.md)** (every badge, and what you have to do
 outside the repo before it shows anything real).
 
 ## Options
@@ -103,3 +107,7 @@ const { markdown, skipped } = renderBadgeBlock(context);
 Add an entry to `BADGES` in `src/badges.js` — `needs`, `setup` and `group` are
 what make it self-documenting — then `bun run docs:badges`. Nothing else needs to
 know about it.
+
+---
+
+Source: [`packages/template-git-repo/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/template-git-repo/README.md)

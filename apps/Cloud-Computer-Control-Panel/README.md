@@ -1,3 +1,9 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/Cloud-Computer-Control-Panel"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
 ![code2cloud](https://i.imgur.com/t6WlnCI.png)
 
 # Cloud Computer Control Panel

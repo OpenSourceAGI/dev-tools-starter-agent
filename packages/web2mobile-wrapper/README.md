@@ -2,6 +2,14 @@
     <img src="https://i.imgur.com/QTS1kwk.png" >
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/web2mobile-wrapper"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=web2mobile-wrapper&label=web2mobile-wrapper%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
 > **💍One Code to rule them all — and in the cloud compile them.** 
 
 # Web2Mobile - Easy Mobile App Wrapper for Any Website

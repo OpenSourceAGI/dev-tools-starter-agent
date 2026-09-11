@@ -31,8 +31,8 @@ Rows, in order. Four rows of five reads; twenty badges in one run is a wall.
 
 | Row | Badges | Answers |
 | --- | --- | --- |
-| identity | DOI, DeepWiki, Docs, API, YouTube, Cloudflare deploy button | what is this |
-| quality | npm downloads, npm version, Codecov, CI status, test report, uptime | does it work |
+| identity | DOI, DeepWiki, Docs, API, YouTube, Cloudflare deploy button, StackBlitz | what is this |
+| quality | npm downloads (monthly + total), npm version, types, install size, Codecov, per-flag Codecov, CI status, test report, uptime | does it work |
 | community | stars, commit activity, last commit, Discord, PRs welcome, license | is it alive |
 | stack | tech chips | what is it built with |
 
@@ -47,6 +47,10 @@ Rows, in order. Four rows of five reads; twenty badges in one run is a wall.
 | `deploy-cloudflare` | `--cloudflare-deploy` | A `wrangler.toml` at the cloned path, and a build that needs no secrets — the visitor's fork runs it. |
 | `npm-version` / `npm-downloads` | `--npm-package` | One published version. Counts a single package, not the workspace. |
 | `codecov` | — | Add the repo at codecov.io, set `CODECOV_TOKEN`, land one upload. |
+| `codecov-flag` | `--codecov-flag` | The flag has to exist twice over: an entry under `flag_management.individual_flags` in `codecov.yml`, and an upload passing `flags: <name>`. Naming a flag nothing uploads to reads "unknown" while the repo-wide badge looks fine. |
+| `npm-types` | `--npm-package` | Nothing — but it reads the published tarball, so it stays grey when a build shipped JS without its `.d.ts`. That is the badge doing its job. |
+| `install-size` | `--npm-package` | Nothing. Measures what `npm install` writes to disk, dependencies included — not bundled browser size. |
+| `stackblitz` | `--stackblitz` | Point it at a directory that boots on its own (a package with its own `package.json`). StackBlitz installs from the manifest at that path, so a monorepo root, a Worker that only exists deployed, or anything needing a native toolchain will not run. |
 | `workflow` | `--workflow` | The filename must match a real workflow, and `?branch=` must name your default branch. |
 | `test-report` | `--test-report` | `deploy-test-reports.yml` plus the two Cloudflare secrets. |
 | `uptime` | `--uptime` | An UptimeRobot monitor and public status page. |
@@ -71,6 +75,22 @@ bunx template-git-repo --badges-only --exclude commit-activity,last-commit
 Commit-activity and last-commit are worth thinking about before adding: a quiet
 month reads as an abandoned project.
 
+**Per-package rows in this monorepo**
+
+The root README's block is the repo's. Each package README gets its own row
+instead — its npm name, its Codecov flag, its docs page, its StackBlitz
+directory — written by:
+
+```bash
+bun run badges          # write
+bun run badges:check    # fail if any block is stale
+```
+
+`scripts/sync-package-badges.mjs` reads each package's `package.json` for the
+npm name (private packages get no npm badges), `codecov.yml` for the flag that
+covers its path, and skips the rest. Edit the block only by re-running it: it
+lives between the same markers, so a hand edit is overwritten.
+
 **Render a row without touching a repo**
 
 ```js
@@ -92,6 +112,8 @@ with the message "welcome". `shieldsBadge()` does this for you.
 | Symptom | Cause → fix |
 | --- | --- |
 | Codecov reads `unknown` | No upload has landed. Check the Codecov dashboard — a missing `CODECOV_TOKEN` and a repo never added look identical from the badge. |
+| A package's flagged Codecov badge reads `unknown` while the repo-wide one is fine | That flag has no uploads: the package has no suite, or the flag name in `codecov.yml` does not match the one the workflow passes. Don't swap in the repo-wide badge — it would read as this package's coverage while measuring the whole monorepo. |
+| npm downloads on a package README look like another package's | The row was copied from the root README, where `--npm-package` names whichever package the repo advertises. Re-run `bun run badges`. |
 | CI badge red for a branch you do not care about | `?branch=` is missing, so the badge shows the latest run on *any* branch. Re-run the CLI, which always pins it. |
 | CI badge reads `no status` | The filename does not match a file in `.github/workflows/`, or that workflow has never run on that branch. |
 | npm badge reads `invalid` | The package is not on the registry, or it is scoped and the scope is missing from the URL. |

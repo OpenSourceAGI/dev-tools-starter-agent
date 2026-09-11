@@ -1,3 +1,16 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/create-starter-app"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
+    <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/dm/create-starter-app.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/v/create-starter-app.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/dt/create-starter-app.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/types/create-starter-app" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=create-starter-app"><img src="https://packagephobia.com/badge?p=create-starter-app" alt="Install size" /></a>
+</p>
+<!-- template-git-repo:badges:end -->
+
 ### ⚒️ Starter DOCS: Drizzle OAuth Cloudflare Shadcn
 
 ```bash

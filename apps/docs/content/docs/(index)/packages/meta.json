@@ -16,6 +16,8 @@
     "export-svg-icons-typescript",
     "manage-storage",
     "react-app-store-buttons",
+    "setup-git-repo",
+    "template-git-repo",
     "---Infrastructure---",
     "cloudflare-to-claude-fix",
     "native-app-wrapper",

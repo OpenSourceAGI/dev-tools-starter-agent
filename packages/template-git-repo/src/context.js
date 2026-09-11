@@ -71,6 +71,14 @@ export function detectDefaultBranch(root) {
   const symbolic = git(['symbolic-ref', '--short', 'refs/remotes/origin/HEAD'], root);
   if (symbolic) return symbolic.replace(/^origin\//, '');
 
+  // origin/HEAD is unset in plenty of clones (a shallow CI checkout, anything
+  // cloned with --single-branch). Falling straight through to the current branch
+  // there is how badges end up pinned to whatever feature branch they were
+  // generated on, so try the conventional names on the remote first.
+  for (const name of ['main', 'master', 'canary']) {
+    if (git(['rev-parse', '--verify', '--quiet', `refs/remotes/origin/${name}`], root)) return name;
+  }
+
   const current = git(['rev-parse', '--abbrev-ref', 'HEAD'], root);
   // A detached HEAD reports "HEAD", which is not a branch name.
   if (current && current !== 'HEAD') return current;
@@ -195,6 +203,8 @@ export function buildContext(options = {}) {
     discordInvite: overrides.discordInvite,
     stack: overrides.stack,
     cloudflareDeploy: overrides.cloudflareDeploy,
+    stackblitzUrl: overrides.stackblitzUrl,
+    codecovFlag: overrides.codecovFlag,
   };
 
   return context;

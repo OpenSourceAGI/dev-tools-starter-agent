@@ -1,11 +1,18 @@
-# SMS Verification API Server
-
+<!-- template-git-repo:badges:start -->
 <p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/verify-phone-sms"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/verify-phone-sms"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <br />
     <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dm/verify-phone-sms.svg" alt="NPM Monthly Downloads" /></a>
-    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dt/verify-phone-sms.svg" alt="NPM Total Downloads" /></a>
     <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/v/verify-phone-sms.svg" alt="npm version" /></a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/LICENSE.md"><img src="https://img.shields.io/npm/l/verify-phone-sms.svg" alt="license" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dt/verify-phone-sms.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/types/verify-phone-sms" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=verify-phone-sms"><img src="https://packagephobia.com/badge?p=verify-phone-sms" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=verify-phone-sms&label=verify-phone-sms%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
 </p>
+<!-- template-git-repo:badges:end -->
+
+# SMS Verification API Server
 
 A complete Hono-based server for SMS verification using AWS SNS. Built for Cloudflare Workers with comprehensive API documentation and security features.
 
