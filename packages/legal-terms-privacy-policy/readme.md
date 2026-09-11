@@ -3,11 +3,12 @@
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/legal-terms-privacy-policy"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/legal-terms-privacy-policy"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
     <br />
-    <a href="https://www.npmjs.com/package/legal-terms-privacy-policy"><img src="https://img.shields.io/npm/dm/legal-terms-privacy-policy.svg" alt="NPM Monthly Downloads" /></a>
-    <a href="https://www.npmjs.com/package/legal-terms-privacy-policy"><img src="https://img.shields.io/npm/v/legal-terms-privacy-policy.svg" alt="npm version" /></a>
-    <a href="https://www.npmjs.com/package/legal-terms-privacy-policy"><img src="https://img.shields.io/npm/dt/legal-terms-privacy-policy.svg" alt="NPM Total Downloads" /></a>
-    <a href="https://www.npmjs.com/package/legal-terms-privacy-policy"><img src="https://img.shields.io/npm/types/legal-terms-privacy-policy" alt="TypeScript types" /></a>
-    <a href="https://packagephobia.com/result?p=legal-terms-privacy-policy"><img src="https://packagephobia.com/badge?p=legal-terms-privacy-policy" alt="Install size" /></a>
+    <a href="https://www.npmjs.com/package/legal-terms"><img src="https://img.shields.io/npm/dm/legal-terms.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/legal-terms"><img src="https://img.shields.io/npm/v/legal-terms.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/legal-terms"><img src="https://img.shields.io/npm/dt/legal-terms.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/legal-terms"><img src="https://img.shields.io/npm/types/legal-terms" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=legal-terms"><img src="https://packagephobia.com/badge?p=legal-terms" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=legal-terms-privacy-policy&label=legal-terms-privacy-policy%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
 </p>
 <!-- template-git-repo:badges:end -->
 

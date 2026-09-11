@@ -1,6 +1,7 @@
 <!-- template-git-repo:badges:start -->
 <p align="center">
     <a href="https://starterdocs.vtempest.workers.dev/docs/apps/Cloud-Computer-Control-Panel"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/Cloud-Computer-Control-Panel"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
 </p>
 <!-- template-git-repo:badges:end -->
 
