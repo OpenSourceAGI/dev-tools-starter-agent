@@ -120,6 +120,7 @@ const SKILLS_BY_PACKAGE = {
   'create-starter-app': ['create-starter-app'],
   'export-svg-icons-typescript': ['export-svg-typescript'],
   'git0-repo-downloader': ['git0'],
+  'legal-terms-privacy-policy': ['legal-terms-privacy-policy'],
   'manage-storage': ['manage-storage'],
   'native-app-wrapper': ['native-app-wrapper'],
   'open-when-ready': ['open-ready'],
