@@ -82,14 +82,16 @@ instead — its npm name, its Codecov flag, its docs page, its StackBlitz
 directory — written by:
 
 ```bash
-bun run badges          # write
-bun run badges:check    # fail if any block is stale
+bun run readmes          # write
+bun run readmes:check    # fail if any header is stale
 ```
 
-`scripts/sync-package-badges.mjs` reads each package's `package.json` for the
-npm name (private packages get no npm badges), `codecov.yml` for the flag that
-covers its path, and skips the rest. Edit the block only by re-running it: it
-lives between the same markers, so a hand edit is overwritten.
+`scripts/sync-package-readmes.mjs` reads each package's `package.json` for the
+npm name (private packages, and everything outside `packages/`, get no npm
+badges), `codecov.yml` for the flag that covers its path, and skips the rest. The
+same pass writes the package's agent-skill install line under the badges, between
+`<!-- skills:install:start -->` markers. Edit either block only by re-running it:
+a hand edit inside the markers is overwritten.
 
 **Render a row without touching a repo**
 

@@ -8,6 +8,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill server-shell-setup` ([what it covers](../../skills/server-shell-setup/SKILL.md))
+<!-- skills:install:end -->
+
 ## The Devil Is In The Defaults
 
 > If you hold a unix shell up to your ear, can you hear the C?

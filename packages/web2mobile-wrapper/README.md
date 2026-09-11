@@ -10,6 +10,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill web2mobile` ([what it covers](../../skills/web2mobile/SKILL.md))
+<!-- skills:install:end -->
+
 > **💍One Code to rule them all — and in the cloud compile them.** 
 
 # Web2Mobile - Easy Mobile App Wrapper for Any Website

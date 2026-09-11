@@ -154,15 +154,21 @@ per-package coverage badge in each README reads.
 
 ### 📖 READMEs, badges and docs
 
-Each package README opens with a badge row describing **that package** — its npm
-version and download counts, its published tarball's types and install size, its
-own Codecov flag, its docs page, and a StackBlitz link to its directory. The row
-is generated between markers, never hand-edited:
+Each package README opens with a generated header describing **that package**: a
+badge row (its npm version and download counts, its published tarball's types and
+install size, its own Codecov flag, its docs page, a StackBlitz link to its
+directory) and the one-line command that installs **its** agent skill. Both live
+between markers and are never hand-edited:
 
 ```bash
-bun run badges          # rewrite every package's badge block
-bun run badges:check    # fail if any block is stale (for CI)
+bun run readmes          # rewrite every package's README header
+bun run readmes:check    # fail if any header is stale (for CI)
 ```
+
+The skill line is generated because the command differs per package
+(`--skill <name>`, and a skill is not always named after its package): pasting it
+is how a README ends up advertising another package's skill. The script fails if
+a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
 
 Every package and app README is then published as a docs page under
 [`/docs/packages`](https://starterdocs.vtempest.workers.dev/docs/packages), so the

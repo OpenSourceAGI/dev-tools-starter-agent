@@ -15,6 +15,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill export-svg-typescript` ([what it covers](../../skills/export-svg-typescript/SKILL.md))
+<!-- skills:install:end -->
+
 ## export-svg-typescript
 
 Convert a folder of SVG icons into a color-customizable, tree-shakable TypeScript export `index.ts` that works with any component framework without SVG or Vite compiler issues.

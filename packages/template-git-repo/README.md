@@ -12,6 +12,14 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skills**
+<br />
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill template-git-repo` ([what it covers](../../skills/template-git-repo/SKILL.md))
+<br />
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill repo-badges` ([what it covers](../../skills/repo-badges/SKILL.md))
+<!-- skills:install:end -->
+
 # template-git-repo
 
 One command to give a repository the CI, publishing, badges and Turborepo wiring

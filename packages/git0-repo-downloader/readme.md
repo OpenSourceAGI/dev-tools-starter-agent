@@ -16,6 +16,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill git0` ([what it covers](../../skills/git0/SKILL.md))
+<!-- skills:install:end -->
+
 # Step 0: Download Git Repo
 
 CLI tool to search GitHub repositories, download source & releases for your system, and instantly set up, then install dependencies and open code editor.

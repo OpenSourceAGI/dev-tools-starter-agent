@@ -15,6 +15,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill code-tree-graph` ([what it covers](../../skills/code-tree-graph/SKILL.md))
+<!-- skills:install:end -->
+
 # code-tree-graph
 
 Interactive code dependency graph and file tree visualization components for [Fumadocs](https://fumadocs.vercel.app/) + Next.js. Drop them into any MDX page to generate live, navigable views of your codebase — no external service required.

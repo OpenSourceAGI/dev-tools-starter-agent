@@ -23,8 +23,8 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "coverage": "turbo run coverage",
-    "badges": "node scripts/sync-package-badges.mjs",
-    "badges:check": "node scripts/sync-package-badges.mjs --check",
+    "readmes": "node scripts/sync-package-readmes.mjs",
+    "readmes:check": "node scripts/sync-package-readmes.mjs --check",
     "docs:sync": "bun ./apps/docs/scripts/sync-readme-docs.ts",
     "clean": "turbo run clean && rm -rf .turbo node_modules"
   },

@@ -16,6 +16,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill manage-storage` ([what it covers](../../skills/manage-storage/SKILL.md))
+<!-- skills:install:end -->
+
 # Cloud Storage Manager
 
 One class, `StorageManager`, for Amazon S3, Cloudflare R2 and Backblaze B2. It

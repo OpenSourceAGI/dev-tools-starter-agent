@@ -12,6 +12,14 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skills**
+<br />
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill github-actions-setup` ([what it covers](../../skills/github-actions-setup/SKILL.md))
+<br />
+`npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill git-badges` ([what it covers](../../skills/git-badges/SKILL.md))
+<!-- skills:install:end -->
+
 # setup-git-repo
 
 One command to give a repository the whole GitHub setup: Turborepo, the CI

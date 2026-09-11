@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /**
- * Put a badge row that describes *one package* at the top of that package's
- * README.
+ * Write the generated header of every package README: a badge row that describes
+ * *one package*, and the one-line command that installs that package's agent
+ * skill.
  *
  * The root README's badge block is the repo's: stars, commit activity, the
  * monorepo's coverage. Pasting it into `packages/manage-storage/README.md` makes
@@ -21,9 +22,15 @@
  * both come from `template-git-repo`, which is where the repo-level block comes
  * from too — one definition of what a badge is, used twice.
  *
+ * The second half of the header is the skill line. Every package here ships an
+ * agent skill under `skills/`, and the install command differs per package
+ * (`--skill <name>`), so it is generated from the same pass rather than pasted —
+ * pasted ones are how a README ends up telling you to install another package's
+ * skill.
+ *
  * Usage:
- *   node scripts/sync-package-badges.mjs           # write
- *   node scripts/sync-package-badges.mjs --check   # fail if anything is stale (CI)
+ *   node scripts/sync-package-readmes.mjs           # write
+ *   node scripts/sync-package-readmes.mjs --check   # fail if anything is stale (CI)
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -86,6 +93,43 @@ const NO_STACKBLITZ = new Set([
   'vscode-cloud',
   'web2mobile-wrapper',
 ])
+
+/** Markers for the skill-install line, which this script owns end to end. */
+const SKILL_START = '<!-- skills:install:start -->'
+const SKILL_END = '<!-- skills:install:end -->'
+
+/** The repo the `skills` CLI installs from. */
+const SKILLS_SOURCE = 'https://github.com/OpenSourceAGI/dev-tools-starter-agent'
+
+/**
+ * Which skill (or skills) document each package, as listed in `skills/README.md`.
+ *
+ * Written out rather than derived: a skill directory is not named after its
+ * package (`open-when-ready` is documented by `open-ready`), two packages have
+ * two skills each, and the ones that do mention a `packages/…` path in their body
+ * mention example paths too. Wrong here means a README that tells you to install
+ * something else, so the mapping is explicit and `validateSkills` fails the run
+ * if a name does not exist on disk.
+ */
+const SKILLS_BY_PACKAGE = {
+  'about-system-info': ['about-system'],
+  'api2ai-mcp-generator': ['api2ai'],
+  'cloudflare-to-claude-fix': ['cloudflare-to-claude-fix'],
+  'code-tree-graph': ['code-tree-graph'],
+  'create-cloud-db': ['create-cloud-db'],
+  'create-starter-app': ['create-starter-app'],
+  'export-svg-icons-typescript': ['export-svg-typescript'],
+  'git0-repo-downloader': ['git0'],
+  'manage-storage': ['manage-storage'],
+  'native-app-wrapper': ['native-app-wrapper'],
+  'open-when-ready': ['open-ready'],
+  'react-app-store-buttons': ['app-store-buttons'],
+  'server-shell-setup': ['server-shell-setup'],
+  'setup-git-repo': ['github-actions-setup', 'git-badges'],
+  'template-git-repo': ['template-git-repo', 'repo-badges'],
+  'verify-phone-sms': ['verify-phone-sms'],
+  'web2mobile-wrapper': ['web2mobile'],
+}
 
 const README_NAMES = ['README.md', 'readme.md', 'Readme.md']
 
@@ -206,6 +250,71 @@ export function collectEntries(repoContext) {
 }
 
 /**
+ * Fail loudly on a skill name that does not exist, in either direction.
+ *
+ * A typo'd name produces a command that installs nothing, which nobody notices
+ * from reading the README — and a skill that no package points at is invisible to
+ * anyone browsing packages, which is the other half of the same mistake.
+ *
+ * @param {string} root
+ * @returns {string[]} skills that exist but no package cites
+ */
+export function validateSkills(root) {
+  const cited = new Set(Object.values(SKILLS_BY_PACKAGE).flat());
+
+  for (const name of cited) {
+    if (!fs.existsSync(path.join(root, 'skills', name, 'SKILL.md'))) {
+      throw new Error(
+        `SKILLS_BY_PACKAGE points at skills/${name}/SKILL.md, which does not exist. ` +
+          'Fix the name, or add the skill.',
+      )
+    }
+  }
+
+  const onDisk = fs.existsSync(path.join(root, 'skills'))
+    ? fs
+        .readdirSync(path.join(root, 'skills'), { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name)
+    : []
+
+  return onDisk.filter(
+    (name) => !cited.has(name) && fs.existsSync(path.join(root, 'skills', name, 'SKILL.md')),
+  )
+}
+
+/**
+ * The install line(s) for a package's agent skill.
+ *
+ * Deliberately one line per skill and no heading: it sits above the README's own
+ * title, where a section heading would read as the document's first section.
+ *
+ * @param {string} slug package directory name
+ * @param {string} dir package directory relative to the repo root
+ * @returns {string} markdown, or '' for a package with no skill
+ */
+export function renderSkillInstall(slug, dir) {
+  const skills = SKILLS_BY_PACKAGE[slug]
+  if (!skills || skills.length === 0) return ''
+
+  // Relative so it resolves on GitHub, in an editor, and in the docs sync (which
+  // rewrites it to an absolute blob URL).
+  const up = '../'.repeat(dir.split('/').length)
+
+  const commands = skills.map(
+    (name) =>
+      `\`npx skills@latest add ${SKILLS_SOURCE} --skill ${name}\`` +
+      ` ([what it covers](${up}skills/${name}/SKILL.md))`,
+  )
+
+  // One skill reads as a sentence; two want a label of their own, or the label
+  // repeats down the page.
+  return commands.length === 1
+    ? `**🤖 Agent skill** — ${commands[0]}`
+    : ['**🤖 Agent skills**', ...commands].join('\n<br />\n')
+}
+
+/**
  * Where a generated block goes in a README that has no markers yet.
  *
  * Above everything is wrong here: most of these READMEs open with a centered
@@ -236,12 +345,43 @@ export function placeBlock(readme, block) {
 }
 
 /**
+ * Put the skill line under the badge block, replacing the previous one.
+ *
+ * @param {string} readme
+ * @param {string} block rendered skill markdown ('' to remove the section)
+ * @returns {string}
+ */
+export function placeSkillBlock(readme, block) {
+  const marked = block ? [SKILL_START, block, SKILL_END].join('\n') : ''
+
+  const start = readme.indexOf(SKILL_START)
+  const end = readme.indexOf(SKILL_END)
+
+  if (start !== -1 && end !== -1 && end > start) {
+    const after = readme.slice(end + SKILL_END.length)
+    return readme.slice(0, start) + marked + (marked ? after : after.replace(/^\n+/, '\n'))
+  }
+
+  if (!block) return readme
+
+  // Directly after the badge row, which placeBlock has already put in place.
+  const badgesEnd = readme.indexOf(END_MARKER)
+  if (badgesEnd !== -1) {
+    const cut = badgesEnd + END_MARKER.length
+    return `${readme.slice(0, cut)}\n\n${marked}${readme.slice(cut)}`
+  }
+
+  return `${marked}\n\n${readme.replace(/^\n+/, '')}`
+}
+
+/**
  * @param {{ check?: boolean }} [options]
  * @returns {{ changed: string[], skipped: { dir: string, ids: string[] }[] }}
  */
 export function syncPackageBadges(options = {}) {
   const { check = false } = options
   const repoContext = buildContext({ cwd: ROOT })
+  const orphanSkills = validateSkills(ROOT)
 
   if (!repoContext.repoSlug) {
     throw new Error(
@@ -257,7 +397,11 @@ export function syncPackageBadges(options = {}) {
     const { markdown, skipped } = renderBadgeBlock(context, { only: PACKAGE_BADGES })
 
     const existing = fs.readFileSync(entry.readme, 'utf8')
-    const { content } = placeBlock(existing, markdown)
+    const { content: withBadges } = placeBlock(existing, markdown)
+    const content = placeSkillBlock(
+      withBadges,
+      renderSkillInstall(entry.slug, entry.dir),
+    )
 
     const relative = path.relative(repoContext.root, entry.readme)
     if (content !== existing) {
@@ -269,12 +413,12 @@ export function syncPackageBadges(options = {}) {
     if (ids.length > 0) skippedByEntry.push({ dir: entry.dir, ids })
   }
 
-  return { changed, skipped: skippedByEntry }
+  return { changed, skipped: skippedByEntry, orphanSkills }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const check = process.argv.includes('--check')
-  const { changed, skipped } = syncPackageBadges({ check })
+  const { changed, skipped, orphanSkills } = syncPackageBadges({ check })
 
   for (const file of changed) console.log(`  ${check ? '!' : '~'} ${file}`)
 
@@ -283,16 +427,23 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const { dir, ids } of skipped) console.log(`    ${dir.padEnd(38)} ${ids.join(', ')}`)
   }
 
+  if (orphanSkills.length > 0) {
+    console.log(
+      `\n  Skills no package README links to: ${orphanSkills.join(', ')}` +
+        '\n    → add them to SKILLS_BY_PACKAGE, or retire them',
+    )
+  }
+
   if (check && changed.length > 0) {
     console.error(
-      `\n${changed.length} README badge block(s) are out of date — run: bun run badges\n`,
+      `\n${changed.length} README header(s) are out of date — run: bun run readmes\n`,
     )
     process.exit(1)
   }
 
   console.log(
     check
-      ? '\nEvery package README badge block is up to date.\n'
+      ? '\nEvery package README header is up to date.\n'
       : `\n${changed.length === 0 ? 'Already up to date' : `Updated ${changed.length} README(s)`}.\n`,
   )
 }

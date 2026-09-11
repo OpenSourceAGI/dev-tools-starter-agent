@@ -16,6 +16,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill api2ai` ([what it covers](../../skills/api2ai/SKILL.md))
+<!-- skills:install:end -->
+
 <h3 align="center">
   <a href="https://api-2-ai.vercel.app/"> 🌐 Live Site </a> &nbsp;|&nbsp;
   <a href="https://github.com/vtempest/GRAB-URL/tree/master/api2ai/example-petstore"> 🎯 Example MCP Server </a>

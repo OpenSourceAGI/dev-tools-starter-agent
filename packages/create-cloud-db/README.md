@@ -11,6 +11,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill create-cloud-db` ([what it covers](../../skills/create-cloud-db/SKILL.md))
+<!-- skills:install:end -->
+
 # create-cloud-db
 
 `create-cloud-db` is a small CLI that creates a Turso database and manages the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` values in your local `.env` file.

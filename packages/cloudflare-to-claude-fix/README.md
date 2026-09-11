@@ -14,6 +14,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill cloudflare-to-claude-fix` ([what it covers](../../skills/cloudflare-to-claude-fix/SKILL.md))
+<!-- skills:install:end -->
+
 A Cloudflare Workers **Queue consumer** that fires a **Claude Code routine** whenever a Workers build fails. Required Workers Paid and Claude Pro.
 
 ---

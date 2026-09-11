@@ -12,6 +12,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill verify-phone-sms` ([what it covers](../../skills/verify-phone-sms/SKILL.md))
+<!-- skills:install:end -->
+
 # SMS Verification API Server
 
 A complete Hono-based server for SMS verification using AWS SNS. Built for Cloudflare Workers with comprehensive API documentation and security features.

@@ -16,6 +16,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill about-system` ([what it covers](../../skills/about-system/SKILL.md))
+<!-- skills:install:end -->
+
 # About System Info
 
 A TypeScript/Node.js library to display comprehensive system information with customizable output.

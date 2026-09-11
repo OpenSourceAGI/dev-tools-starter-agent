@@ -17,6 +17,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill app-store-buttons` ([what it covers](../../skills/app-store-buttons/SKILL.md))
+<!-- skills:install:end -->
+
 # react-native-app-buttons
 
 React badge components for app store and platform download links. Badges ship as bundled assets — no CDN required.

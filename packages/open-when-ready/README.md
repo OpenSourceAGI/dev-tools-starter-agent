@@ -15,6 +15,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill open-ready` ([what it covers](../../skills/open-ready/SKILL.md))
+<!-- skills:install:end -->
+
 # open-ready
 
 Smart dev server launcher that watches your server's output and automatically opens the browser when ready — or opens an AI assistant with the error context when something goes wrong.

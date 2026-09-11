@@ -11,6 +11,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill create-starter-app` ([what it covers](../../skills/create-starter-app/SKILL.md))
+<!-- skills:install:end -->
+
 ### ⚒️ Starter DOCS: Drizzle OAuth Cloudflare Shadcn
 
 ```bash

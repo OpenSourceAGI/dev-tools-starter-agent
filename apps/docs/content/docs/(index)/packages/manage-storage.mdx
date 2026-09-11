@@ -22,6 +22,8 @@ icon: HardDrive
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=manage-storage&label=manage-storage%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
 </div>
 
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill manage-storage` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/manage-storage/SKILL.md))
+
 One class, `StorageManager`, for Amazon S3, Cloudflare R2 and Backblaze B2. It
 resolves credentials once, from the environment or from what you pass it, then
 exposes the bucket as methods: `.upload()`, `.download()`, `.list()`, `.copy()`,
