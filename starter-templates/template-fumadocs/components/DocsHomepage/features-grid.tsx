@@ -1,6 +1,7 @@
 /**
  * @file features-grid.tsx
- * @description Grid component displaying the key features and benefits of GRAB, grouped by category.
+ * @description Grid component displaying the key features and benefits of GRAB, grouped into the
+ * same categories the GRAB README uses so the homepage and the README stay in sync.
  */
 import Image from "next/image"
 import {
@@ -31,8 +32,8 @@ import {
 
 const featureCategories = [
   {
-    category: "Requests & Responses",
-    tagline: "Send anything, get back usable data",
+    category: "Requests & Data",
+    tagline: "Send anything, get back parsed data — no boilerplate per content type.",
     features: [
       {
         icon: Zap,
@@ -40,14 +41,14 @@ const featureCategories = [
         description: "Pass parameters and get response or error in JSON, handling other data types automatically.",
       },
       {
-        icon: FileArchive,
-        title: "Auto-Unzip",
-        description: "Automatically extracts ZIP responses into { data: { filename: content } }. Set unzip: false to disable.",
-      },
-      {
         icon: CodeXml,
         title: "DOM Parsing",
         description: 'Automatically parses HTML responses. Pass dom: "selector" for CSS extraction or dom: false to disable.',
+      },
+      {
+        icon: FileArchive,
+        title: "Auto-Unzip",
+        description: "Automatically extracts ZIP responses into { data: { filename: content } }. Set unzip: false to disable.",
       },
       {
         icon: Upload,
@@ -62,8 +63,8 @@ const featureCategories = [
     ],
   },
   {
-    category: "Reliability & Control",
-    tagline: "Never let a flaky network break the UI",
+    category: "Reliability & Traffic Control",
+    tagline: "Keep flaky networks and click-happy users from cascading into your API.",
     features: [
       {
         icon: Clock,
@@ -85,11 +86,16 @@ const featureCategories = [
         title: "Rate Limiting",
         description: "Built-in rate limiting prevents multi-click cascading responses.",
       },
+      {
+        icon: Repeat,
+        title: "Repeat & Poll",
+        description: "Repeat request X times or poll every X seconds for live updates.",
+      },
     ],
   },
   {
-    category: "Performance & Data Flow",
-    tagline: "Fewer round trips, fresher data",
+    category: "Performance & UI State",
+    tagline: "Fewer round trips, and loading state your components can bind to directly.",
     features: [
       {
         icon: HardDrive,
@@ -102,20 +108,56 @@ const featureCategories = [
         description: "Built-in pagination that auto-loads and merges next page on scroll.",
       },
       {
-        icon: Repeat,
-        title: "Repeat & Poll",
-        description: "Repeat request X times or poll every X seconds for live updates.",
+        icon: RefreshCw,
+        title: "Reactive Loading",
+        description: "Sets .isLoading=true on response object for React, Vue, Svelte — any framework works.",
       },
     ],
   },
   {
-    category: "Framework Integration",
-    tagline: "Drop into any app, typed end to end",
+    category: "Testing & Debugging",
+    tagline: "See every request, fake the ones you don't have yet, and assert on the rest.",
     features: [
       {
-        icon: RefreshCw,
-        title: "Reactive Loading",
-        description: "Sets .isLoading=true on response object for React, Vue, Svelte — any framework works.",
+        icon: Database,
+        title: "Mock Server",
+        description: "Configure grab.mock for dev/testing. Supports conditional responses and delays.",
+      },
+      {
+        icon: FlaskConical,
+        title: "Jest Testing",
+        description: "Easy unit testing with mock setup and grab.log assertions.",
+      },
+      {
+        icon: Bug,
+        title: "Debug Logging",
+        description: "Global log() prints colored JSON structure, response timing. Ctrl+I opens DevTools overlay.",
+      },
+      {
+        icon: Layers,
+        title: "Request History",
+        description: "All requests stored in grab.log for debugging and analytics.",
+      },
+      {
+        icon: Terminal,
+        title: "CLI Testing",
+        description: "npm i -g grab-url for command line API testing with params and JSON payloads.",
+      },
+    ],
+  },
+  {
+    category: "Setup & Integration",
+    tagline: "Drop it into any stack, any runtime, or generate a whole client from a spec.",
+    features: [
+      {
+        icon: Globe,
+        title: "Instance Config",
+        description: "Create separate instances with grab.instance() for different APIs.",
+      },
+      {
+        icon: Play,
+        title: "Proxy Support",
+        description: "Node.js proxy support with HttpsProxyAgent for server-side requests.",
       },
       {
         icon: Boxes,
@@ -126,53 +168,6 @@ const featureCategories = [
         icon: FileCode,
         title: "TypeScript Tooltips",
         description: "Full type inference with hover tooltips and autocomplete for options.",
-      },
-      {
-        icon: Globe,
-        title: "Instance Config",
-        description: "Create separate instances with grab.instance() for different APIs.",
-      },
-    ],
-  },
-  {
-    category: "Debugging & Testing",
-    tagline: "See every request, fake the ones you need",
-    features: [
-      {
-        icon: Bug,
-        title: "Debug Logging",
-        description: "Global log() prints colored JSON structure, response timing. Ctrl+I opens DevTools overlay.",
-      },
-      {
-        icon: Database,
-        title: "Mock Server",
-        description: "Configure grab.mock for dev/testing. Supports conditional responses and delays.",
-      },
-      {
-        icon: Layers,
-        title: "Request History",
-        description: "All requests stored in grab.log for debugging and analytics.",
-      },
-      {
-        icon: FlaskConical,
-        title: "Jest Testing",
-        description: "Easy unit testing with mock setup and grab.log assertions.",
-      },
-      {
-        icon: Terminal,
-        title: "CLI Testing",
-        description: "npm i -g grab-url for command line API testing with params and JSON payloads.",
-      },
-    ],
-  },
-  {
-    category: "Server & Codegen",
-    tagline: "Same tool outside the browser",
-    features: [
-      {
-        icon: Play,
-        title: "Proxy Support",
-        description: "Node.js proxy support with HttpsProxyAgent for server-side requests.",
       },
       {
         icon: Blocks,
@@ -220,9 +215,9 @@ export function FeaturesGrid() {
         <div className="flex flex-col gap-12">
           {featureCategories.map(({ category, tagline, features }, categoryIndex) => (
             <div key={category}>
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-x-3 gap-y-1 mb-5">
+              <div className="mb-5 pb-3 border-b border-border">
                 <h3 className="text-xl md:text-2xl font-bold text-foreground">{category}</h3>
-                <p className="text-sm text-muted-foreground">{tagline}</p>
+                <p className="text-sm text-muted-foreground mt-1">{tagline}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">

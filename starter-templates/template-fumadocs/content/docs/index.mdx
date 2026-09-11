@@ -37,26 +37,54 @@ npm i grab-url
 
 ### GRAB: Generate Request to API from Browser
 
-1. **GRAB is the FBEST Request Manager: Functionally Brilliant, Elegantly Simple Tool**: One Function, no dependencies, minimalist syntax, [more features than alternatives](https://grab.js.org/docs/Comparisons)
-2. **Auto-JSON Convert**: Pass parameters and get response or error in JSON, handling other data types as is.
-3. **isLoading Status**: Sets `.isLoading=true` on the pre-initialized response object so you can show a "Loading..." in any framework
-4. **[Claude Skill](https://grab.js.org/docs/claude-skill)** Copy this link as markdown and paste into ~/.claude/skills/use-grab-request/SKILL.md or similar for Antigravity, Cursor, Gemini, Codex, etc...
-5. **Mock Server Support**: Configure `window.grab.mock` for development and testing environments
-6. **Cancel Duplicates**: Prevent this request if one is ongoing to same path & params, or cancel the ongoing request.
-7. **Timeout & Retry**: Customizable request timeout, default 20s, and auto-retry on error
-8. **DevTools**: `Ctrl+Alt+I` overlays webpage with devtools showing all requests and responses, timing, and JSON structure.
-9. **Request History**: Stores all request and response data in global `grab.log` object
-10. **Pagination Infinite Scroll**: Built-in pagination for infinite scroll to auto-load and merge next result page, with scroll position recovery.
-11. **Base URL Based on Environment**: Configure `grab.defaults.baseURL` once at the top, overide with `SERVER_API_URL` in `.env`.
-12. **Frontend Cache**: Set cache headers and retrieve from frontend memory for repeat requests to static data.
-13. **Regrab On Error**: Regrab on timeout error, or on window refocus, or on network change, or on stale data.
-14. **Framework Agnostic**: Alternatives like TanStack work only in component initialization and depend on React & others.
-15. **Globals**: Adds to window in browser or global in Node.js so you only import once: `grab()`, `log()`, `grab.log`, `grab.mock`, `grab.defaults`
-16. **Debug Logging**: Adds global `log()` and prints colored JSON structure, response, timing for requests in test.
-17. **Request Stategies**: [🎯 Examples](https://grab.js.org/docs/Examples) show common stategies like debounce, repeat, proxy, unit tests, interceptors, file upload, etc
-18. **Rate Limiting**: Built-in rate limiting to prevent multi-click cascading responses, require to wait seconds between requests.
-19. **Repeat**: Repeat request this many times, or repeat every X seconds to poll for updates.
-20. **Loading Icons**: Import from `grab-url/icons` to get enhanced animated loading icons.
+**GRAB is the FBEST Request Manager: Functionally Brilliant, Elegantly Simple Tool** — One Function, no dependencies, minimalist syntax, [more features than alternatives](https://grab.js.org/docs/Comparisons)
+
+#### Requests & Data
+
+_Send anything, get back parsed data — no boilerplate per content type._
+
+- **Auto-JSON Convert**: Pass parameters and get response or error in JSON, handling other data types as is.
+- **Auto-Unzip**: Automatically extracts ZIP responses into `{ data: { filename: content } }` using archiver-web. Set `unzip: false` to disable.
+- **DOM Parsing**: Automatically parses HTML responses. Pass `parseDOM: "selector"` for CSS selector extraction or `parseDOM: false` to disable. Uses linkedom.
+- **Request Stategies**: [🎯 Examples](https://grab.js.org/docs/Examples) show common stategies like debounce, repeat, proxy, unit tests, interceptors, file upload, etc
+
+#### Reliability & Traffic Control
+
+_Keep flaky networks and click-happy users from cascading into your API._
+
+- **Cancel Duplicates**: Prevent this request if one is ongoing to same path & params, or cancel the ongoing request.
+- **Timeout & Retry**: Customizable request timeout, default 30s, and auto-retry on error
+- **Regrab On Error**: Regrab on timeout error, or on window refocus, or on network change, or on stale data.
+- **Rate Limiting**: Built-in rate limiting to prevent multi-click cascading responses, require to wait seconds between requests.
+- **Repeat**: Repeat request this many times, or repeat every X seconds to poll for updates.
+
+#### Performance & UI State
+
+_Fewer round trips, and loading state your components can bind to directly._
+
+- **isLoading Status**: Sets `.isLoading=true` on the pre-initialized response object so you can show a "Loading..." in any framework
+- **Frontend Cache**: Set cache headers and retrieve from frontend memory for repeat requests to static data.
+- **Pagination Infinite Scroll**: Built-in pagination for infinite scroll to auto-load and merge next result page, with scroll position recovery.
+- **Loading Icons**: Import from `grab-url/icons` to get enhanced animated loading icons, including the [quantum sphere](https://grab.js.org/loaders/quantum-sphere) — an interactive 3D orbital loader for React and Svelte that re-rolls its own colors and collapses each ring you hover: `import QuantumOrbital from 'grab-url/icons/quantum-sphere'`.
+
+#### Testing & Debugging
+
+_See every request, fake the ones you don't have yet, and assert on the rest._
+
+- **Mock Server Support**: Configure `window.grab.mock` for development and testing environments
+- **DevTools**: `Ctrl+Alt+I` overlays webpage with devtools showing all requests and responses, timing, and JSON structure.
+- **Debug Logging**: Adds global `log()` and prints colored JSON structure, response, timing for requests in test.
+- **Request History**: Stores all request and response data in global `grab.log` object
+
+#### Setup & Integration
+
+_Drop it into any stack, any runtime, or generate a whole client from a spec._
+
+- **[Agent Skill](/docs/claude-skill)** Install the skill into any agent (Claude, Cursor, Gemini, Codex, Antigravity, etc.) with one command: `npx skills add vtempest/GRAB-URL@use-grab-request`.
+- **Globals**: Adds to window in browser or global in Node.js so you only import once: `grab()`, `log()`, `grab.log`, `grab.mock`, `grab.defaults`
+- **Base URL Based on Environment**: Configure `grab.defaults.baseURL` once at the top, overide with `SERVER_API_URL` in `.env`.
+- **Framework Agnostic**: Alternatives like TanStack work only in component initialization and depend on React & others.
+- **[OpenAPI SDKs](/docs/openapi-services)**: Generate a typed client from any OpenAPI spec with [Hey API](https://heyapi.dev) and have it send requests with grab instead of axios: `npx api2client ./openapi.yaml ./src/client`. Every endpoint gets caching, retries, rate limiting, dedupe and mocks.
 
 ### Examples
 
