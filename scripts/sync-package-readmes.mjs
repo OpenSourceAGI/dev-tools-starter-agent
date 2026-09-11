@@ -238,8 +238,13 @@ export function collectEntries(repoContext) {
           npmPackage: published,
           codecovFlag: codecovFlags.get(`${relative}/`),
           docsUrl: `${DOCS_SITE}/docs/${docsSlug}/${child.name}`,
+          // Not gated on `published`: StackBlitz boots from the manifest at the
+          // path, not from the registry, so a private package or an app runs
+          // there just as well as a published one. What it needs is a
+          // package.json at that path and a runtime it can host — hence the
+          // manifest check and the NO_STACKBLITZ list.
           stackblitzUrl:
-            published && !NO_STACKBLITZ.has(child.name)
+            manifest && !NO_STACKBLITZ.has(child.name)
               ? `https://stackblitz.com/github/${repoContext.repoSlug}/tree/${repoContext.defaultBranch}/${relative}`
               : undefined,
         },

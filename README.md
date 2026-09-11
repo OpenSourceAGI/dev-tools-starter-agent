@@ -11,6 +11,7 @@
     <a href="https://starterdocs.vtempest.workers.dev"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://www.npmjs.com/~vtempest"><img src="https://img.shields.io/badge/npm-packages-CB3837?logo=npm&logoColor=white" alt="npm packages" /></a>
     <a href="https://codespaces.new/OpenSourceAGI/dev-tools-starter-agent"><img src="https://github.com/codespaces/badge.svg" height="20" alt="Open in GitHub Codespaces" /></a>
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-starter-app"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
 <br />
     <a href="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent"><img src="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/graph/badge.svg" alt="Coverage" /></a>
