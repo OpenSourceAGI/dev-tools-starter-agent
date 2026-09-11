@@ -37,6 +37,7 @@ the package.
 | [git-badges](./git-badges/SKILL.md) | `setup-git-repo` | The README badge block: Shields grammar, per-badge setup, why a badge renders `invalid` |
 | [git0](./git0/SKILL.md) | `git0-repo-downloader` | Search, download, auto-install, IDE launch, rate limits |
 | [github-actions-setup](./github-actions-setup/SKILL.md) | `setup-git-repo` | The five CI workflows: what each needs, the secrets, and the failure modes worth knowing |
+| [legal-terms-privacy-policy](./legal-terms-privacy-policy/SKILL.md) | `legal-terms-privacy-policy` | The two-variant terms/privacy page: tokens, parts, adding and removing sections, the CLI |
 | [manage-storage](./manage-storage/SKILL.md) | `manage-storage` | S3 / R2 / B2 through one `StorageManager`, provider detection, edge credentials |
 | [native-app-wrapper](./native-app-wrapper/SKILL.md) | `native-app-wrapper` | Website or CLI → native Tauri app: profiles, the sidecar bridge, icons, per-OS builds |
 | [open-ready](./open-ready/SKILL.md) | `open-when-ready` | Dev-server wrapper: ready/error detection, flags, log locations |
