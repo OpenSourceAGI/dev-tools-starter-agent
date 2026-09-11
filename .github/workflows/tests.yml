@@ -65,6 +65,12 @@ jobs:
             install: npm install --ignore-scripts --legacy-peer-deps
             coverage: true
 
+          - name: legal-terms-privacy-policy
+            dir: packages/legal-terms-privacy-policy
+            runtime: node
+            install: npm install --ignore-scripts --legacy-peer-deps
+            coverage: true
+
           - name: verify-phone-sms
             dir: packages/verify-phone-sms
             runtime: node
