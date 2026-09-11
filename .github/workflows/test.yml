@@ -27,6 +27,7 @@ jobs:
           - package: create-starter-app
           - package: export-svg-icons-typescript
           - package: git0-repo-downloader
+          - package: legal-terms-privacy-policy
           - package: manage-storage
           - package: native-app-wrapper
           - package: open-when-ready
