@@ -17,6 +17,23 @@ The block lives between `<!-- template-git-repo:badges:start -->` and
 between the markers and nothing else, so it is safe to run again after you publish a
 package or finish setting up Codecov.
 
+## The four rows
+
+The block renders one row per group, in this order. The split is by the question a
+reader is asking, not by where the badge is hosted — stars sit with the download
+counts because both answer "is anyone using this", and the sandbox buttons sit at
+the bottom so they do not compete with the link to the live app.
+
+| Row | Carries |
+| --- | --- |
+| Row 1 — what this is and where to try it | `doi`, `deepwiki`, `website`, `docs`, `api`, `youtube`, `uptime`, `deploy-cloudflare` |
+| Row 2 — is it used, is it working, is it shipped | `stars`, `npm-downloads`, `npm-version`, `npm-total-downloads`, `npm-types`, `install-size`, `codecov`, `codecov-flag`, `workflow`, `test-report` |
+| Row 3 — is it alive, who is behind it | `contributors`, `forks`, `issues`, `pull-requests`, `prs-merged`, `discussions`, `commit-activity`, `last-commit`, `discord` |
+| Row 4 — run it yourself, and what it is built with | `stackblitz`, `codespaces`, `prs-welcome`, `license`, `stack` |
+
+A row whose badges are all missing or excluded is dropped rather than rendered
+empty, so a repo with nothing published still gets a tidy three-row block.
+
 ## Index
 
 | Badge | Needs | Flag |
@@ -27,16 +44,9 @@ package or finish setting up Codecov.
 | [Documentation](#docs) `docs` | docsUrl | `--docs <url>` |
 | [API reference](#api) `api` | apiUrl | `--api <url>` |
 | [YouTube demo](#youtube) `youtube` | youtubeUrl | `--youtube <url>` |
+| [Uptime](#uptime) `uptime` | uptimeUrl | `--uptime <url>` |
 | [Deploy to Cloudflare Workers](#deploy-cloudflare) `deploy-cloudflare` | cloudflareDeploy | `--cloudflare-deploy` |
-| [Open in StackBlitz](#stackblitz) `stackblitz` | stackblitzUrl | `--stackblitz <url>` |
-| [Open in GitHub Codespaces](#codespaces) `codespaces` | — | on by default |
 | [GitHub stars](#stars) `stars` | — | on by default |
-| [GitHub forks](#forks) `forks` | — | on by default |
-| [Contributors](#contributors) `contributors` | — | on by default |
-| [Open issues](#issues) `issues` | — | on by default |
-| [Open pull requests](#pull-requests) `pull-requests` | — | on by default |
-| [Merged pull requests](#prs-merged) `prs-merged` | — | on by default |
-| [GitHub Discussions](#discussions) `discussions` | — | on by default |
 | [npm monthly downloads](#npm-downloads) `npm-downloads` | npmPackage | `--npm-package <name>` |
 | [npm version](#npm-version) `npm-version` | npmPackage | `--npm-package <name>` |
 | [npm total downloads](#npm-total-downloads) `npm-total-downloads` | npmPackage | `--npm-package <name>` |
@@ -46,15 +56,22 @@ package or finish setting up Codecov.
 | [Coverage for one package](#codecov-flag) `codecov-flag` | codecovFlag | `--codecov-flag <name>` |
 | [CI status](#workflow) `workflow` | workflowFile | `--workflow <file>` |
 | [Hosted test report](#test-report) `test-report` | testReportUrl | `--test-report <url>` |
-| [Uptime](#uptime) `uptime` | uptimeUrl | `--uptime <url>` |
+| [Contributors](#contributors) `contributors` | — | on by default |
+| [GitHub forks](#forks) `forks` | — | on by default |
+| [Open issues](#issues) `issues` | — | on by default |
+| [Open pull requests](#pull-requests) `pull-requests` | — | on by default |
+| [Merged pull requests](#prs-merged) `prs-merged` | — | on by default |
+| [GitHub Discussions](#discussions) `discussions` | — | on by default |
 | [Commit activity](#commit-activity) `commit-activity` | — | on by default |
 | [Last commit](#last-commit) `last-commit` | — | on by default |
 | [Discord](#discord) `discord` | discordId, discordInvite | `--discord-id <id>` `--discord-invite <url>` |
+| [Open in StackBlitz](#stackblitz) `stackblitz` | stackblitzUrl | `--stackblitz <url>` |
+| [Open in GitHub Codespaces](#codespaces) `codespaces` | — | on by default |
 | [PRs welcome](#prs-welcome) `prs-welcome` | — | on by default |
 | [License](#license) `license` | — | on by default |
 | [Tech stack chips](#stack) `stack` | stack | `--stack <A,B,C>` |
 
-## Identity — what this project is
+## Row 1 — what this is and where to try it
 
 ### doi
 
@@ -104,6 +121,14 @@ A demo video does more for a README than three paragraphs. Any YouTube URL works
 
 Enable with: `--youtube <url>`
 
+### uptime
+
+**Uptime**
+
+Create a monitor at uptimerobot.com, then a public status page, and link the status page here. This is a static badge — it says "brightgreen" even while you are down. For a live one use the UptimeRobot shields endpoint with a read-only API key.
+
+Enable with: `--uptime <url>`
+
 ### deploy-cloudflare
 
 **Deploy to Cloudflare Workers**
@@ -112,23 +137,15 @@ The repo must contain a wrangler.toml (or wrangler.jsonc) at the path the button
 
 Enable with: `--cloudflare-deploy`
 
-### stackblitz
+## Row 2 — is it used, is it working, is it shipped
 
-**Open in StackBlitz**
+### stars
 
-Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.
+**GitHub stars**
 
-Enable with: `--stackblitz <url>`
-
-### codespaces
-
-**Open in GitHub Codespaces**
-
-Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor's own free hours, so the button costs you nothing.
+Nothing to configure. Public repos only — shields.io cannot read a private repo.
 
 Included by default — no configuration needed.
-
-## Quality — is it working, is it tested, is it shipped
 
 ### npm-downloads
 
@@ -202,21 +219,13 @@ Backed by `.github/workflows/deploy-test-reports.yml`, which publishes the Vites
 
 Enable with: `--test-report <url>`
 
-### uptime
+## Row 3 — is it alive, who is behind it
 
-**Uptime**
+### contributors
 
-Create a monitor at uptimerobot.com, then a public status page, and link the status page here. This is a static badge — it says "brightgreen" even while you are down. For a live one use the UptimeRobot shields endpoint with a read-only API key.
+**Contributors**
 
-Enable with: `--uptime <url>`
-
-## Community — is it alive, can I join
-
-### stars
-
-**GitHub stars**
-
-Nothing to configure. Public repos only — shields.io cannot read a private repo.
+Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.
 
 Included by default — no configuration needed.
 
@@ -225,14 +234,6 @@ Included by default — no configuration needed.
 **GitHub forks**
 
 Nothing to configure. Counts direct forks only, not forks of forks, so it undercounts a repo that has been forked along a chain. Public repos only.
-
-Included by default — no configuration needed.
-
-### contributors
-
-**Contributors**
-
-Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.
 
 Included by default — no configuration needed.
 
@@ -292,6 +293,24 @@ Two different values: the numeric server id drives the online-member count (Serv
 
 Enable with: `--discord-id <id>` `--discord-invite <url>`
 
+## Row 4 — run it yourself, and what it is built with
+
+### stackblitz
+
+**Open in StackBlitz**
+
+Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.
+
+Enable with: `--stackblitz <url>`
+
+### codespaces
+
+**Open in GitHub Codespaces**
+
+Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor's own free hours, so the button costs you nothing.
+
+Included by default — no configuration needed.
+
 ### prs-welcome
 
 **PRs welcome**
@@ -307,8 +326,6 @@ Included by default — no configuration needed.
 Reads the license GitHub detected, which comes from a recognized LICENSE file at the repo root. A custom or modified license shows as "unknown" no matter what the file says.
 
 Included by default — no configuration needed.
-
-## Stack — what it is built with
 
 ### stack
 

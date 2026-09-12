@@ -27,21 +27,27 @@ broken. The run prints which ones and what each needs.
 
 ## The catalog
 
-Rows, in order. Four rows of five reads; twenty badges in one run is a wall.
+Rows, in order. Four labelled rows read; twenty badges in one run is a wall.
 
 | Row | Badges | Answers |
 | --- | --- | --- |
-| identity | DOI, DeepWiki, live app, Docs, API, YouTube, Cloudflare deploy button, StackBlitz, Codespaces | what is this |
-| quality | npm downloads (monthly + total), npm version, types, install size, Codecov, per-flag Codecov, CI status, test report, uptime | does it work |
-| community | stars, forks, contributors, open issues, open PRs, merged PRs, discussions, commit activity, last commit, Discord, PRs welcome, license | is it alive |
-| stack | tech chips | what is it built with |
+| identity | DOI, DeepWiki, live app, Docs, API, YouTube, uptime, Cloudflare deploy button | what is this, where do I try it |
+| quality | stars, npm downloads (monthly + total), npm version, types, install size, Codecov, per-flag Codecov, CI status, test report | is anyone using it, does it work |
+| community | contributors, forks, open issues, open PRs, merged PRs, discussions, commit activity, last commit, Discord | is it alive, who is behind it |
+| stack | StackBlitz, Codespaces, PRs welcome, license, tech chips | how do I run it, what is it built with |
 
-The community row is the one people under-fill. Stars say a repo was noticed
-once; **open issues, open PRs and merged PRs together** say whether anything is
-moving through it now, and a reader deciding whether to depend on you is asking
-the second question. Two PR counts rather than one on purpose: an open count
-alone reads the same whether the queue clears in a day or has been stuck for a
-year.
+The split is by the question a reader is asking, not by where the badge is
+hosted. That is why **stars sit with the download counts** rather than with the
+PR queue — both answer "is anyone using this", and stars next to the open-issue
+count read as project chatter instead. It is also why the **sandbox buttons sit
+at the bottom**: row one is the click that matters, and "Open in StackBlitz"
+next to the live-app link competes with it for the one decision a visitor makes.
+
+Row three is the one people under-fill. Stars say a repo was noticed once;
+**open issues, open PRs and merged PRs together** say whether anything is moving
+through it now, and a reader deciding whether to depend on you is asking the
+second question. Two PR counts rather than one on purpose: an open count alone
+reads the same whether the queue clears in a day or has been stuck for a year.
 
 ## Which need setup outside the repo
 
@@ -92,9 +98,12 @@ month reads as an abandoned project.
 The root README's block is the repo's. Each package README gets its own four
 rows instead, and the split between rows two and three is the point:
 
-- **row 2 measures the package** — its npm name, its tarball, its Codecov flag.
+- **row 2 measures the package** — its npm name, its tarball, its Codecov flag
+  (plus the repo's stars, the one number a reader takes as popularity wherever
+  it is attached).
   Nothing in it moves because a sibling package got popular.
-- **row 3 measures the repo it ships from** — stars, issues, the PR queue. Those
+- **row 3 measures the repo it ships from** — issues, the PR queue, when it was
+  last touched. Those
   are repo-wide by nature, which is why they sit on their own row instead of
   being mixed into the package numbers.
 

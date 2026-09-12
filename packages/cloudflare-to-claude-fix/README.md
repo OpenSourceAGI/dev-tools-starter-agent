@@ -6,13 +6,13 @@
 <p align="center">
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/cloudflare-to-claude-fix"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dm/cloudflare-to-claude-fix.svg" alt="NPM Monthly Downloads" /></a>
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/v/cloudflare-to-claude-fix.svg" alt="npm version" /></a>
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dt/cloudflare-to-claude-fix.svg" alt="NPM Total Downloads" /></a>
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/types/cloudflare-to-claude-fix" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=cloudflare-to-claude-fix"><img src="https://packagephobia.com/badge?p=cloudflare-to-claude-fix" alt="Install size" /></a>
     <br />
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>

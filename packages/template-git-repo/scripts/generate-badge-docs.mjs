@@ -18,10 +18,10 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const DOCS_PATH = path.join(HERE, '..', 'docs', 'BADGES.md');
 
 const GROUP_TITLES = {
-  identity: 'Identity — what this project is',
-  quality: 'Quality — is it working, is it tested, is it shipped',
-  community: 'Community — is it alive, can I join',
-  stack: 'Stack — what it is built with',
+  identity: 'Row 1 — what this is and where to try it',
+  quality: 'Row 2 — is it used, is it working, is it shipped',
+  community: 'Row 3 — is it alive, who is behind it',
+  stack: 'Row 4 — run it yourself, and what it is built with',
 };
 
 const FLAG_FOR = {
@@ -63,6 +63,23 @@ export function generate() {
     '`<!-- template-git-repo:badges:end -->` in your README. Re-running replaces what is',
     'between the markers and nothing else, so it is safe to run again after you publish a',
     'package or finish setting up Codecov.',
+    '',
+    '## The four rows',
+    '',
+    'The block renders one row per group, in this order. The split is by the question a',
+    'reader is asking, not by where the badge is hosted — stars sit with the download',
+    'counts because both answer "is anyone using this", and the sandbox buttons sit at',
+    'the bottom so they do not compete with the link to the live app.',
+    '',
+    '| Row | Carries |',
+    '| --- | --- |',
+    ...GROUPS.map((group) => {
+      const ids = BADGES.filter((badge) => badge.group === group).map((badge) => `\`${badge.id}\``);
+      return `| ${GROUP_TITLES[group] ?? group} | ${ids.join(', ')} |`;
+    }),
+    '',
+    'A row whose badges are all missing or excluded is dropped rather than rendered',
+    'empty, so a repo with nothing published still gets a tidy three-row block.',
     '',
     '## Index',
     '',

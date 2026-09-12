@@ -11,14 +11,34 @@
  *   setup   what a human has to do outside this repo to make it real, which is
  *           the part every badge README omits. `docs/BADGES.md` is generated
  *           from these strings, so the docs cannot drift from the catalog.
- *   group   which line of the badge block it belongs on. Twenty badges in one
- *           run is a wall; four rows of five reads.
+ *   group   which line of the badge block it belongs on. See `GROUPS` below
+ *           for what each row carries and why the split falls where it does.
  *
  * Adding a badge means adding an entry here — nothing else in the package
  * needs to know about it.
  */
 
-/** Row order in the rendered block. */
+/**
+ * Row order in the rendered block, and what each row is for.
+ *
+ * The split is by the question a reader is asking, not by where the badge is
+ * hosted — which is why stars sits with the download counts rather than with
+ * the PR queue, and why the sandbox buttons sit at the bottom next to the
+ * stack chips instead of competing with the link to the live app.
+ *
+ *   identity   what this is and where to try it — DOI, wiki, app, docs, API,
+ *              demo video, uptime, the one-click deploy button.
+ *   quality    is it used and is it working — stars, npm downloads and version,
+ *              install size, coverage, CI.
+ *   community  is it alive and who is behind it — contributors, forks, issues,
+ *              the PR queue, commit activity, chat.
+ *   stack      run it yourself, and what it is built with — StackBlitz,
+ *              Codespaces, PRs welcome, license, the tech chips.
+ *
+ * Row one earns the click, row two says whether the project is worth the
+ * click, and the rest is for whoever is still reading. Twenty badges in one
+ * run is a wall; four labelled rows reads.
+ */
 export const GROUPS = ['identity', 'quality', 'community', 'stack'];
 
 /** @typedef {Record<string, string | undefined>} BadgeContext */
@@ -109,6 +129,17 @@ export const BADGES = [
     height: '20px',
   },
   {
+    id: 'uptime',
+    title: 'Uptime',
+    group: 'identity',
+    needs: ['uptimeUrl'],
+    alt: 'Uptime Status',
+    href: (c) => c.uptimeUrl,
+    img: () => shieldsBadge('Uptime-Status', 'brightgreen', { logo: 'uptimerobot', logoColor: 'white' }),
+    setup:
+      'Create a monitor at uptimerobot.com, then a public status page, and link the status page here. This is a static badge — it says "brightgreen" even while you are down. For a live one use the UptimeRobot shields endpoint with a read-only API key.',
+  },
+  {
     id: 'deploy-cloudflare',
     title: 'Deploy to Cloudflare Workers',
     group: 'identity',
@@ -121,105 +152,14 @@ export const BADGES = [
     height: '24px',
   },
   {
-    id: 'stackblitz',
-    title: 'Open in StackBlitz',
-    group: 'identity',
-    needs: ['stackblitzUrl'],
-    alt: 'Open in StackBlitz',
-    href: (c) => c.stackblitzUrl,
-    img: () => 'https://developer.stackblitz.com/img/open_in_stackblitz.svg',
-    setup:
-      'Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.',
-    height: '20px',
-  },
-  {
-    id: 'codespaces',
-    title: 'Open in GitHub Codespaces',
-    group: 'identity',
-    needs: [],
-    alt: 'Open in GitHub Codespaces',
-    href: (c) => `https://codespaces.new/${c.repoSlug}`,
-    img: () => 'https://github.com/codespaces/badge.svg',
-    setup:
-      'Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor\'s own free hours, so the button costs you nothing.',
-    height: '20px',
-  },
-  {
     id: 'stars',
     title: 'GitHub stars',
-    group: 'community',
+    group: 'quality',
     needs: [],
     alt: 'GitHub Stars',
     href: (c) => `https://github.com/${c.repoSlug}/stargazers`,
     img: (c) => `https://img.shields.io/github/stars/${c.repoSlug}`,
     setup: 'Nothing to configure. Public repos only — shields.io cannot read a private repo.',
-  },
-  {
-    id: 'forks',
-    title: 'GitHub forks',
-    group: 'community',
-    needs: [],
-    alt: 'GitHub Forks',
-    href: (c) => `https://github.com/${c.repoSlug}/forks`,
-    img: (c) => `https://img.shields.io/github/forks/${c.repoSlug}`,
-    setup:
-      'Nothing to configure. Counts direct forks only, not forks of forks, so it undercounts a repo that has been forked along a chain. Public repos only.',
-  },
-  {
-    id: 'contributors',
-    title: 'Contributors',
-    group: 'community',
-    needs: [],
-    alt: 'Contributors',
-    href: (c) => `https://github.com/${c.repoSlug}/graphs/contributors`,
-    img: (c) => `https://img.shields.io/github/contributors/${c.repoSlug}`,
-    setup:
-      'Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.',
-  },
-  {
-    id: 'issues',
-    title: 'Open issues',
-    group: 'community',
-    needs: [],
-    alt: 'GitHub Issues',
-    href: (c) => `https://github.com/${c.repoSlug}/issues`,
-    img: (c) => `https://img.shields.io/github/issues/${c.repoSlug}?logo=github`,
-    setup:
-      'Nothing to configure beyond having Issues enabled (Settings → Features). Read it as a work-in-flight number, not a defect count: shields.io asks GitHub Search, which counts pull requests as issues unless the badge path excludes them — this one uses the `/issues/` path, which already does.',
-  },
-  {
-    id: 'pull-requests',
-    title: 'Open pull requests',
-    group: 'community',
-    needs: [],
-    alt: 'Open Pull Requests',
-    href: (c) => `https://github.com/${c.repoSlug}/pulls`,
-    img: (c) => `https://img.shields.io/github/issues-pr/${c.repoSlug}?logo=github&label=PRs`,
-    setup:
-      'Nothing to configure. Counts open PRs including drafts. Pair it with the merged count below — an open count alone reads the same whether the queue moves in a day or has been stuck for a year.',
-  },
-  {
-    id: 'prs-merged',
-    title: 'Merged pull requests',
-    group: 'community',
-    needs: [],
-    alt: 'Merged Pull Requests',
-    href: (c) => `https://github.com/${c.repoSlug}/pulls?q=is%3Apr+is%3Aclosed`,
-    img: (c) =>
-      `https://img.shields.io/github/issues-pr-closed/${c.repoSlug}?logo=github&label=PRs%20merged&color=8957e5`,
-    setup:
-      'Nothing to configure. shields.io has no "merged" endpoint — `issues-pr-closed` counts every PR that is no longer open, so PRs closed without merging are in this number too. On a repo that closes a lot of stale PRs, label it "PRs closed" instead of overstating what landed.',
-  },
-  {
-    id: 'discussions',
-    title: 'GitHub Discussions',
-    group: 'community',
-    needs: [],
-    alt: 'GitHub Discussions',
-    href: (c) => `https://github.com/${c.repoSlug}/discussions`,
-    img: (c) => `https://img.shields.io/github/discussions/${c.repoSlug}`,
-    setup:
-      'Discussions has to be turned on (Settings → Features → Discussions) or the badge reads "repo not found" — which looks identical to a private repo. Turn it on before adding the badge, not after.',
   },
   {
     id: 'npm-downloads',
@@ -324,15 +264,71 @@ export const BADGES = [
       'Backed by `.github/workflows/deploy-test-reports.yml`, which publishes the Vitest HTML reporter output to Cloudflare Workers on every push to the default branch. Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets.',
   },
   {
-    id: 'uptime',
-    title: 'Uptime',
-    group: 'quality',
-    needs: ['uptimeUrl'],
-    alt: 'Uptime Status',
-    href: (c) => c.uptimeUrl,
-    img: () => shieldsBadge('Uptime-Status', 'brightgreen', { logo: 'uptimerobot', logoColor: 'white' }),
+    id: 'contributors',
+    title: 'Contributors',
+    group: 'community',
+    needs: [],
+    alt: 'Contributors',
+    href: (c) => `https://github.com/${c.repoSlug}/graphs/contributors`,
+    img: (c) => `https://img.shields.io/github/contributors/${c.repoSlug}`,
     setup:
-      'Create a monitor at uptimerobot.com, then a public status page, and link the status page here. This is a static badge — it says "brightgreen" even while you are down. For a live one use the UptimeRobot shields endpoint with a read-only API key.',
+      'Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.',
+  },
+  {
+    id: 'forks',
+    title: 'GitHub forks',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Forks',
+    href: (c) => `https://github.com/${c.repoSlug}/forks`,
+    img: (c) => `https://img.shields.io/github/forks/${c.repoSlug}`,
+    setup:
+      'Nothing to configure. Counts direct forks only, not forks of forks, so it undercounts a repo that has been forked along a chain. Public repos only.',
+  },
+  {
+    id: 'issues',
+    title: 'Open issues',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Issues',
+    href: (c) => `https://github.com/${c.repoSlug}/issues`,
+    img: (c) => `https://img.shields.io/github/issues/${c.repoSlug}?logo=github`,
+    setup:
+      'Nothing to configure beyond having Issues enabled (Settings → Features). Read it as a work-in-flight number, not a defect count: shields.io asks GitHub Search, which counts pull requests as issues unless the badge path excludes them — this one uses the `/issues/` path, which already does.',
+  },
+  {
+    id: 'pull-requests',
+    title: 'Open pull requests',
+    group: 'community',
+    needs: [],
+    alt: 'Open Pull Requests',
+    href: (c) => `https://github.com/${c.repoSlug}/pulls`,
+    img: (c) => `https://img.shields.io/github/issues-pr/${c.repoSlug}?logo=github&label=PRs`,
+    setup:
+      'Nothing to configure. Counts open PRs including drafts. Pair it with the merged count below — an open count alone reads the same whether the queue moves in a day or has been stuck for a year.',
+  },
+  {
+    id: 'prs-merged',
+    title: 'Merged pull requests',
+    group: 'community',
+    needs: [],
+    alt: 'Merged Pull Requests',
+    href: (c) => `https://github.com/${c.repoSlug}/pulls?q=is%3Apr+is%3Aclosed`,
+    img: (c) =>
+      `https://img.shields.io/github/issues-pr-closed/${c.repoSlug}?logo=github&label=PRs%20merged&color=8957e5`,
+    setup:
+      'Nothing to configure. shields.io has no "merged" endpoint — `issues-pr-closed` counts every PR that is no longer open, so PRs closed without merging are in this number too. On a repo that closes a lot of stale PRs, label it "PRs closed" instead of overstating what landed.',
+  },
+  {
+    id: 'discussions',
+    title: 'GitHub Discussions',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Discussions',
+    href: (c) => `https://github.com/${c.repoSlug}/discussions`,
+    img: (c) => `https://img.shields.io/github/discussions/${c.repoSlug}`,
+    setup:
+      'Discussions has to be turned on (Settings → Features → Discussions) or the badge reads "repo not found" — which looks identical to a private repo. Turn it on before adding the badge, not after.',
   },
   {
     id: 'commit-activity',
@@ -367,9 +363,33 @@ export const BADGES = [
       'Two different values: the numeric server id drives the online-member count (Server Settings → Widget → Enable Server Widget, then copy the Server ID), and the invite link is where the badge points. Without the widget enabled the badge reads "invite" instead of a count.',
   },
   {
+    id: 'stackblitz',
+    title: 'Open in StackBlitz',
+    group: 'stack',
+    needs: ['stackblitzUrl'],
+    alt: 'Open in StackBlitz',
+    href: (c) => c.stackblitzUrl,
+    img: () => 'https://developer.stackblitz.com/img/open_in_stackblitz.svg',
+    setup:
+      'Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.',
+    height: '20px',
+  },
+  {
+    id: 'codespaces',
+    title: 'Open in GitHub Codespaces',
+    group: 'stack',
+    needs: [],
+    alt: 'Open in GitHub Codespaces',
+    href: (c) => `https://codespaces.new/${c.repoSlug}`,
+    img: () => 'https://github.com/codespaces/badge.svg',
+    setup:
+      'Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor\'s own free hours, so the button costs you nothing.',
+    height: '20px',
+  },
+  {
     id: 'prs-welcome',
     title: 'PRs welcome',
-    group: 'community',
+    group: 'stack',
     needs: [],
     alt: 'PRs Welcome',
     href: () =>
@@ -380,7 +400,7 @@ export const BADGES = [
   {
     id: 'license',
     title: 'License',
-    group: 'community',
+    group: 'stack',
     needs: [],
     alt: 'License',
     href: (c) => `https://github.com/${c.repoSlug}/blob/${c.defaultBranch}/LICENSE.md`,
