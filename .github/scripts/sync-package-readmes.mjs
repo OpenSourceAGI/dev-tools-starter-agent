@@ -67,39 +67,42 @@ const SECTIONS = [
 /**
  * The badges this block carries, and the only ones it rewrites.
  *
- * Read as four rows, and the split between the second and third is the point:
+ * Rows and order come from the catalog in `template-git-repo`, not from this
+ * list — listing an id here only says the badge belongs on a package header.
+ * The split between the second and third row is the point:
  *
- *   row 2 (quality)   measures *this package* — its own npm name, its own
- *                     tarball, its own Codecov flag. Nothing here is affected
- *                     by the sixteen packages next to it.
- *   row 3 (community) measures *the repository* this package ships from —
- *                     stars, open issues, the PR queue. Those are repo-wide by
- *                     nature, which is exactly why they are on a separate row
- *                     and labelled rather than mixed into the package numbers.
+ *   row 2   is anyone using this, and does it work. Mostly *this package* —
+ *           its own npm name, its own tarball, its own Codecov flag — plus the
+ *           repo's stars, which is the one number a reader reads as popularity
+ *           whatever it is attached to.
+ *   row 3   measures *the repository* this package ships from — open issues,
+ *           the PR queue, when it was last touched. Those are repo-wide by
+ *           nature, which is why they sit apart from the package numbers
+ *           rather than mixed in among them.
  *
  * Neither row can stand for the other: a package with no downloads in a busy
  * repo and a popular package in a quiet one are different situations, and the
  * two rows together are what tells them apart.
  */
 const PACKAGE_BADGES = [
-  // identity
+  // row 1 — where to read about it
   'docs',
-  'stackblitz',
-  // quality — this package
+  // row 2 — this package: its downloads, its size, its coverage
   'npm-version',
   'npm-downloads',
   'npm-total-downloads',
   'npm-types',
   'install-size',
   'codecov-flag',
-  // community — the repo it ships from
   'stars',
+  // row 3 — the repo it ships from
   'issues',
   'pull-requests',
   'prs-merged',
   'discussions',
   'last-commit',
-  // stack — read off this package's own manifest
+  // row 4 — run it, and what it is built with
+  'stackblitz',
   'stack',
 ]
 

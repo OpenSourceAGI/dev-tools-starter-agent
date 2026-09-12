@@ -8,6 +8,16 @@ icon: Code
 
 <div align="center">
     <a href="https://starterdocs.vtempest.workers.dev/docs/apps/vscode-cloud"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Cloudflare%20Workers-F38020?logo=cloudflareworkers&logoColor=white" alt="Cloudflare Workers" />
 </div>
 
 Per-user [code-server](https://github.com/coder/code-server) instances on Cloudflare Containers — one isolated VS Code environment per authenticated user, with workspace files persisted to R2, GitHub repos auto-cloned on first boot, a team management dashboard, and WakaTime time tracking pre-installed.
@@ -362,26 +372,31 @@ Extension failures during image build are non-fatal — the IDE still launches.
 
 ### Environment variables (`wrangler.jsonc` vars)
 
-| Variable | Default | Description |
-|---|---|---|
-| `SLEEP_AFTER` | `"30m"` | Container idle timeout. `"30s"`, `"1h"`, etc. Max 24h |
-| `TEAM_DOMAIN` | `""` | Auth A — CF Access team URL |
-| `POLICY_AUD` | `""` | Auth A — CF Access AUD tag |
-| `GOOGLE_CLIENT_ID` | `""` | Auth B — Google OAuth client ID |
-| `ADMIN_EMAILS` | `""` | Comma-separated emails with platform-wide `/admin` access |
-| `WAKATIME_API_KEY` | `""` | Auto-configure WakaTime in every container |
-| `R2_BUCKET_NAME` | `"vscode-cloud-workspaces"` | R2 bucket name |
-| `GITHUB_REPOS` | `""` | Comma-separated `owner/repo` list to auto-clone |
+Non-secret values, edited in [`wrangler.jsonc`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/vscode-cloud/wrangler.jsonc) → `vars` and
+shipped with the next `wrangler deploy`. `keep_vars: true` stops Wrangler from
+deleting variables you added in the dashboard.
+
+| Variable | Default | Enables | Where to get it |
+|---|---|---|---|
+| `SLEEP_AFTER` | `"2m"` | Container idle timeout before hibernation. `"30s"`, `"5m"`, `"1h"`; max ~24h. | Your own choice — it trades cold starts against cost. |
+| `TEAM_DOMAIN` | `""` | Auth A — validates Cloudflare Access JWTs. | [Cloudflare One](https://one.dash.cloudflare.com) → Settings → Custom Pages; it is `https://<your-team-name>.cloudflareaccess.com`. |
+| `POLICY_AUD` | `""` | Auth A — the audience the JWT must carry. | Cloudflare One → Access → Applications → your app → **AUD tag**. |
+| `GOOGLE_CLIENT_ID` | `""` | Auth B — Google OAuth sign-in. | [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials) → OAuth client ID (Web application). Redirect URI: `https://<your-worker>.workers.dev/auth/callback`. |
+| `ADMIN_EMAILS` | `""` | Comma-separated addresses with platform-wide `/admin` access. | Your own addresses. |
+| `WAKATIME_API_KEY` | `""` | Writes `~/.wakatime.cfg` in every container so users skip setup. | [wakatime.com/settings/account](https://wakatime.com/settings/account), or a team API key. |
+| `R2_BUCKET_NAME` | `"vscode-cloud-workspaces"` | Which bucket workspaces persist to. | The name you passed to `wrangler r2 bucket create`. |
+| `GITHUB_REPOS` | `""` | Comma-separated `owner/repo` list auto-cloned into `/workspace` on start. | Your own repositories. |
 
 ### Secrets (`wrangler secret put`)
 
-| Secret | Description |
-|---|---|
-| `R2_ACCESS_KEY_ID` | R2 API token key |
-| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
-| `R2_ACCOUNT_ID` | Cloudflare account ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret (auth option B) |
-| `GITHUB_TOKEN` | GitHub PAT with `repo` scope (private repos only) |
+Never put these in `wrangler.jsonc` — it is committed.
+
+| Secret | Enables | Where to get it |
+|---|---|---|
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | The FUSE mount inside the container, over R2's S3-compatible endpoint. | [Cloudflare dashboard](https://dash.cloudflare.com) → R2 → **Manage R2 API Tokens** → Create token with *Object Read & Write* on the bucket. |
+| `R2_ACCOUNT_ID` | The S3 endpoint host for that account. | Cloudflare dashboard → any zone → Account ID in the right-hand sidebar, or `wrangler whoami`. |
+| `GOOGLE_CLIENT_SECRET` | Auth option B, alongside `GOOGLE_CLIENT_ID`. | The same [Google Cloud Console credential](https://console.cloud.google.com/apis/credentials) that issued the client ID. |
+| `GITHUB_TOKEN` | Cloning private repos listed in `GITHUB_REPOS`. | [github.com/settings/tokens](https://github.com/settings/tokens) — a PAT with the `repo` scope. |
 
 ### Cloudflare resources
 

@@ -149,17 +149,44 @@ describe('renderBadgeBlock', () => {
   });
 
   it('renders one row per group, in GROUPS order', () => {
-    // Four rows is the shape the block is designed around: what it is, whether
-    // it works, whether it is alive, what it is built with. A fifth row would
-    // mean a badge landed in a group nobody named.
+    // Four rows is the shape the block is designed around: what it is and where
+    // to try it, whether anyone uses it and whether it works, whether it is
+    // alive, and how to run it yourself. A fifth row would mean a badge landed
+    // in a group nobody named.
     const { markdown } = renderBadgeBlock({ ...context, stack: 'Bun' });
     const rows = markdown.split('<br />');
 
     expect(rows).toHaveLength(GROUPS.length);
     expect(rows[0]).toContain('deepwiki');
     expect(rows[1]).toContain('npm/v');
-    expect(rows[2]).toContain('github/stars');
+    expect(rows[2]).toContain('issues-pr');
     expect(rows[3]).toContain('alt="Bun"');
+  });
+
+  it('puts stars with the download counts, not with the PR queue', () => {
+    // Both answer the same question — is anyone using this — so they read as
+    // one row. Stars next to the open-issue count reads as project chatter.
+    const { markdown } = renderBadgeBlock({ ...context, stack: 'Bun' });
+    const rows = markdown.split('<br />');
+
+    expect(rows[1]).toContain('github/stars');
+    expect(rows[2]).not.toContain('github/stars');
+  });
+
+  it('keeps the sandbox buttons off the row that links to the live app', () => {
+    // Row one is the click that matters. "Open in StackBlitz" next to it
+    // competes with the app link for the one decision a visitor makes.
+    const { markdown } = renderBadgeBlock({
+      ...context,
+      websiteUrl: 'https://example.com',
+      stackblitzUrl: 'https://stackblitz.com/github/acme/widget',
+      stack: 'Bun',
+    });
+    const rows = markdown.split('<br />');
+
+    expect(rows[0]).toContain('alt="Website"');
+    expect(rows[0]).not.toContain('stackblitz');
+    expect(rows[3]).toContain('stackblitz');
   });
 
   it('never emits an undefined url', () => {

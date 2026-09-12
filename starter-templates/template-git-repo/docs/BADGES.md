@@ -334,9 +334,26 @@ markdown image syntax cannot center or set a height. Consequences:
 - GitHub's markdown renderer strips `style` attributes. Sizing has to come from
   the `height` attribute or from Shields' own `style=` parameter.
 
-Group by meaning, four rows: identity and links on row one, health and freshness
-on row two, community on row three, stack chips last. Four rows of five reads;
-twenty badges in one run is a wall.
+Group by the question a reader is asking, four rows:
+
+1. **What this is and where to try it** — DOI, wiki, live app, docs, API, demo
+   video, uptime, the one-click deploy button.
+2. **Is anyone using it and does it work** — stars, npm downloads and version,
+   install size, coverage, CI.
+3. **Is it alive and who is behind it** — contributors, forks, issues, the PR
+   queue, commit activity, chat.
+4. **Run it yourself, and what it is built with** — Codespaces, StackBlitz, PRs
+   welcome, license, stack chips.
+
+Row one earns the click, row two says whether the project is worth the click,
+and the rest is for whoever is still reading. Four labelled rows read; twenty
+badges in one run is a wall.
+
+Two placements that look wrong and are not. Stars belong on row two with the
+download counts — both answer "is anyone using this", while stars next to the
+open-issue count read as project chatter. And the sandbox buttons belong at the
+bottom rather than beside the live-app link, which is the one click row one is
+there to earn.
 
 ## Verifying
 
