@@ -42,7 +42,7 @@ wrangler secret put API_KEY
 | Just a VoIP check | `import { isPhoneNumberVoip } from "verify-phone-sms"` |
 | A hosted endpoint | `POST /api/send` with `X-API-Key` |
 | Any non-verification SMS | `POST /api/sms` with `message` |
-| Interactive docs | `GET /docs` (Swagger UI); `GET /` and `GET /health` are unauthenticated health checks |
+| Interactive docs | `GET /docs` (Swagger UI) over `GET /openapi.json` (the spec); both, plus `GET /` and `GET /health`, are unauthenticated |
 
 Note `verifyPhone` requires **both** `phoneNumber` and `code` — it sends the code you give it, it does not generate one. The `/api/send` endpoint generates one for you when the body omits it.
 
@@ -57,7 +57,7 @@ Note `verifyPhone` requires **both** `phoneNumber` and `code` — it sends the c
 
 **Message text** — `messageTemplate: "Your code is: {code}"`; `smsType: "Transactional"` (default) gets delivery priority over `"Promotional"`.
 
-**Auth middleware** — applied to `/api/*` only; the rate limiter (15-minute window, 100 requests per IP, keyed off `CF-Connecting-IP`) runs on every route.
+**Auth middleware** — applied to `/api/*` only, and registered *above* those routes: Hono runs middleware only for handlers defined after it, so moving the `app.use("/api/*", …)` line below them disables the check without any error. The rate limiter (15-minute window, 100 requests per IP, keyed off `CF-Connecting-IP`) runs on every route.
 
 ## Troubleshooting
 
@@ -70,6 +70,8 @@ Note `verifyPhone` requires **both** `phoneNumber` and `code` — it sends the c
 | Sender ID ignored | Many countries (including the US) override or forbid alphanumeric sender ids. Max 11 alphanumeric characters where it is supported. |
 | Legitimate mobile numbers blocked as VoIP | Heuristic detection flags toll-free and pattern-y numbers. Switch to `voipDetectionMethod: "api"`, or `metadataType: "full"`, or turn `blockVoip` off. |
 | `429` from your own API | The built-in limiter: 100 requests per IP per 15 minutes, before any AWS call. |
+| `/openapi.json` returns 500 with "Unknown zod object type" | `@hono/zod-openapi` and Zod majors disagree. The package is on Zod 4 and needs `@hono/zod-openapi` v1+; the v0.19 line bundles a Zod 3-only `zod-to-openapi`. |
+| `/api/*` answers without an API key | The auth middleware is registered after the routes. Move `app.use("/api/*", authenticateApiKey)` above them. |
 | Works in `wrangler dev`, fails deployed | `.env` is dev-only; deployed Workers read Wrangler secrets. Set all four values per environment. |
 | AWS `SignatureDoesNotMatch` / `InvalidClientTokenId` | Wrong key pair, or a region mismatch between the credentials and `AWS_REGION`. |
 | Codes are logged in responses | `/api/send` echoes the generated code in its response — useful in development, a leak in production. Strip it before exposing the endpoint publicly. |

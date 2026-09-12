@@ -1,6 +1,6 @@
 {
   "name": "verify-phone-sms",
-  "version": "0.9.72",
+  "version": "0.9.77",
   "description": "SMS Phone Verification API using AWS SNS HTTP API with Hono server on Cloudflare Workers",
   "main": "src/verify-phone.ts",
   "type": "module",
@@ -31,7 +31,8 @@
     "test": "vitest run",
     "test:run": "vitest run",
     "test:ui": "vitest --ui",
-    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=junit.xml"
+    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=junit.xml --coverage --coverage.reporter=lcov --coverage.reporter=text",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [
     "sms",
@@ -49,7 +50,7 @@
   "license": "MIT",
   "dependencies": {
     "@hono/swagger-ui": "^0.5.2",
-    "@hono/zod-openapi": "^0.19.9",
+    "@hono/zod-openapi": "^1.6.3",
     "grab-api.js": "^0.9.131",
     "hono": "^4.0.0",
     "hono-rate-limiter": "^0.2.2",

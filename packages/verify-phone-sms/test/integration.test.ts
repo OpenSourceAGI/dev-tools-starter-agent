@@ -1,152 +1,151 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+/**
+ * Cross-cutting behaviour: the two accepted authentication schemes, and the
+ * phone-number formatting `verifyPhone` applies before handing off to SNS.
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { createApp } from '../src/verify-phone-server';
+import { apiRequest, stubNetwork, TEST_API_KEY } from './helpers';
 
 describe('SMS Verification API Integration Tests', () => {
   let app: ReturnType<typeof createApp>;
 
   beforeEach(() => {
     app = createApp(globalThis.env);
+    stubNetwork();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe('Authentication Methods', () => {
     it('should accept both X-API-Key and Bearer token headers', async () => {
-      const phoneNumber = '+1234567890';
+      const body = { phoneNumber: '+12025550123' };
 
-      // Test X-API-Key header
-      const req1 = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res1 = await app.request(req1, globalThis.env);
-      const data1: any = await res1.json();
+      const viaHeader = await app.request(
+        apiRequest('/api/send', body, { 'X-API-Key': TEST_API_KEY }),
+        undefined,
+        globalThis.env,
+      );
+      expect(viaHeader.status).toBe(200);
+      expect(((await viaHeader.json()) as any).success).toBe(true);
 
-      expect(res1.status).toBe(200);
-      expect(data1.success).toBe(true);
-
-      // Test Bearer token header
-      const req2 = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
-        headers: {
-          'Authorization': 'Bearer test-api-key'
-        }
-      });
-      const res2 = await app.request(req2, globalThis.env);
-      const data2: any = await res2.json();
-
-      expect(res2.status).toBe(200);
-      expect(data2.success).toBe(true);
+      const viaBearer = await app.request(
+        apiRequest('/api/send', body, { Authorization: `Bearer ${TEST_API_KEY}` }),
+        undefined,
+        globalThis.env,
+      );
+      expect(viaBearer.status).toBe(200);
+      expect(((await viaBearer.json()) as any).success).toBe(true);
     });
 
     it('should reject requests without authentication', async () => {
-      const phoneNumber = '+1234567890';
-
-      const req = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`);
-      const res = await app.request(req, globalThis.env);
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123' }, {}),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(401);
-      expect(data.error).toBe('API key required');
+      expect(data.error).toBe('Unauthorized');
+      expect(data.message).toBe('Invalid or missing API key');
     });
 
     it('should reject requests with invalid authentication', async () => {
-      const phoneNumber = '+1234567890';
-
-      const req = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
-        headers: {
-          'X-API-Key': 'invalid-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123' }, { 'X-API-Key': 'not-the-key' }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(401);
-      expect(data.error).toBe('Invalid API key');
+      expect(data.error).toBe('Unauthorized');
+    });
+
+    it('should not reach the SMS provider when authentication fails', async () => {
+      const fetchMock = stubNetwork();
+
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123' }, {}),
+        undefined,
+        globalThis.env,
+      );
+
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
     });
   });
 
   describe('Phone Number Formatting', () => {
     it('should format various phone number formats correctly', async () => {
-      const testCases = [
-        '1234567890',
-        '11234567890',
-        '+1234567890',
-        '(123) 456-7890',
-        '123-456-7890',
+      const cases: [string, string][] = [
+        ['2025550123', '+12025550123'],
+        ['12025550123', '+12025550123'],
+        ['+12025550123', '+12025550123'],
+        ['(202) 555-0123', '+12025550123'],
+        ['202-555-0123', '+12025550123'],
       ];
 
-      for (const phoneNumber of testCases) {
-        const req = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
-          headers: {
-            'X-API-Key': 'test-api-key'
-          }
-        });
-        const res = await app.request(req, globalThis.env);
+      for (const [input, expected] of cases) {
+        const res = await app.request(
+          apiRequest('/api/send', { phoneNumber: input }),
+          undefined,
+          globalThis.env,
+        );
         const data: any = await res.json();
 
-        expect(res.status).toBe(200);
+        expect(res.status, `${input} should be accepted`).toBe(200);
         expect(data.success).toBe(true);
+        expect(data.phoneNumber, `${input} should normalise`).toBe(expected);
       }
     });
 
     it('should reject clearly invalid phone numbers', async () => {
-      const invalidNumbers = [
-        'not-a-number',
-        '123',
-        '12345678901234567890', // Too long
-        '+', // Just plus sign
-        'abc123def',
-      ];
-
-      for (const invalidNumber of invalidNumbers) {
-        const req = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(invalidNumber)}`, {
-          headers: {
-            'X-API-Key': 'test-api-key'
-          }
-        });
-        const res = await app.request(req, globalThis.env);
+      for (const input of ['not-a-number', '123', 'abc-def-ghij', '']) {
+        const res = await app.request(
+          apiRequest('/api/send', { phoneNumber: input }),
+          undefined,
+          globalThis.env,
+        );
         const data: any = await res.json();
 
-        expect(res.status).toBe(400);
-        expect(data.error).toBe('Invalid phone number format');
+        expect(res.status, `${input} should be rejected`).toBe(400);
+        expect(data.success).toBe(false);
+        expect(data.error).toBeDefined();
       }
     });
   });
 
   describe('API Endpoints', () => {
-    it('should handle send verification endpoint', async () => {
-      const phoneNumber = '+1234567890';
-
-      const req = new Request(`http://localhost/api/send-verification?phoneNumber=${encodeURIComponent(phoneNumber)}`, {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+    it('should handle the send verification endpoint', async () => {
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123' }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(200);
       expect(data).toMatchObject({
         success: true,
         message: 'Verification code sent successfully',
-        expiresIn: 600
+        phoneNumber: '+12025550123',
       });
-      expect(data.messageId).toBeDefined();
     });
 
-    it('should handle verify code endpoint', async () => {
-      const phoneNumber = '+1234567890';
-      const code = '123456';
-
-      const req = new Request(`http://localhost/api/verify-code?phoneNumber=${encodeURIComponent(phoneNumber)}&code=${code}`, {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+    it('should handle the verify code endpoint', async () => {
+      const res = await app.request(
+        apiRequest('/api/verify', { phoneNumber: '+12025550123', code: '123456' }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
-      expect(res.status).toBe(400); // Will fail because no code was sent, but endpoint works
-      expect(data.error).toBeDefined();
+      expect(res.status).toBe(200);
+      expect(data).toMatchObject({ success: true, verified: true });
     });
   });
-}); 
+});

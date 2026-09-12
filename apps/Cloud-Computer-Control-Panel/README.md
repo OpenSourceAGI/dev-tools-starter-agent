@@ -62,7 +62,7 @@ starter template, which supplies the auth, database and theming layers.
 
 ## Prerequisites
 
-- Node.js 18+ and npm/yarn/pnpm
+- [Bun](https://bun.sh) 1.3+ — the monorepo pins `bun@1.3.11`; do not use npm or yarn
 - AWS Account with IAM credentials (Access Key ID + Secret Access Key)
 - Required AWS IAM permissions for EC2 operations:
   - `ec2:DescribeInstances`
@@ -83,59 +83,102 @@ Follow these guides to create programmatic access credentials:
 
 ## Getting Started
 
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/aws-manager.git
-cd aws-manager
-```
-
-2. Install dependencies:
+This app is a workspace in the [dev-tools-starter-agent](../../) monorepo, which
+installs with **Bun** — not npm or yarn.
 
 ```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
+git clone https://github.com/OpenSourceAGI/dev-tools-starter-agent.git
+cd dev-tools-starter-agent
+bun install                                    # from the repo root
 
-3. Configure the environment:
-
-```bash
+cd apps/Cloud-Computer-Control-Panel
 cp .env.example .env
-# BETTER_AUTH_SECRET is required — it signs sessions and, unless you set
-# CREDENTIALS_ENCRYPTION_KEY separately, encrypts stored AWS secret keys.
-openssl rand -base64 32
+openssl rand -base64 32                        # paste into BETTER_AUTH_SECRET
+bun run db:push                                # applies lib/db/schema.ts
+bun run dev                                    # http://localhost:3000
 ```
 
-4. Create the database schema:
+`BETTER_AUTH_SECRET` is the only variable you must set. With `DATABASE_URL`
+unset the app writes a local SQLite file at `./data/cccp.db`, so nothing else
+is needed to sign in and start managing instances — AWS keys are entered in
+the UI, not in `.env`.
+
+Then, in the browser:
+
+1. Click **Sign in** and create an account with an email and password.
+2. In the dashboard, enter your AWS Access Key ID and Secret Access Key.
+3. CCCP verifies them against AWS, encrypts the secret, and stores it against
+   your account.
+
+## Environment variables
+
+Values are read in [`env.ts`](./env.ts) and `lib/`. Put them in
+`apps/Cloud-Computer-Control-Panel/.env` locally, and in your host's
+environment-variable settings in production. Only `BETTER_AUTH_SECRET` is
+required; each of the others turns on one more feature.
+
+### App identity
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `NEXT_PUBLIC_APP_NAME` | The name shown in the header and page titles. | Your own value; defaults to `CCCP`. |
+| `NEXT_PUBLIC_APP_URL` | Absolute URLs, and the OAuth callback origin. | Your own origin — `http://localhost:3000` in development. |
+| `NEXT_PUBLIC_APP_EMAIL`, `NEXT_PUBLIC_APP_DESCRIPTION` | Contact address and meta description. | Your own values. |
+
+### Database — libSQL / Turso
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `DATABASE_URL` (alias `TURSO_DATABASE_URL`) | A hosted database instead of the local file. Leave empty for `./data/cccp.db`. | Run `npm create cloud-db`, or create a database at [turso.tech](https://turso.tech) and copy its libSQL URL. |
+| `DATABASE_AUTH_TOKEN` (alias `TURSO_AUTH_TOKEN`) | Authenticating to that database. | Turso dashboard → your database → **Create Token**, or `turso db tokens create <name>`. |
+
+### Auth
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `BETTER_AUTH_SECRET` | **Required.** Signs sessions, and — unless `CREDENTIALS_ENCRYPTION_KEY` is set — encrypts stored AWS secret keys. | Generate one: `openssl rand -base64 32`. See [better-auth installation](https://www.better-auth.com/docs/installation). |
+| `CREDENTIALS_ENCRYPTION_KEY` | A separate key for credential encryption at rest, so session-secret rotation does not invalidate stored AWS keys. | Generate one: `openssl rand -base64 32`. Rotating it makes already-stored secret keys unreadable — users must re-enter them. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | "Sign in with Google". | [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials) → OAuth client ID (Web application). Authorized redirect URI: `<APP_URL>/api/auth/callback/google`. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | The same client ID, for the browser. | Same value as `GOOGLE_CLIENT_ID`. |
+| `RESEND_API_KEY` (alias `AUTH_RESEND_KEY`) | Magic-link sign-in. Without it, only password and OAuth sign-in work. | [resend.com/api-keys](https://resend.com/api-keys) |
+| `AUTH_TRUSTED_ORIGINS` | Extra comma-separated origins allowed to call the auth endpoints — needed when the VS Code extension webview signs in against a deployed instance. | Your own origins. |
+
+### AWS fallback credentials
+
+Optional, and only for single-tenant installs. A user's own saved credentials
+always take priority over these; see
+[How credentials are stored](#how-credentials-are-stored).
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Server-side fallback credentials when the signed-in user has stored none. | [AWS IAM console](https://console.aws.amazon.com/iam/home#/users) → your user → Security credentials → Create access key. The permissions needed are listed under [Prerequisites](#prerequisites). |
+| `AWS_REGION` | The default region. Defaults to `us-east-1`. | Any [AWS region code](https://docs.aws.amazon.com/general/latest/gr/rande.html). |
+
+## Deploying
+
+The app is a stock Next.js 16 build with a Node server runtime — the AWS SDK,
+`ssh2` and `node-forge` are marked external in
+[`next.config.mjs`](./next.config.mjs), so it needs Node, not an edge runtime.
 
 ```bash
-npm run db:push       # applies lib/db/schema.ts to DATABASE_URL
-npm run db:studio     # optional: browse the data
+bun run build
+bun run start        # serves the production build on :3000
 ```
 
-With `DATABASE_URL` unset, the app uses a local SQLite file at `./data/cccp.db`.
-For a hosted database, run `npm create cloud-db` (or point `DATABASE_URL` /
-`DATABASE_AUTH_TOKEN` at a Turso database).
+To deploy from this monorepo, point your host at the repository root, set the
+root directory to `apps/Cloud-Computer-Control-Panel`, and use `bun install` as
+the install command. Then:
 
-5. Run the development server:
-
-```bash
-npm run dev
-```
-
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-### Configuration
-
-1. Click **Sign in** and create an account with an email and password
-   (or configure `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` for Google sign-in)
-2. In the dashboard, enter your AWS Access Key ID and Secret Access Key
-3. CCCP verifies them against AWS, encrypts the secret, and stores it against your account
+1. Provision a hosted database and set `DATABASE_URL` / `DATABASE_AUTH_TOKEN` —
+   the default local SQLite file does not survive a container restart.
+2. Run `bun run db:push` once against it to create the schema.
+3. Set `BETTER_AUTH_SECRET` and `CREDENTIALS_ENCRYPTION_KEY` as secrets, and
+   keep them stable across deploys: rotating either signs everyone out, and
+   rotating the second one orphans every stored AWS credential.
+4. Set `NEXT_PUBLIC_APP_URL` to the deployed origin, and add that origin to the
+   Google OAuth client's authorized redirect URIs if you use Google sign-in.
+5. Add `AUTH_TRUSTED_ORIGINS` if the VS Code extension will sign in against
+   this instance.
 
 ### How credentials are stored
 

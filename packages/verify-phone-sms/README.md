@@ -252,7 +252,9 @@ X-API-Key: your_api_key
 
 ## API Documentation
 
-Visit `/docs` to see the interactive OpenAPI documentation.
+Visit `/docs` for the interactive Swagger UI, or `/openapi.json` for the
+OpenAPI 3.0 spec it renders. Both, along with `/` and `/health`, are
+unauthenticated.
 
 ## Authentication
 
