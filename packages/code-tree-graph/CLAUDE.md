@@ -16,11 +16,12 @@ Keep it that way: the selling point is that a docs build does not phone home.
 
 ## The coupling to watch
 
-`apps/docs` renders these components. A change to a component's props or output
-shape surfaces in the **docs build**, not in this package's tests. After
-changing public props, build the docs site before assuming you're done.
+`apps/dev-tools-help-docs` renders these components. A change to a component's
+props or output shape surfaces in the **docs build**, not in this package's
+tests. After changing public props, build the docs site before assuming you're
+done.
 
 ```bash
 cd packages/code-tree-graph && bun run test && bun run build
-cd ../../apps/docs && bun run build
+cd ../../apps/dev-tools-help-docs && bun run build
 ```

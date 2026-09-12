@@ -25,7 +25,7 @@
     "coverage": "turbo run coverage",
     "readmes": "node scripts/sync-package-readmes.mjs",
     "readmes:check": "node scripts/sync-package-readmes.mjs --check",
-    "docs:sync": "bun ./apps/docs/scripts/sync-readme-docs.ts",
+    "docs:sync": "bun ./apps/dev-tools-help-docs/scripts/sync-readme-docs.ts",
     "clean": "turbo run clean && rm -rf .turbo node_modules"
   },
   "devDependencies": {
