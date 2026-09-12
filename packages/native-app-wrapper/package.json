@@ -1,8 +1,7 @@
 {
-  "name": "native-app-wrapper",
+  "name": "code2app",
   "version": "0.1.0",
   "description": "Tauri scaffold that packages a website or a bundled CLI as a native desktop + mobile app, configured from a single JSON profile",
-  "private": true,
   "type": "module",
   "author": "vtempest",
   "license": "rights.institute/prosper",
