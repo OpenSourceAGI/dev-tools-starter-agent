@@ -1,6 +1,6 @@
 ---
 name: repo-badges
-description: The README badge template from qwksearch-research-agent — which badges to use (DOI, DeepWiki, docs, npm version and downloads, Codecov, CI status, stars, commit activity, last commit, Discord, uptime, license, PRs welcome, Cloudflare deploy button, tech-stack chips), how they group into rows, and what you must set up outside the repo before each one shows anything real. Use when adding or fixing README badges, or when a badge renders wrong — Codecov stuck on unknown, a CI badge showing a feature branch's failure, npm reading invalid, Discord showing "invite" instead of a member count, shields.io eating a hyphen in a label, or a repo-not-found on a private repo.
+description: The README badge template from qwksearch-research-agent — which badges to use (DOI, DeepWiki, live app, docs, npm version and downloads including all-time totals, Codecov, CI status, stars, forks, contributors, open issues, open and merged pull request counts, discussions, commit activity, last commit, Discord, uptime, license, PRs welcome, Cloudflare deploy button, Codespaces, tech-stack chips), how they group into four rows, and what you must set up outside the repo before each one shows anything real. Use when adding or fixing README badges, or when a badge renders wrong — Codecov stuck on unknown, a CI badge showing a feature branch's failure, npm reading invalid, Discord showing "invite" instead of a member count, shields.io eating a hyphen in a label, or a repo-not-found on a private repo.
 ---
 
 # The Repo Badge Template
@@ -31,10 +31,17 @@ Rows, in order. Four rows of five reads; twenty badges in one run is a wall.
 
 | Row | Badges | Answers |
 | --- | --- | --- |
-| identity | DOI, DeepWiki, Docs, API, YouTube, Cloudflare deploy button, StackBlitz | what is this |
+| identity | DOI, DeepWiki, live app, Docs, API, YouTube, Cloudflare deploy button, StackBlitz, Codespaces | what is this |
 | quality | npm downloads (monthly + total), npm version, types, install size, Codecov, per-flag Codecov, CI status, test report, uptime | does it work |
-| community | stars, commit activity, last commit, Discord, PRs welcome, license | is it alive |
+| community | stars, forks, contributors, open issues, open PRs, merged PRs, discussions, commit activity, last commit, Discord, PRs welcome, license | is it alive |
 | stack | tech chips | what is it built with |
+
+The community row is the one people under-fill. Stars say a repo was noticed
+once; **open issues, open PRs and merged PRs together** say whether anything is
+moving through it now, and a reader deciding whether to depend on you is asking
+the second question. Two PR counts rather than one on purpose: an open count
+alone reads the same whether the queue clears in a day or has been stuck for a
+year.
 
 ## Which need setup outside the repo
 
@@ -55,8 +62,13 @@ Rows, in order. Four rows of five reads; twenty badges in one run is a wall.
 | `test-report` | `--test-report` | `deploy-test-reports.yml` plus the two Cloudflare secrets. |
 | `uptime` | `--uptime` | An UptimeRobot monitor and public status page. |
 | `discord` | `--discord-id` + `--discord-invite` | **Two different values**: the numeric server id (Server Settings → Widget → Enable Server Widget) drives the count; the invite is where it links. |
-| `stars`, `commit-activity`, `last-commit`, `prs-welcome`, `license` | — | Nothing. Public repos only. |
-| `stack` | `--stack A,B,C` | Nothing — any slug from simpleicons.org works as `?logo=`. |
+| `website` | `--website` | Nothing — the deployed thing, not the repo. First in the row: a visitor who can click into a running app decides in seconds. |
+| `codespaces` | — | Nothing. Add a `.devcontainer/` if the default image cannot install your deps — the visitor sees that failure, not you. |
+| `issues` | — | Issues enabled (Settings → Features). The `/issues/` path already excludes PRs from the count. |
+| `pull-requests` / `prs-merged` | — | Nothing. shields.io has no "merged" endpoint: `issues-pr-closed` counts every PR that is no longer open, so a repo that closes many stale PRs should relabel it "PRs closed". |
+| `discussions` | — | Discussions has to be **on** (Settings → Features) or the badge reads "repo not found", which looks exactly like a private repo. |
+| `stars`, `forks`, `contributors`, `commit-activity`, `last-commit`, `prs-welcome`, `license` | — | Nothing. Public repos only. `contributors` counts commit authors GitHub matched to an account, so unregistered-email commits are invisible to it. |
+| `stack` | `--stack A,B,C` | Nothing — any slug from simpleicons.org works as `?logo=`. A name with no icon (`better-auth`, `MCP`) renders as a plain text chip rather than a blank square. In this monorepo the list is read off each package's own `package.json` instead of being passed. |
 
 ## Recipes
 
@@ -77,9 +89,21 @@ month reads as an abandoned project.
 
 **Per-package rows in this monorepo**
 
-The root README's block is the repo's. Each package README gets its own row
-instead — its npm name, its Codecov flag, its docs page, its StackBlitz
-directory — written by:
+The root README's block is the repo's. Each package README gets its own four
+rows instead, and the split between rows two and three is the point:
+
+- **row 2 measures the package** — its npm name, its tarball, its Codecov flag.
+  Nothing in it moves because a sibling package got popular.
+- **row 3 measures the repo it ships from** — stars, issues, the PR queue. Those
+  are repo-wide by nature, which is why they sit on their own row instead of
+  being mixed into the package numbers.
+
+Neither row substitutes for the other: a package with no downloads in a busy
+repo and a popular package in a dead repo are different situations, and it takes
+both rows to tell them apart. Row 4 is read off the package's own
+`package.json`, so a CLI that never imports React does not advertise Next.js.
+
+Written by:
 
 ```bash
 bun run readmes          # write

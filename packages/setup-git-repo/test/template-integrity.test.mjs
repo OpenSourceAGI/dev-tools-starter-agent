@@ -31,6 +31,7 @@ const KNOWN_PLACEHOLDERS = new Set([
   "DESCRIPTION",
   "PACKAGE",
   "DOI",
+  "WEBSITE_URL",
   "DOCS_URL",
   "API_URL",
   "YOUTUBE_URL",
