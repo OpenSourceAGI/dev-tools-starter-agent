@@ -44,6 +44,7 @@ the package.
 | [repo-badges](./repo-badges/SKILL.md) | `template-git-repo` | The README badge template: which badges, which rows, what each needs set up outside the repo |
 | [server-shell-setup](./server-shell-setup/SKILL.md) | `server-shell-setup` | The bootstrap installer, components, fish aliases |
 | [template-git-repo](./template-git-repo/SKILL.md) | `template-git-repo` | One-command repo setup: workflows, helper scripts, turbo.json, codecov.yml, badge block |
+| [test-google-login](./test-google-login/SKILL.md) | `test-google-login` | Persisting a Google sign-in as a Playwright storageState, the setup-project guard, app-minted sessions, and the Workers Browser Rendering Durable Object |
 | [verify-phone-sms](./verify-phone-sms/SKILL.md) | `verify-phone-sms` | SNS-backed SMS verification, endpoints, auth, VoIP blocking |
 | [web2mobile](./web2mobile/SKILL.md) | `web2mobile-wrapper` | Website → Expo WebView app, asset generation, EAS build/submit |
 

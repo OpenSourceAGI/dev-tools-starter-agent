@@ -1,0 +1,82 @@
+{
+  "name": "test-google-login",
+  "version": "0.1.0",
+  "description": "End-to-end test harness for Google sign-in: persist a Playwright storageState once, reuse it everywhere, and replay it from a Cloudflare Workers Browser Rendering Durable Object",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./worker": {
+      "types": "./dist/worker.d.ts",
+      "import": "./dist/worker.js"
+    }
+  },
+  "bin": {
+    "test-google-login": "./bin/cli.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "examples"
+  ],
+  "scripts": {
+    "build": "vite build",
+    "prepublishOnly": "bun run build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=junit.xml --coverage",
+    "coverage": "vitest run --coverage",
+    "deploy": "wrangler deploy",
+    "dev:worker": "wrangler dev",
+    "ship": "npx standard-version --release-as patch; npm publish"
+  },
+  "keywords": [
+    "playwright",
+    "puppeteer",
+    "google-login",
+    "oauth",
+    "storage-state",
+    "e2e",
+    "testing",
+    "cloudflare-workers",
+    "browser-rendering",
+    "durable-objects"
+  ],
+  "author": "vtempest",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/puppeteer": "^1.4.0",
+    "@cloudflare/workers-types": "^4.20260507.1",
+    "@types/node": "^22.10.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "typescript": "^5.9.3",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.0",
+    "wrangler": "^4.24.0"
+  },
+  "peerDependencies": {
+    "@cloudflare/puppeteer": "*",
+    "@playwright/test": "*"
+  },
+  "peerDependenciesMeta": {
+    "@playwright/test": {
+      "optional": true
+    },
+    "@cloudflare/puppeteer": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/test-google-login"
+  },
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/test-google-login"
+}

@@ -155,6 +155,7 @@ const SKILLS_BY_PACKAGE = {
   'server-shell-setup': ['server-shell-setup'],
   'setup-git-repo': ['github-actions-setup', 'git-badges'],
   'template-git-repo': ['template-git-repo', 'repo-badges'],
+  'test-google-login': ['test-google-login'],
   'verify-phone-sms': ['verify-phone-sms'],
   'web2mobile-wrapper': ['web2mobile'],
 }

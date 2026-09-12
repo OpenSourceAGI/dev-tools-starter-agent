@@ -36,6 +36,7 @@ name is what turbo filters and `--skill` flags use.
 | `server-shell-setup` | *(not a workspace)* | Plain shell scripts: `install-shell.sh`, `get-node.sh`, `clean-server-disk.sh`. No `package.json`, no build, no tests. |
 | `setup-git-repo` | `setup-git-repo` | One command to set up a GitHub repo: Turborepo, CI workflows, README badges |
 | `template-git-repo` | `template-git-repo` | The badge/README **catalog** that both `setup-git-repo` and `.github/scripts/sync-package-readmes.mjs` build on — one definition of what a badge is, used twice |
+| `test-google-login` | `test-google-login` | Google-login E2E harness: a Playwright `storageState` captured once and reused, plus a Workers Browser Rendering Durable Object that replays it. Two build entries (Node + Worker); the Worker half must stay free of `node:` imports. |
 | `verify-phone-sms` | `verify-phone-sms` | SMS phone verification over AWS SNS, Hono server on Workers. No build step. |
 | `web2mobile-wrapper` | `create-mobile-wrapper` *(private)* | Expo/EAS scaffold wrapping a website as a mobile app. **Runs on Jest.** |
 
