@@ -28,8 +28,10 @@
     "submit:android": "cd mobile-app && eas submit --platform android",
     "submit:ios": "cd mobile-app && eas submit --platform ios",
     "submit:all": "cd mobile-app && eas submit --platform all",
-    "test": "jest",
-    "test:ci": "jest --ci --coverage --coverageReporters=lcov --coverageReporters=text --reporters=default --reporters=jest-junit"
+    "test": "vitest run",
+    "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=./junit.xml --coverage --coverage.reporter=lcov --coverage.reporter=text",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "expo": "~52.0.0",
@@ -42,9 +44,8 @@
     "@babel/core": "^7.25.2",
     "@vitest/coverage-v8": "^4.1.0",
     "eas-cli": "^14.2.0",
-    "jest": "^30.2.0",
-    "jest-junit": "^16.0.0",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "vitest": "^4.1.0"
   },
   "repository": {
     "type": "git",

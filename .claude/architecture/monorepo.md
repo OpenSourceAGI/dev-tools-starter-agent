@@ -76,7 +76,6 @@ different places and publish independently.
 | --- | --- |
 | Vitest | most of them |
 | `bun test` | `git0-repo-downloader` |
-| Jest | `web2mobile-wrapper` |
 | none | `server-shell-setup` (no manifest), `api-*` generated code |
 
 Do not "unify" them as a drive-by. If you are in a package, run its own script:

@@ -31,8 +31,7 @@ database, and very little cross-package importing.
    the source. Read the package's skill before re-deriving how it works, and
    update it when public behaviour changes.
 6. **Each package brings its own test runner.** Mostly Vitest, but `git0` uses
-   `bun test` and `web2mobile-wrapper` uses Jest. Don't standardize them as a
-   drive-by.
+   `bun test`. Don't standardize them as a drive-by.
 7. **`starter-templates/` is not a workspace.** Those are scaffolds copied out
    by `create-starter-app`, not built here. See
    [`architecture/templates.md`](.claude/architecture/templates.md).
