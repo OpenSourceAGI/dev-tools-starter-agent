@@ -367,26 +367,31 @@ Extension failures during image build are non-fatal — the IDE still launches.
 
 ### Environment variables (`wrangler.jsonc` vars)
 
-| Variable | Default | Description |
-|---|---|---|
-| `SLEEP_AFTER` | `"30m"` | Container idle timeout. `"30s"`, `"1h"`, etc. Max 24h |
-| `TEAM_DOMAIN` | `""` | Auth A — CF Access team URL |
-| `POLICY_AUD` | `""` | Auth A — CF Access AUD tag |
-| `GOOGLE_CLIENT_ID` | `""` | Auth B — Google OAuth client ID |
-| `ADMIN_EMAILS` | `""` | Comma-separated emails with platform-wide `/admin` access |
-| `WAKATIME_API_KEY` | `""` | Auto-configure WakaTime in every container |
-| `R2_BUCKET_NAME` | `"vscode-cloud-workspaces"` | R2 bucket name |
-| `GITHUB_REPOS` | `""` | Comma-separated `owner/repo` list to auto-clone |
+Non-secret values, edited in [`wrangler.jsonc`](./wrangler.jsonc) → `vars` and
+shipped with the next `wrangler deploy`. `keep_vars: true` stops Wrangler from
+deleting variables you added in the dashboard.
+
+| Variable | Default | Enables | Where to get it |
+|---|---|---|---|
+| `SLEEP_AFTER` | `"2m"` | Container idle timeout before hibernation. `"30s"`, `"5m"`, `"1h"`; max ~24h. | Your own choice — it trades cold starts against cost. |
+| `TEAM_DOMAIN` | `""` | Auth A — validates Cloudflare Access JWTs. | [Cloudflare One](https://one.dash.cloudflare.com) → Settings → Custom Pages; it is `https://<your-team-name>.cloudflareaccess.com`. |
+| `POLICY_AUD` | `""` | Auth A — the audience the JWT must carry. | Cloudflare One → Access → Applications → your app → **AUD tag**. |
+| `GOOGLE_CLIENT_ID` | `""` | Auth B — Google OAuth sign-in. | [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials) → OAuth client ID (Web application). Redirect URI: `https://<your-worker>.workers.dev/auth/callback`. |
+| `ADMIN_EMAILS` | `""` | Comma-separated addresses with platform-wide `/admin` access. | Your own addresses. |
+| `WAKATIME_API_KEY` | `""` | Writes `~/.wakatime.cfg` in every container so users skip setup. | [wakatime.com/settings/account](https://wakatime.com/settings/account), or a team API key. |
+| `R2_BUCKET_NAME` | `"vscode-cloud-workspaces"` | Which bucket workspaces persist to. | The name you passed to `wrangler r2 bucket create`. |
+| `GITHUB_REPOS` | `""` | Comma-separated `owner/repo` list auto-cloned into `/workspace` on start. | Your own repositories. |
 
 ### Secrets (`wrangler secret put`)
 
-| Secret | Description |
-|---|---|
-| `R2_ACCESS_KEY_ID` | R2 API token key |
-| `R2_SECRET_ACCESS_KEY` | R2 API token secret |
-| `R2_ACCOUNT_ID` | Cloudflare account ID |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret (auth option B) |
-| `GITHUB_TOKEN` | GitHub PAT with `repo` scope (private repos only) |
+Never put these in `wrangler.jsonc` — it is committed.
+
+| Secret | Enables | Where to get it |
+|---|---|---|
+| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | The FUSE mount inside the container, over R2's S3-compatible endpoint. | [Cloudflare dashboard](https://dash.cloudflare.com) → R2 → **Manage R2 API Tokens** → Create token with *Object Read & Write* on the bucket. |
+| `R2_ACCOUNT_ID` | The S3 endpoint host for that account. | Cloudflare dashboard → any zone → Account ID in the right-hand sidebar, or `wrangler whoami`. |
+| `GOOGLE_CLIENT_SECRET` | Auth option B, alongside `GOOGLE_CLIENT_ID`. | The same [Google Cloud Console credential](https://console.cloud.google.com/apis/credentials) that issued the client ID. |
+| `GITHUB_TOKEN` | Cloning private repos listed in `GITHUB_REPOS`. | [github.com/settings/tokens](https://github.com/settings/tokens) — a PAT with the `repo` scope. |
 
 ### Cloudflare resources
 
