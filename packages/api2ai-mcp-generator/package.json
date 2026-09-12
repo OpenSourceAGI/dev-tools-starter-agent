@@ -1,6 +1,6 @@
 {
   "name": "api2ai",
-  "version": "0.2.73",
+  "version": "0.2.74",
   "description": "Generate production-ready MCP servers from any OpenAPI specification using the highly-used and convenient [mcp-use](https://mcp-use.com) framework",
   "license": "rights.institute/prosper",
   "author": "vtempest",

@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-to-claude-fix",
-  "version": "1.0.75",
+  "version": "1.0.76",
   "type": "module",
   "repository": {
     "type": "git",
