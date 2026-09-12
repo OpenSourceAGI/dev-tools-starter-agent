@@ -85,13 +85,28 @@ deployment and sign in with a password you set there.
 | `CCCP: Open the Web Dashboard in a Browser` | Opens `/dashboard` on the configured server |
 | `CCCP: Reload Panel` | Re-renders the webview |
 
-## Settings
+## Configuration
+
+An extension has no `.env` — **this extension reads no environment variables at
+all.** Everything it needs is either a VS Code setting or a secret VS Code holds
+for it:
 
 | Setting | Default | Description |
 | --- | --- | --- |
 | `cccp.serverUrl` | `http://localhost:3000` | Base URL of your CCCP deployment |
 | `cccp.followVsCodeTheme` | `true` | Match the panel's light/dark mode to the editor theme |
 | `cccp.requestTimeoutMs` | `60000` | How long to wait on the server; provisioning calls are slow |
+
+Change them in **Settings → Extensions → CCCP**, or with
+`CCCP: Set Server URL`.
+
+The session cookie lives in VS Code's
+[SecretStorage](https://code.visualstudio.com/api/references/vscode-api#SecretStorage)
+(`AuthManager` in `src/`), not in a setting file, and your AWS keys never live
+here at all — they are encrypted and stored by the CCCP server you sign in to.
+Every key CCCP itself needs (`BETTER_AUTH_SECRET`, the database URL, Google
+OAuth, Resend) is configured on that deployment; see
+[its README](../Cloud-Computer-Control-Panel/README.md#environment-variables).
 
 ## Development
 
@@ -110,6 +125,32 @@ Then press <kbd>F5</kbd> in VS Code to launch an Extension Development Host.
 its own `node_modules` — see `resolveCccpImportsHere()` in `webview-ui/vite.config.ts` and the `"*"`
 path fallback in `webview-ui/tsconfig.json` — so the Next.js app does not need to be installed to
 build the panel.
+
+## Packaging and publishing
+
+```bash
+bun run package                      # production bundle: webview-ui/dist + dist/extension.js
+bunx @vscode/vsce package            # → cccp-vscode-<version>.vsix
+```
+
+Install the result locally with **Extensions → … → Install from VSIX**, or
+`code --install-extension cccp-vscode-<version>.vsix`.
+
+To publish to the Marketplace under the `opensourceagi` publisher, you need a
+Personal Access Token with the **Marketplace → Manage** scope from an Azure
+DevOps organization — see
+[Publishing Extension](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)
+for the walkthrough and
+[dev.azure.com](https://dev.azure.com) to create the token. Then:
+
+```bash
+bunx @vscode/vsce login opensourceagi   # paste the PAT once
+bunx @vscode/vsce publish               # bump "version" in package.json first
+```
+
+`vscode:prepublish` runs `bun run package` for you, so the bundle is always
+rebuilt before it ships. The PAT is a credential: keep it in `vsce`'s own
+keychain entry, never in the repository.
 
 ## Notes
 
