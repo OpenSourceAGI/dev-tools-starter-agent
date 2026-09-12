@@ -26,6 +26,7 @@ const GROUP_TITLES = {
 
 const FLAG_FOR = {
   doi: '--doi <10.5281/zenodo.NNNNNNN>',
+  websiteUrl: '--website <url>',
   docsUrl: '--docs <url>',
   apiUrl: '--api <url>',
   youtubeUrl: '--youtube <url>',

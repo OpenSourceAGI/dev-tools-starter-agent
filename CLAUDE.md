@@ -43,7 +43,7 @@ database, and very little cross-package importing.
 | You want to change… | Go to |
 | --- | --- |
 | A published CLI or library | `packages/<tool>` — and its skill in `skills/<name>` |
-| The docs site | `apps/docs` (Fumadocs + Next.js; the one Biome workspace) |
+| The docs site | `apps/dev-tools-help-docs` (Fumadocs + Next.js; the one Biome workspace) |
 | Cloud infra dashboard | `apps/Cloud-Computer-Control-Panel` (+ `apps/cccp-vscode-ext`) |
 | Per-user VS Code on Cloudflare Containers | `apps/vscode-cloud` |
 | A scaffold that users copy out | `starter-templates/<template>` |
@@ -100,7 +100,7 @@ one tree rather than beside the source.
 | --- | --- |
 | `apps/Cloud-Computer-Control-Panel` | [.claude/apps/Cloud-Computer-Control-Panel/CLAUDE.md](.claude/apps/Cloud-Computer-Control-Panel/CLAUDE.md) |
 | `apps/cccp-vscode-ext` | [.claude/apps/cccp-vscode-ext/CLAUDE.md](.claude/apps/cccp-vscode-ext/CLAUDE.md) |
-| `apps/docs` | [.claude/apps/docs/CLAUDE.md](.claude/apps/docs/CLAUDE.md) |
+| `apps/dev-tools-help-docs` | [.claude/apps/dev-tools-help-docs/CLAUDE.md](.claude/apps/dev-tools-help-docs/CLAUDE.md) |
 | `apps/vscode-cloud` | [.claude/apps/vscode-cloud/CLAUDE.md](.claude/apps/vscode-cloud/CLAUDE.md) |
 | `packages/about-system-info` | [.claude/packages/about-system-info/CLAUDE.md](.claude/packages/about-system-info/CLAUDE.md) |
 | `packages/api2ai-mcp-generator` | [.claude/packages/api2ai-mcp-generator/CLAUDE.md](.claude/packages/api2ai-mcp-generator/CLAUDE.md) |

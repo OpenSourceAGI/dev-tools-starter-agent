@@ -6,8 +6,9 @@
   `.js`/`.mjs` (`create-cloud-db`, `create-starter-app`, `open-when-ready`,
   `setup-git-repo`, `template-git-repo`, `web2mobile-wrapper`) — leave them that
   way unless converting a whole package is the point of the PR.
-- **There is no repo-wide formatter.** Only `apps/docs` runs Biome. Match the
-  surrounding file's style — naming, import order, comment density.
+- **There is no repo-wide formatter.** Only `apps/dev-tools-help-docs` runs
+  Biome. Match the surrounding file's style — naming, import order, comment
+  density.
 - **Comments explain why, not what.** The best comments in this repo record a
   decision and the failure behind it: why the publish job resolves versions from
   the registry, why package README badges are generated per package, why badges

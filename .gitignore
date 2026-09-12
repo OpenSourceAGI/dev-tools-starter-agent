@@ -19,7 +19,7 @@ migrations/*
 .docusaurus/*
 */.next/*
 */dist/*
-apps/docs/.next/*
+apps/dev-tools-help-docs/.next/*
 bun.lock
 dist/
 packages/template-fumadocs/.next/*
@@ -34,6 +34,8 @@ coverage/
 
 .claude/*
 # Agent docs for Claude Code — checked in on purpose (see CLAUDE.md)
+!.claude/apps
+!.claude/packages
 !.claude/architecture
 !.claude/settings.json
 .claude/settings.local.json

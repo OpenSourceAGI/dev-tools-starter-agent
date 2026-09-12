@@ -36,9 +36,10 @@ That is why the template keeps one `<a>` per line.
 
 | Setup needed | Badges |
 | --- | --- |
-| **Nothing** (public repo) | Stars, Commit Activity, Last Commit, License, PRs Welcome, DeepWiki, Deploy to Cloudflare, tech-stack chips |
+| **Nothing** (public repo) | Stars, Forks, Contributors, Open Issues, Open PRs, Merged PRs, Commit Activity, Last Commit, License, PRs Welcome, DeepWiki, Deploy to Cloudflare, Codespaces, tech-stack chips |
 | **A workflow or service** | Workflow status, Codecov coverage, npm version, npm downloads |
-| **An external account + an id** | DOI (Zenodo), Discord, UptimeRobot, Docs/API/YouTube links |
+| **An external account + an id** | DOI (Zenodo), Discord, UptimeRobot, live-app/Docs/API/YouTube links |
+| **A repo setting** | Discussions — off by default, and the badge reads "repo not found" until it is on |
 
 Full per-badge setup — where each id comes from, what the URL means, how it
 fails — is in [`API.md`](./API.md) and, in a generated repo, in `docs/BADGES.md`.
@@ -92,8 +93,14 @@ syntax cannot center or set a height. Consequences:
 - GitHub's renderer strips `style` attributes. Sizing comes from the `height`
   attribute or from Shields' own `style=` parameter.
 
-Group by meaning: identity and links first, health and freshness second,
-community third, stack chips last.
+Group by meaning, four rows: identity and links first, health and freshness
+second, community third, stack chips last. Four rows of five reads; twenty
+badges in one run is a wall.
+
+In the community row, carry the counts that show motion — open issues, open PRs,
+merged PRs — not just stars. Stars say a repo was noticed once; the PR queue says
+whether maintenance is happening, which is the question someone deciding to
+depend on you is actually asking.
 
 ## Recipes
 

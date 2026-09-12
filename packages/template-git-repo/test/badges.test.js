@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   BADGES,
+  GROUPS,
   renderBadge,
   renderBadgeBlock,
   selectBadges,
@@ -69,8 +70,25 @@ describe('renderBadge', () => {
 
     expect(html).toContain('alt="Claude"');
     expect(html).toContain('alt="Next.js"');
-    // The dot is not part of a simple-icons slug.
-    expect(html).toContain('logo=nextjs');
+    // simple-icons spells the dot out rather than dropping it: the slug is
+    // `nextdotjs`, and `nextjs` renders a chip with a blank square on it.
+    expect(html).toContain('logo=nextdotjs');
+  });
+
+  it('spaces and slashes in a chip name survive into the label but not the slug', () => {
+    const badge = BADGES.find((entry) => entry.id === 'stack');
+    const html = renderBadge(badge, { ...context, stack: 'Tailwind CSS,shadcn/ui' });
+
+    expect(html).toContain('logo=tailwindcss');
+    expect(html).toContain('logo=shadcnui');
+    expect(html).toContain('alt="shadcn/ui"');
+  });
+
+  it('leaves off the logo for a chip simple-icons has no icon for', () => {
+    // A wrong slug renders a blank square where the logo should be, which looks
+    // like a broken image rather than a deliberate text chip.
+    expect(stackChip('better-auth')).not.toContain('logo=');
+    expect(stackChip('better-auth')).toContain('alt="better-auth"');
   });
 
   it('gives every badge a non-empty alt text', () => {
@@ -84,6 +102,43 @@ describe('renderBadge', () => {
   });
 });
 
+describe('GitHub activity badges', () => {
+  // Stars alone say a repo was noticed once. These say whether anything is
+  // moving through it now.
+  it('links each count at the page that explains it', () => {
+    const expected = {
+      issues: '/issues',
+      'pull-requests': '/pulls',
+      'prs-merged': '/pulls?q=is%3Apr+is%3Aclosed',
+      discussions: '/discussions',
+      contributors: '/graphs/contributors',
+      forks: '/forks',
+    };
+
+    for (const [id, suffix] of Object.entries(expected)) {
+      const badge = BADGES.find((entry) => entry.id === id);
+      expect(renderBadge(badge, context), id).toContain(`href="https://github.com/acme/widget${suffix}"`);
+    }
+  });
+
+  it('labels the two PR counts apart', () => {
+    // Both come off shields.io as bare numbers; unlabelled, two adjacent PR
+    // badges read as one number printed twice.
+    const open = BADGES.find((entry) => entry.id === 'pull-requests');
+    const merged = BADGES.find((entry) => entry.id === 'prs-merged');
+
+    expect(renderBadge(open, context)).toContain('label=PRs');
+    expect(renderBadge(merged, context)).toContain('label=PRs%20merged');
+  });
+
+  it('renders every activity count without any configuration', () => {
+    const { included } = selectBadges(context);
+    expect(included.map((badge) => badge.id)).toEqual(
+      expect.arrayContaining(['issues', 'pull-requests', 'prs-merged', 'discussions', 'contributors', 'forks']),
+    );
+  });
+});
+
 describe('renderBadgeBlock', () => {
   it('groups badges into rows separated by <br />', () => {
     const { markdown } = renderBadgeBlock(context);
@@ -91,6 +146,20 @@ describe('renderBadgeBlock', () => {
     expect(markdown.startsWith('<p align="center">')).toBe(true);
     expect(markdown.trimEnd().endsWith('</p>')).toBe(true);
     expect(markdown).toContain('<br />');
+  });
+
+  it('renders one row per group, in GROUPS order', () => {
+    // Four rows is the shape the block is designed around: what it is, whether
+    // it works, whether it is alive, what it is built with. A fifth row would
+    // mean a badge landed in a group nobody named.
+    const { markdown } = renderBadgeBlock({ ...context, stack: 'Bun' });
+    const rows = markdown.split('<br />');
+
+    expect(rows).toHaveLength(GROUPS.length);
+    expect(rows[0]).toContain('deepwiki');
+    expect(rows[1]).toContain('npm/v');
+    expect(rows[2]).toContain('github/stars');
+    expect(rows[3]).toContain('alt="Bun"');
   });
 
   it('never emits an undefined url', () => {

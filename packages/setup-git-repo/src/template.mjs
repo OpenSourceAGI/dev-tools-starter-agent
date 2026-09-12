@@ -11,6 +11,7 @@ import { join, relative, sep } from "node:path";
  */
 export const OPTIONAL_BADGES = {
   doi: ["DOI"],
+  website: ["WEBSITE_URL"],
   docs: ["DOCS_URL"],
   api: ["API_URL"],
   youtube: ["YOUTUBE_URL"],

@@ -1,4 +1,4 @@
-# CLAUDE.md — `apps/docs`
+# CLAUDE.md — `apps/dev-tools-help-docs`
 
 The documentation site (starterdocs.vtempest.workers.dev): Next.js + Fumadocs,
 with AI chat, full-text search, and an auto-generated API reference built from
@@ -7,9 +7,9 @@ TypeScript types and OpenAPI specs.
 ## The one rule everyone trips on
 
 **This is the only Biome workspace in the repo.** `check`, `lint`, `format` and
-`check:write` here are Biome; nothing outside `apps/docs` is formatted by it and
-there is no repo-wide formatter. Never run Biome over the rest of the monorepo —
-it will rewrite files that nobody formats that way.
+`check:write` here are Biome; nothing outside `apps/dev-tools-help-docs` is
+formatted by it and there is no repo-wide formatter. Never run Biome over the
+rest of the monorepo — it will rewrite files that nobody formats that way.
 
 It also carries its own `commitlint.config.ts`, `cspell` config and
 `bunfig.toml`, all scoped to this app.

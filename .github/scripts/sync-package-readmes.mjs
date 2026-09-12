@@ -38,7 +38,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { renderBadgeBlock } from '../../packages/template-git-repo/src/badges.js'
-import { buildContext } from '../../packages/template-git-repo/src/context.js'
+import { buildContext, detectStack } from '../../packages/template-git-repo/src/context.js'
 import {
   END_MARKER,
   START_MARKER,
@@ -64,16 +64,43 @@ const SECTIONS = [
   { dir: 'apps', docsSlug: 'apps', npm: false },
 ]
 
-/** The badges this block carries, and the only ones it rewrites. */
+/**
+ * The badges this block carries, and the only ones it rewrites.
+ *
+ * Read as four rows, and the split between the second and third is the point:
+ *
+ *   row 2 (quality)   measures *this package* — its own npm name, its own
+ *                     tarball, its own Codecov flag. Nothing here is affected
+ *                     by the sixteen packages next to it.
+ *   row 3 (community) measures *the repository* this package ships from —
+ *                     stars, open issues, the PR queue. Those are repo-wide by
+ *                     nature, which is exactly why they are on a separate row
+ *                     and labelled rather than mixed into the package numbers.
+ *
+ * Neither row can stand for the other: a package with no downloads in a busy
+ * repo and a popular package in a quiet one are different situations, and the
+ * two rows together are what tells them apart.
+ */
 const PACKAGE_BADGES = [
+  // identity
   'docs',
   'stackblitz',
+  // quality — this package
   'npm-version',
   'npm-downloads',
   'npm-total-downloads',
   'npm-types',
   'install-size',
   'codecov-flag',
+  // community — the repo it ships from
+  'stars',
+  'issues',
+  'pull-requests',
+  'prs-merged',
+  'discussions',
+  'last-commit',
+  // stack — read off this package's own manifest
+  'stack',
 ]
 
 /**
@@ -247,6 +274,10 @@ export function collectEntries(repoContext) {
             manifest && !NO_STACKBLITZ.has(child.name)
               ? `https://stackblitz.com/github/${repoContext.repoSlug}/tree/${repoContext.defaultBranch}/${relative}`
               : undefined,
+          // Read off this package's own dependencies, not the repo's. The
+          // catalog shares one install, so a repo-wide stack row would put
+          // Next.js on a README for a CLI that has never seen React.
+          stack: detectStack(manifest, { packageManager: repoContext.packageManager }),
         },
       })
     }
