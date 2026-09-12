@@ -54,7 +54,7 @@ describe('a full run', () => {
 
     expect(exists('.github/workflows/tests.yml')).toBe(true);
     expect(exists('.github/workflows/npm-publish.yml')).toBe(true);
-    expect(exists('scripts/list-test-packages.mjs')).toBe(true);
+    expect(exists('.github/scripts/list-test-packages.mjs')).toBe(true);
     expect(exists('turbo.json')).toBe(true);
     expect(exists('codecov.yml')).toBe(true);
 
@@ -111,7 +111,7 @@ describe('scoped runs', () => {
     await main([...BASE, '--actions-only']);
 
     expect(exists('.github/workflows/tests.yml')).toBe(true);
-    expect(exists('scripts/next-free-version.mjs')).toBe(true);
+    expect(exists('.github/scripts/next-free-version.mjs')).toBe(true);
     expect(exists('turbo.json')).toBe(false);
     expect(read('README.md')).not.toContain('shields.io');
     expect(JSON.parse(read('package.json')).scripts).toBeUndefined();

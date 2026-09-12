@@ -52,7 +52,7 @@ is overwritten without `--force`, and `--dry-run` prints the exact plan.
 | `.github/workflows/auto-merge-claude.yml` | Auto-merges agent PRs once their checks pass |
 | `.github/workflows/auto-merge-and-create-prs.yml` | Twice-daily sweep: merges green PRs, opens PRs for orphan branches |
 | `.github/workflows/deploy-test-reports.yml` | Publishes the HTML test report to Cloudflare Workers |
-| `scripts/*.mjs` | The five helpers those workflows call |
+| `.github/scripts/*.mjs` | The five helpers those workflows call |
 | `turbo.json` | Pipeline whose task names the workflows use |
 | `codecov.yml` | Per-package flags with `carryforward` |
 | `README.md` | The badge block, between markers |
@@ -86,7 +86,7 @@ Run `bunx template-git-repo --help` for the rest.
 
 ## The parts worth knowing
 
-**The test matrix is discovered, not written.** `scripts/list-test-packages.mjs`
+**The test matrix is discovered, not written.** `.github/scripts/list-test-packages.mjs`
 reads the `workspaces` globs and emits one matrix entry per package with a test
 script. A hand-maintained matrix fails silently — a package added to the repo but
 not to the matrix is never tested, and nothing goes red to say so.

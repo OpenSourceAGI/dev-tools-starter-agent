@@ -37,7 +37,7 @@ Analytics, which tracks per-test run time and flakiness and comments failures on
 the PR.
 
 **The matrix is discovered, not written.** A `discover` job runs
-`scripts/list-test-packages.mjs`, which reads the `workspaces` globs from the root
+`.github/scripts/list-test-packages.mjs`, which reads the `workspaces` globs from the root
 `package.json` and emits one entry per package with a `test:coverage`, `test:ci`
 or `test` script. A hand-maintained matrix fails silently — a package added to
 the repo but not to the matrix is simply never tested, and nothing goes red to
@@ -91,16 +91,16 @@ Five rules are encoded in it, each learned from a specific failure:
    it`, which reads like a missing package — and it arrives *after* every package
    has been built, with a provenance statement already signed into the public
    sigstore transparency log for each failed attempt.
-3. **Walk the workspace in dependency order** (`scripts/workspace-build-order.mjs`).
+3. **Walk the workspace in dependency order** (`.github/scripts/workspace-build-order.mjs`).
    Package managers link workspace siblings as symlinks; a sibling that has not
    been built has no `dist/`, and its `exports` → `types` entries point at files
    that do not exist. Alphabetical order produces
    `Cannot find module '<sibling>' or its corresponding type declarations`.
 4. **Never publish the literal `workspace:*` protocol** — no consumer outside the
-   monorepo can resolve it. `scripts/pin-workspace-deps.mjs` substitutes real
-   ranges at pack time; `scripts/restore-pinned-deps.mjs` takes them back out
+   monorepo can resolve it. `.github/scripts/pin-workspace-deps.mjs` substitutes real
+   ranges at pack time; `.github/scripts/restore-pinned-deps.mjs` takes them back out
    afterwards, so only the version bump gets committed.
-5. **The registry decides which versions are spent** (`scripts/next-free-version.mjs`).
+5. **The registry decides which versions are spent** (`.github/scripts/next-free-version.mjs`).
    npm refuses a PUT for any version it has *ever* seen, including ones staged by
    an interrupted publish that the `latest` dist-tag cannot show you:
    `E409 ... Cannot publish over previously staged version`. The union of

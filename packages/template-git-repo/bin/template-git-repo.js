@@ -31,7 +31,7 @@ Usage
 
 What it writes
   .github/workflows/   tests, npm publish, auto-merge, hosted test reports
-  scripts/*.mjs        the helpers those workflows call
+  .github/scripts/     the helpers those workflows call
   turbo.json           pipeline whose task names the workflows use
   codecov.yml          per-package flags with carryforward
   README.md            the badge block, between markers
@@ -159,7 +159,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   // ── Workflows, scripts, turbo.json, codecov.yml ───────────────────────────
   if (!badgesOnly) {
-    const include = actionsOnly ? ['.github', 'scripts'] : undefined;
+    const include = actionsOnly ? ['.github'] : undefined;
     const filePlan = planFiles({ context, force, include }).filter(
       (entry) => !(skipTurbo && entry.path === 'turbo.json'),
     );
