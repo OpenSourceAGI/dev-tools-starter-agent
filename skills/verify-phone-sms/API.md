@@ -9,6 +9,7 @@ Auth applies to `/api/*`: `X-API-Key: <key>` or `Authorization: Bearer <key>`. R
 | `GET` | `/` | no | Service info + endpoint index |
 | `GET` | `/health` | no | Health check |
 | `GET` | `/docs` | no | Swagger UI over the generated OpenAPI 3.0 doc |
+| `GET` | `/openapi.json` | no | The generated OpenAPI 3.0 doc itself |
 | `POST` | `/api/send` | yes | Send a verification code |
 | `POST` | `/api/verify` | yes | **Mock** — always returns `verified: true` |
 | `POST` | `/api/sms` | yes | Send an arbitrary SMS |

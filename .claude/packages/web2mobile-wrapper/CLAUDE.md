@@ -2,15 +2,18 @@
 
 **npm name:** `create-mobile-wrapper` · **Private — not published.**
 **skill:** [`skills/web2mobile`](../../../skills/web2mobile/SKILL.md)
-· **runner:** **Jest** (not Vitest) · **build:** none
+· **runner:** Vitest · **build:** none
 
 Scaffolds an **Expo** WebView app around an existing website, generates the
 assets, and wires up **EAS** build/submit.
 
 ## Things that bite
 
-- **This is the one Jest package.** `bun run test` here runs Jest. Vitest
-  config and APIs do not apply; don't port it as a drive-by.
+- **The suite is ESM.** `test/generate.test.js` uses `import` and Vitest's
+  APIs, while `src/generate.js` is CommonJS — it is loaded through
+  `createRequire` so its `require('fs')`/`require('sharp')` calls keep working.
+  The tests run the generator against a real temp directory rather than
+  mocking those modules.
 - **`src/*.template.js|json` are templates, not source.** They are copied into
   the generated project — they are not type-checked or linted here, and a
   syntax error in one surfaces only in the scaffolded app. Read them as the
@@ -26,5 +29,5 @@ assets, and wires up **EAS** build/submit.
 `src/eas.template.json` · `bin/cli.js`
 
 ```bash
-cd packages/web2mobile-wrapper && bun run test   # jest
+cd packages/web2mobile-wrapper && bun run test   # vitest
 ```

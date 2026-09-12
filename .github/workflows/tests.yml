@@ -81,13 +81,7 @@ jobs:
             dir: packages/verify-phone-sms
             runtime: node
             install: npm install --ignore-scripts --legacy-peer-deps
-            # vitest 1.6's v8 provider writes no report on Node 22, so this one
-            # uploads test results only.
-            coverage: false
-            # 28 pre-existing failures: the suite asserts an older shape of the
-            # API than src/verify-phone-server.ts serves ("ok" vs "healthy",
-            # "API key required" vs "Unauthorized"). Tracked in Test Analytics.
-            allow-failure: true
+            coverage: true
 
     steps:
       # Codecov needs the parent commit to attribute results to the right base.

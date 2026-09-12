@@ -95,6 +95,7 @@ app.get("/", (c) => {
       send: "/api/send",
       verify: "/api/verify",
       docs: "/docs",
+      openapi: "/openapi.json",
     },
   });
 });
@@ -108,6 +109,11 @@ app.get("/health", (c) => {
     uptime: "N/A", // process.uptime() not available in Cloudflare Workers
   });
 });
+
+// Apply authentication to all API routes. This must be registered before the
+// `/api/*` handlers below: Hono runs middleware only for routes defined after
+// it, so registering this at the bottom of the file left every endpoint open.
+app.use("/api/*", authenticateApiKey);
 
 // Generate verification code
 function generateCode(length = 6) {
@@ -446,7 +452,7 @@ app.openAPIRegistry.registerComponent("securitySchemes", "apiKey", {
   in: "header",
 });
 
-app.doc("/docs", {
+app.doc("/openapi.json", {
   openapi: "3.0.0",
   info: {
     title: "SMS Verification API",
@@ -466,10 +472,7 @@ app.doc("/docs", {
 });
 
 // Swagger UI
-app.get("/docs", swaggerUI({ url: "/docs" }));
-
-// Apply authentication to all API routes
-app.use("/api/*", authenticateApiKey);
+app.get("/docs", swaggerUI({ url: "/openapi.json" }));
 
 // Error handling
 app.onError((err, c) => {
