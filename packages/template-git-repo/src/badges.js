@@ -64,6 +64,19 @@ export const BADGES = [
       'Nothing to configure for a public repo — visit deepwiki.com/<owner>/<repo> once to trigger the first index. Private repos need the DeepWiki GitHub App installed.',
   },
   {
+    id: 'website',
+    title: 'Live app',
+    group: 'identity',
+    needs: ['websiteUrl'],
+    alt: 'Website',
+    href: (c) => c.websiteUrl,
+    img: () =>
+      shieldsBadge('App', 'blueviolet', { style: 'for-the-badge', logo: 'googlechrome', logoColor: 'white' }),
+    setup:
+      'The deployed thing, not the repo. It is first in the row on purpose: a visitor who can click through to a running app decides in seconds whether to read the rest. Static badge — nothing checks that the URL is up, which is what the uptime badge is for.',
+    height: '20px',
+  },
+  {
     id: 'docs',
     title: 'Documentation',
     group: 'identity',
@@ -120,6 +133,18 @@ export const BADGES = [
     height: '20px',
   },
   {
+    id: 'codespaces',
+    title: 'Open in GitHub Codespaces',
+    group: 'identity',
+    needs: [],
+    alt: 'Open in GitHub Codespaces',
+    href: (c) => `https://codespaces.new/${c.repoSlug}`,
+    img: () => 'https://github.com/codespaces/badge.svg',
+    setup:
+      'Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor\'s own free hours, so the button costs you nothing.',
+    height: '20px',
+  },
+  {
     id: 'stars',
     title: 'GitHub stars',
     group: 'community',
@@ -128,6 +153,73 @@ export const BADGES = [
     href: (c) => `https://github.com/${c.repoSlug}/stargazers`,
     img: (c) => `https://img.shields.io/github/stars/${c.repoSlug}`,
     setup: 'Nothing to configure. Public repos only — shields.io cannot read a private repo.',
+  },
+  {
+    id: 'forks',
+    title: 'GitHub forks',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Forks',
+    href: (c) => `https://github.com/${c.repoSlug}/forks`,
+    img: (c) => `https://img.shields.io/github/forks/${c.repoSlug}`,
+    setup:
+      'Nothing to configure. Counts direct forks only, not forks of forks, so it undercounts a repo that has been forked along a chain. Public repos only.',
+  },
+  {
+    id: 'contributors',
+    title: 'Contributors',
+    group: 'community',
+    needs: [],
+    alt: 'Contributors',
+    href: (c) => `https://github.com/${c.repoSlug}/graphs/contributors`,
+    img: (c) => `https://img.shields.io/github/contributors/${c.repoSlug}`,
+    setup:
+      'Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.',
+  },
+  {
+    id: 'issues',
+    title: 'Open issues',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Issues',
+    href: (c) => `https://github.com/${c.repoSlug}/issues`,
+    img: (c) => `https://img.shields.io/github/issues/${c.repoSlug}?logo=github`,
+    setup:
+      'Nothing to configure beyond having Issues enabled (Settings → Features). Read it as a work-in-flight number, not a defect count: shields.io asks GitHub Search, which counts pull requests as issues unless the badge path excludes them — this one uses the `/issues/` path, which already does.',
+  },
+  {
+    id: 'pull-requests',
+    title: 'Open pull requests',
+    group: 'community',
+    needs: [],
+    alt: 'Open Pull Requests',
+    href: (c) => `https://github.com/${c.repoSlug}/pulls`,
+    img: (c) => `https://img.shields.io/github/issues-pr/${c.repoSlug}?logo=github&label=PRs`,
+    setup:
+      'Nothing to configure. Counts open PRs including drafts. Pair it with the merged count below — an open count alone reads the same whether the queue moves in a day or has been stuck for a year.',
+  },
+  {
+    id: 'prs-merged',
+    title: 'Merged pull requests',
+    group: 'community',
+    needs: [],
+    alt: 'Merged Pull Requests',
+    href: (c) => `https://github.com/${c.repoSlug}/pulls?q=is%3Apr+is%3Aclosed`,
+    img: (c) =>
+      `https://img.shields.io/github/issues-pr-closed/${c.repoSlug}?logo=github&label=PRs%20merged&color=8957e5`,
+    setup:
+      'Nothing to configure. shields.io has no "merged" endpoint — `issues-pr-closed` counts every PR that is no longer open, so PRs closed without merging are in this number too. On a repo that closes a lot of stale PRs, label it "PRs closed" instead of overstating what landed.',
+  },
+  {
+    id: 'discussions',
+    title: 'GitHub Discussions',
+    group: 'community',
+    needs: [],
+    alt: 'GitHub Discussions',
+    href: (c) => `https://github.com/${c.repoSlug}/discussions`,
+    img: (c) => `https://img.shields.io/github/discussions/${c.repoSlug}`,
+    setup:
+      'Discussions has to be turned on (Settings → Features → Discussions) or the badge reads "repo not found" — which looks identical to a private repo. Turn it on before adding the badge, not after.',
   },
   {
     id: 'npm-downloads',
@@ -309,18 +401,90 @@ export const BADGES = [
   },
 ];
 
-/** Brand colors for the stack chips, so the common ones look right by default. */
+/**
+ * Brand colors for the stack chips, so the common ones look right by default.
+ *
+ * Keyed by the lowercased chip name. Anything not listed falls back to a
+ * neutral grey, which is a perfectly good chip — this map is a nicety, not a
+ * gate on what you can name.
+ */
 const STACK_COLORS = {
   claude: 'D97757',
   cloudflare: 'F38020',
+  'cloudflare workers': 'F38020',
+  d1: 'F38020',
+  r2: 'F38020',
+  wrangler: 'F38020',
   'next.js': 'black',
   react: '20232A',
+  svelte: 'FF3E00',
+  'vue.js': '4FC08D',
   typescript: '3178C6',
+  javascript: 'F7DF1E',
+  'node.js': '5FA04E',
   bun: '14151A',
+  npm: 'CB3837',
+  pnpm: 'F69220',
+  turborepo: 'EF4444',
   vite: '646CFF',
+  vitest: '6E9F18',
+  jest: 'C21325',
+  playwright: '2EAD33',
+  biome: '60A5FA',
   vercel: 'black',
   postgresql: '4169E1',
+  sqlite: '003B57',
+  'drizzle orm': 'C5F74F',
   tailwindcss: '06B6D4',
+  'tailwind css': '06B6D4',
+  'shadcn/ui': '000000',
+  'radix ui': '161618',
+  'better-auth': '000000',
+  hono: 'E36002',
+  stripe: '635BFF',
+  zod: '3E67B1',
+  tauri: '24C8D8',
+  electron: '47848F',
+  prosemirror: '000000',
+  tiptap: '000000',
+  fumadocs: '000000',
+  mcp: '000000',
+  'vercel ai sdk': 'black',
+  openai: '412991',
+  python: '3776AB',
+  docker: '2496ED',
+  'github actions': '2088FF',
+};
+
+/**
+ * simple-icons slugs for chips whose name does not reduce to one.
+ *
+ * `?logo=` takes a simpleicons.org slug, and the derivation below (lowercase,
+ * drop dots, spaces and slashes) gets most of them right — `Next.js` really is
+ * `nextjs`. It gets a handful wrong, and a wrong slug renders a chip with a
+ * blank square where the logo should be, so those are written out.
+ *
+ * A name with no icon at all (`better-auth`, `MCP`) maps to the empty string:
+ * the chip renders as plain text rather than carrying someone else's logo.
+ */
+const STACK_LOGOS = {
+  'cloudflare workers': 'cloudflareworkers',
+  d1: 'cloudflare',
+  r2: 'cloudflare',
+  'drizzle orm': 'drizzle',
+  'tailwind css': 'tailwindcss',
+  'vue.js': 'vuedotjs',
+  'node.js': 'nodedotjs',
+  'next.js': 'nextdotjs',
+  'radix ui': 'radixui',
+  'github actions': 'githubactions',
+  'vercel ai sdk': 'vercel',
+  claude: 'claude',
+  'better-auth': '',
+  mcp: '',
+  prosemirror: '',
+  fumadocs: '',
+  zod: 'zod',
 };
 
 /**
@@ -328,10 +492,13 @@ const STACK_COLORS = {
  * @returns {string} an `<img>` chip for one stack entry
  */
 export function stackChip(name) {
-  const key = name.trim().toLowerCase();
+  const label = name.trim();
+  const key = label.toLowerCase();
   const color = STACK_COLORS[key] ?? '555555';
-  const logo = key.replace(/[.\s]/g, '');
-  return `<img src="${shieldsBadge(name.trim(), color, { logo, logoColor: 'white' })}" alt="${name.trim()}" />`;
+  const logo = STACK_LOGOS[key] ?? key.replace(/[.\s/]/g, '');
+
+  const params = logo ? { logo, logoColor: 'white' } : {};
+  return `<img src="${shieldsBadge(label, color, params)}" alt="${label}" />`;
 }
 
 /**

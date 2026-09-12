@@ -1,28 +1,44 @@
 <p align="center">
 <!-- badge:doi --><a href="https://doi.org/{{DOI}}"><img src="https://zenodo.org/badge/DOI/{{DOI}}.svg" alt="DOI" /></a>
     <a href="https://deepwiki.com/{{OWNER}}/{{REPO}}"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+<!-- badge:website --><a href="{{WEBSITE_URL}}"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
 <!-- badge:docs --><a href="{{DOCS_URL}}"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
 <!-- badge:api --><a href="{{API_URL}}"><img src="https://img.shields.io/badge/API-blue?logo=fastapi&logoColor=white" alt="API" /></a>
 <!-- badge:youtube --><a href="{{YOUTUBE_URL}}"><img height="20px" src="https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white" alt="YouTube" /></a>
     <a href="https://deploy.workers.cloudflare.com/?url=https://github.com/{{OWNER}}/{{REPO}}"><img height="24px" src="https://deploy.workers.cloudflare.com/button" alt="Deploy to Cloudflare Workers" /></a>
-    <a href="https://github.com/{{OWNER}}/{{REPO}}/stargazers"><img src="https://img.shields.io/github/stars/{{OWNER}}/{{REPO}}" alt="GitHub Stars" /></a>
+    <a href="https://codespaces.new/{{OWNER}}/{{REPO}}"><img height="20px" src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" /></a>
 <br />
+<!-- badge:npm --><a href="https://www.npmjs.com/package/{{PACKAGE}}"><img src="https://img.shields.io/npm/v/{{PACKAGE}}.svg" alt="npm version" /></a>
 <!-- badge:npm --><a href="https://www.npmjs.com/package/{{PACKAGE}}"><img src="https://img.shields.io/npm/dm/{{PACKAGE}}.svg" alt="NPM Monthly Downloads" /></a>
+<!-- badge:npm --><a href="https://www.npmjs.com/package/{{PACKAGE}}"><img src="https://img.shields.io/npm/dt/{{PACKAGE}}.svg" alt="NPM Total Downloads" /></a>
     <a href="https://codecov.io/gh/{{OWNER}}/{{REPO}}"><img src="https://codecov.io/gh/{{OWNER}}/{{REPO}}/graph/badge.svg" alt="Coverage" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/actions/workflows/tests.yml"><img src="https://github.com/{{OWNER}}/{{REPO}}/actions/workflows/tests.yml/badge.svg?branch={{DEFAULT_BRANCH}}" alt="Tests" /></a>
+<!-- badge:uptime --><a href="https://stats.uptimerobot.com/{{UPTIME_ID}}"><img src="https://img.shields.io/badge/Uptime-Status-brightgreen?logo=uptimerobot&logoColor=white" alt="Uptime Status" /></a>
+<br />
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/stargazers"><img src="https://img.shields.io/github/stars/{{OWNER}}/{{REPO}}" alt="GitHub Stars" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/forks"><img src="https://img.shields.io/github/forks/{{OWNER}}/{{REPO}}" alt="GitHub Forks" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/graphs/contributors"><img src="https://img.shields.io/github/contributors/{{OWNER}}/{{REPO}}" alt="Contributors" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/issues"><img src="https://img.shields.io/github/issues/{{OWNER}}/{{REPO}}?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/pulls"><img src="https://img.shields.io/github/issues-pr/{{OWNER}}/{{REPO}}?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/{{OWNER}}/{{REPO}}?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/{{OWNER}}/{{REPO}}/discussions"><img src="https://img.shields.io/github/discussions/{{OWNER}}/{{REPO}}" alt="GitHub Discussions" /></a>
     <a href="https://github.com/{{OWNER}}/{{REPO}}/graphs/contributors"><img src="https://img.shields.io/github/commit-activity/m/{{OWNER}}/{{REPO}}" alt="Commit Activity" /></a>
     <a href="https://github.com/{{OWNER}}/{{REPO}}/commits/{{DEFAULT_BRANCH}}/"><img src="https://img.shields.io/github/last-commit/{{OWNER}}/{{REPO}}.svg" alt="Last Commit" /></a>
-    <a href="https://github.com/{{OWNER}}/{{REPO}}/actions/workflows/tests.yml"><img src="https://github.com/{{OWNER}}/{{REPO}}/actions/workflows/tests.yml/badge.svg?branch={{DEFAULT_BRANCH}}" alt="Tests" /></a>
-<br />
-<!-- badge:uptime --><a href="https://stats.uptimerobot.com/{{UPTIME_ID}}"><img src="https://img.shields.io/badge/Uptime-Status-brightgreen?logo=uptimerobot&logoColor=white" alt="Uptime Status" /></a>
-<!-- badge:npm --><a href="https://www.npmjs.com/package/{{PACKAGE}}"><img src="https://img.shields.io/npm/v/{{PACKAGE}}.svg" alt="npm version" /></a>
 <!-- badge:discord --><a href="{{DISCORD_INVITE}}"><img src="https://img.shields.io/discord/{{DISCORD_ID}}.svg?label=Chat&logo=Discord&colorB=7289da&style=flat" alt="Join Discord" /></a>
     <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
     <a href="./LICENSE.md"><img src="https://img.shields.io/github/license/{{OWNER}}/{{REPO}}" alt="License" /></a>
 <br />
     <img src="https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=fff" alt="Claude AI" />
-    <img src="https://img.shields.io/badge/Cloudflare-F38020?logo=Cloudflare&logoColor=white" alt="Cloudflare" />
+    <img src="https://img.shields.io/badge/Cloudflare%20Workers-F38020?logo=cloudflareworkers&logoColor=white" alt="Cloudflare Workers" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Next.js-black?logo=nextdotjs&logoColor=white" alt="Next.js" />
+    <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" />
+    <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+    <img src="https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&logoColor=white" alt="shadcn/ui" />
+    <img src="https://img.shields.io/badge/Drizzle%20ORM-C5F74F?logo=drizzle&logoColor=white" alt="Drizzle ORM" />
     <img src="https://img.shields.io/badge/Turborepo-EF4444?logo=turborepo&logoColor=white" alt="Turborepo" />
-    <img src="https://img.shields.io/badge/Bun-000000?logo=bun&logoColor=white" alt="Bun" />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" />
+    <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </p>
 
 # {{REPO}}

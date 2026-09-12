@@ -53,6 +53,7 @@ Context (all optional — detected where possible)
 
 Badge inputs (each enables the badge that needs it)
   --doi <10.5281/...>        --docs <url>          --api <url>
+  --website <url>
   --youtube <url>            --uptime <url>        --test-report <url>
   --discord-id <id>          --discord-invite <url>
   --stack <A,B,C>            --cloudflare-deploy
@@ -108,6 +109,7 @@ function overridesFrom(flags) {
     npmPackage: text('npm-package'),
     workflowFile: text('workflow'),
     doi: text('doi'),
+    websiteUrl: text('website'),
     docsUrl: text('docs'),
     apiUrl: text('api'),
     youtubeUrl: text('youtube'),

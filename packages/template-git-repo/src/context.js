@@ -161,6 +161,146 @@ export function detectNpmPackage(root, packagesDir) {
 }
 
 /**
+ * Dependency name -> the stack chip it implies, in the order the chips should
+ * read: language and runtime first, then framework, then the things bolted onto
+ * it, then the test runner.
+ *
+ * Keyed on the dependency rather than on a guess about the project, because the
+ * manifest is the one place that cannot lie about what a package is built with.
+ * A hand-written stack row goes stale the week someone swaps a framework out and
+ * nobody remembers the README says otherwise.
+ *
+ * Several entries collapse many packages into one chip — a ProseMirror app
+ * depends on eight `prosemirror-*` modules and is built with ProseMirror once.
+ * Duplicates are removed by `detectStack`, so listing every alias is safe.
+ */
+const STACK_BY_DEPENDENCY = [
+  ['typescript', 'TypeScript'],
+  ['next', 'Next.js'],
+  ['react', 'React'],
+  ['svelte', 'Svelte'],
+  ['vue', 'Vue.js'],
+  ['@tauri-apps/api', 'Tauri'],
+  ['@tauri-apps/cli', 'Tauri'],
+  ['electron', 'Electron'],
+  ['wrangler', 'Cloudflare Workers'],
+  ['hono', 'Hono'],
+  ['tailwindcss', 'Tailwind CSS'],
+  ['@radix-ui/react-dialog', 'shadcn/ui'],
+  ['drizzle-orm', 'Drizzle ORM'],
+  ['better-auth', 'better-auth'],
+  ['stripe', 'Stripe'],
+  ['ai', 'Vercel AI SDK'],
+  ['@modelcontextprotocol/sdk', 'MCP'],
+  ['@tiptap/core', 'TipTap'],
+  ['prosemirror-state', 'ProseMirror'],
+  ['prosemirror-view', 'ProseMirror'],
+  ['zod', 'Zod'],
+  ['fumadocs-ui', 'Fumadocs'],
+  ['vite', 'Vite'],
+  ['turbo', 'Turborepo'],
+  ['vitest', 'Vitest'],
+  ['jest', 'Jest'],
+  ['@playwright/test', 'Playwright'],
+];
+
+/** The chip for each package manager, so the runtime shows up even with no deps. */
+const STACK_BY_PACKAGE_MANAGER = { bun: 'Bun', pnpm: 'pnpm', yarn: 'Yarn', npm: 'npm' };
+
+/**
+ * De-duplicate chips and put them back in catalog order.
+ *
+ * Needed because the workspace union collects chips manifest by manifest, and
+ * alphabetical directory order is not a sensible reading order for a stack row —
+ * it lands on "Drizzle ORM, Vitest, TypeScript, React". Anything not in the
+ * catalog (a `prepend` like Claude) keeps its position at the front.
+ *
+ * @param {string[]} chips
+ * @returns {string[]}
+ */
+function orderChips(chips) {
+  const order = STACK_BY_DEPENDENCY.map(([, chip]) => chip);
+  const rank = (chip) => {
+    const index = order.indexOf(chip);
+    return index === -1 ? -1 : index;
+  };
+
+  const unique = [...new Set(chips)];
+  const leading = unique.filter((chip) => rank(chip) === -1);
+  const known = unique.filter((chip) => rank(chip) !== -1).sort((a, b) => rank(a) - rank(b));
+
+  return [...leading, ...known];
+}
+
+/**
+ * The stack chips for one manifest, read off its dependencies.
+ *
+ * Returns a comma-separated string because that is what the `stack` badge takes
+ * and what `--stack` passes on the command line. An empty result means the
+ * manifest declared nothing recognizable, and the badge is skipped — better
+ * than a row asserting a framework the package does not use.
+ *
+ * @param {Record<string, any> | null} manifest
+ * @param {{ prepend?: string[], packageManager?: string }} [options]
+ * @returns {string | undefined}
+ */
+export function detectStack(manifest, options = {}) {
+  const { prepend = [], packageManager } = options;
+
+  const declared = new Set([
+    ...Object.keys(manifest?.dependencies ?? {}),
+    ...Object.keys(manifest?.devDependencies ?? {}),
+    ...Object.keys(manifest?.peerDependencies ?? {}),
+  ]);
+
+  const chips = [...prepend];
+
+  const runtime = packageManager ? STACK_BY_PACKAGE_MANAGER[packageManager] : undefined;
+  if (runtime) chips.push(runtime);
+
+  for (const [dependency, chip] of STACK_BY_DEPENDENCY) {
+    if (declared.has(dependency)) chips.push(chip);
+  }
+
+  const ordered = orderChips(chips);
+  return ordered.length > 0 ? ordered.join(',') : undefined;
+}
+
+/**
+ * The stack for a whole workspace: the union of every member's chips.
+ *
+ * A monorepo root manifest lists turbo and little else, so reading it alone
+ * describes the build tooling and none of the product. This walks the workspace
+ * directory instead, which is what the root README's stack row should say.
+ *
+ * @param {string} root
+ * @param {{ packagesDirs?: string[], prepend?: string[], packageManager?: string }} [options]
+ * @returns {string | undefined}
+ */
+export function detectWorkspaceStack(root, options = {}) {
+  const { packagesDirs = ['packages', 'apps'], prepend = [], packageManager } = options;
+
+  const manifests = [readJson(path.join(root, 'package.json'))];
+
+  for (const dir of packagesDirs) {
+    const parent = path.join(root, dir);
+    if (!fs.existsSync(parent)) continue;
+
+    for (const entry of fs.readdirSync(parent, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      manifests.push(readJson(path.join(parent, entry.name, 'package.json')));
+    }
+  }
+
+  const merged = manifests.filter(Boolean).flatMap((manifest) =>
+    (detectStack(manifest, { packageManager }) ?? '').split(',').filter(Boolean),
+  );
+
+  const ordered = orderChips([...prepend, ...merged]);
+  return ordered.length > 0 ? ordered.join(',') : undefined;
+}
+
+/**
  * Everything the templates and badges need, detected then overridden by flags.
  *
  * @param {{ cwd?: string, overrides?: Record<string, string | undefined> }} [options]
@@ -194,6 +334,7 @@ export function buildContext(options = {}) {
     // Everything below has no sensible default — a badge that needs one of
     // these is skipped until it is passed in.
     doi: overrides.doi,
+    websiteUrl: overrides.websiteUrl,
     docsUrl: overrides.docsUrl,
     apiUrl: overrides.apiUrl,
     youtubeUrl: overrides.youtubeUrl,

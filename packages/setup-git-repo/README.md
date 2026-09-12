@@ -9,6 +9,15 @@
     <a href="https://www.npmjs.com/package/setup-git-repo"><img src="https://img.shields.io/npm/types/setup-git-repo" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=setup-git-repo"><img src="https://packagephobia.com/badge?p=setup-git-repo" alt="Install size" /></a>
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=setup-git-repo&label=setup-git-repo%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </p>
 <!-- template-git-repo:badges:end -->
 
@@ -69,7 +78,7 @@ rather than shipped pointing at a placeholder:
 | --- | --- |
 | `--package <name>` | npm version + monthly downloads |
 | `--doi <10.5281/zenodo.N>` | Zenodo DOI |
-| `--docs <url>` / `--api <url>` / `--youtube <url>` | link badges |
+| `--website <url>` / `--docs <url>` / `--api <url>` / `--youtube <url>` | link badges |
 | `--uptime <page-id>` | UptimeRobot status page |
 | `--discord-id <id>` + `--discord-invite <url>` | Discord (both required) |
 

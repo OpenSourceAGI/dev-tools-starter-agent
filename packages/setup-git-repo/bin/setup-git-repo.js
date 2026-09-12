@@ -41,6 +41,7 @@ const FLAGS = {
   description: "DESCRIPTION",
   package: "PACKAGE",
   doi: "DOI",
+  website: "WEBSITE_URL",
   docs: "DOCS_URL",
   api: "API_URL",
   youtube: "YOUTUBE_URL",
@@ -119,6 +120,7 @@ ${bold("Optional badges")} ${dim("(a badge whose value is omitted is left out of
 
   --package <name>          npm package, for the version + downloads badges
   --doi <10.5281/zenodo.N>  Zenodo DOI
+  --website <url>           Live app link
   --docs <url>              Documentation link
   --api <url>               API reference link
   --youtube <url>           Demo video link
@@ -196,6 +198,7 @@ async function main() {
       console.log(`\n${bold("  Optional badges")} ${dim("— press Enter to leave one out")}`);
       values.PACKAGE = await prompt(rl, "npm package name", values.PACKAGE);
       values.DOI = await prompt(rl, "Zenodo DOI", values.DOI);
+      values.WEBSITE_URL = await prompt(rl, "Live app URL", values.WEBSITE_URL);
       values.DOCS_URL = await prompt(rl, "Docs URL", values.DOCS_URL);
       values.API_URL = await prompt(rl, "API URL", values.API_URL);
       values.YOUTUBE_URL = await prompt(rl, "YouTube URL", values.YOUTUBE_URL);

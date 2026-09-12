@@ -4,9 +4,9 @@ Every badge in the README falls into one of three groups:
 
 | Group | Setup | Badges |
 | --- | --- | --- |
-| **Zero setup** — works the moment the repo is public | none | Stars, Commit Activity, Last Commit, License, PRs Welcome, Deploy to Cloudflare, DeepWiki, tech-stack chips |
+| **Zero setup** — works the moment the repo is public | none | Stars, Forks, Contributors, Open Issues, Open PRs, Merged PRs, Discussions, Commit Activity, Last Commit, License, PRs Welcome, Deploy to Cloudflare, Codespaces, DeepWiki, tech-stack chips |
 | **Needs a workflow or service connected** | one repo secret or one app install | Tests status, Coverage, npm version, npm downloads |
-| **Needs an account and an id you paste in** | an external account | DOI, Discord, UptimeRobot, YouTube, Docs, API |
+| **Needs an account and an id you paste in** | an external account | DOI, Discord, UptimeRobot, YouTube, Website, Docs, API |
 
 `setup-git-repo` drops the badge lines for group 3 unless you pass the id, so the
 README never ships a badge pointing at `{{DOI}}`. Add them back later by copying
@@ -86,6 +86,69 @@ DeepWiki indexes public repos automatically. The first visit to the link
 triggers indexing if the repo has not been seen; the badge image itself is
 static, so it renders even before indexing finishes.
 
+### Forks and Contributors
+
+```html
+<a href="https://github.com/OWNER/REPO/forks"><img src="https://img.shields.io/github/forks/OWNER/REPO" alt="GitHub Forks" /></a>
+<a href="https://github.com/OWNER/REPO/graphs/contributors"><img src="https://img.shields.io/github/contributors/OWNER/REPO" alt="Contributors" /></a>
+```
+
+`forks` counts direct forks only, not forks of forks, so a repo forked along a
+chain reads lower than it is. `contributors` counts commit authors GitHub could
+match to an account — commits made with an unregistered email belong to nobody
+and are invisible here. Use `contributors-anon` instead if your history has many
+of those.
+
+### Open Issues
+
+```html
+<a href="https://github.com/OWNER/REPO/issues"><img src="https://img.shields.io/github/issues/OWNER/REPO?logo=github" alt="GitHub Issues" /></a>
+```
+
+Needs Issues enabled (Settings → Features). Read it as work in flight, not a
+defect count. Shields asks GitHub Search, which treats pull requests as issues on
+some endpoints — the `/issues/` path used here already excludes them. Add
+`-raw` (`github/issues-raw/...`) for a bare number with no "open" suffix, and
+`-closed` for the closed count.
+
+### Open PRs and Merged PRs
+
+```html
+<a href="https://github.com/OWNER/REPO/pulls"><img src="https://img.shields.io/github/issues-pr/OWNER/REPO?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+<a href="https://github.com/OWNER/REPO/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OWNER/REPO?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+```
+
+Two counts rather than one on purpose. An open count alone reads the same whether
+the queue clears in a day or has been stuck for a year; the pair is what tells a
+reader whether maintenance is actually happening.
+
+Shields has **no "merged" endpoint**. `issues-pr-closed` counts every PR that is
+no longer open, so PRs closed without merging are in the number too. If you close
+a lot of stale PRs, relabel it `label=PRs%20closed` rather than overstating what
+landed. Both take `label=` because unlabelled they render as bare numbers, and
+two adjacent PR badges then look like one number printed twice.
+
+### Discussions
+
+```html
+<a href="https://github.com/OWNER/REPO/discussions"><img src="https://img.shields.io/github/discussions/OWNER/REPO" alt="GitHub Discussions" /></a>
+```
+
+Discussions is **off by default**. Until you turn it on (Settings → Features →
+Discussions) the badge reads `repo not found`, which looks exactly like the
+private-repo failure — turn it on before adding the badge, not after.
+
+### Open in GitHub Codespaces
+
+```html
+<a href="https://codespaces.new/OWNER/REPO"><img height="20px" src="https://github.com/codespaces/badge.svg" alt="Open in GitHub Codespaces" /></a>
+```
+
+Nothing to configure — the link boots the repo in a default container, billed
+against the *visitor's* free hours, so the button costs you nothing. Add a
+`.devcontainer/devcontainer.json` if the default image is missing something your
+install needs: the visitor is the one who sees that failure.
+
 ### Tech-stack chips
 
 Pure decoration — static Shields badges with a brand color and a Simple Icons
@@ -154,6 +217,7 @@ drop to 0%.
 ```html
 <a href="https://www.npmjs.com/package/PACKAGE"><img src="https://img.shields.io/npm/v/PACKAGE.svg" alt="npm version" /></a>
 <a href="https://www.npmjs.com/package/PACKAGE"><img src="https://img.shields.io/npm/dm/PACKAGE.svg" alt="NPM Monthly Downloads" /></a>
+<a href="https://www.npmjs.com/package/PACKAGE"><img src="https://img.shields.io/npm/dt/PACKAGE.svg" alt="NPM Total Downloads" /></a>
 ```
 
 `PACKAGE` is the name in that package's `package.json`, not the repo name. Both
@@ -161,7 +225,10 @@ badges render `invalid` until the package's **first** publish — `npm-publish.y
 does that on the first push to the default branch. Scoped packages work with the
 scope included and URL-encoded slash: `npm/v/%40scope%2Fname`.
 
-`dm` is downloads/month; `dw` weekly, `dt` total. In a monorepo, pick the package
+`dm` is downloads/month; `dw` weekly, `dt` total. Show the monthly and the total
+together rather than either alone: a large all-time total with a flat month means
+something very different from the same total still climbing, and only the monthly
+number says the package is still being installed. In a monorepo, pick the package
 users actually install — or show several, one badge each.
 
 ---
@@ -225,6 +292,17 @@ For a badge that reports the *real* number, use a monitor-specific API key
 That key is read-only for one monitor, which is why it is safe in a README —
 never paste your account-wide API key there.
 
+### Website (live app)
+
+```html
+<a href="https://your.app"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
+```
+
+The deployed thing, not the repo, and first in the row on purpose: a visitor who
+can click straight into a running app decides in seconds whether to read the
+rest. Static — nothing checks the URL is up, which is what the uptime badge is
+for. Pass it with `--website <url>`.
+
 ### Docs / API / YouTube links
 
 ```html
@@ -256,8 +334,9 @@ markdown image syntax cannot center or set a height. Consequences:
 - GitHub's markdown renderer strips `style` attributes. Sizing has to come from
   the `height` attribute or from Shields' own `style=` parameter.
 
-Group by meaning: identity and links on row one, health and freshness on row two,
-community on row three, stack chips last.
+Group by meaning, four rows: identity and links on row one, health and freshness
+on row two, community on row three, stack chips last. Four rows of five reads;
+twenty badges in one run is a wall.
 
 ## Verifying
 

@@ -23,12 +23,20 @@ package or finish setting up Codecov.
 | --- | --- | --- |
 | [Zenodo DOI](#doi) `doi` | doi | `--doi <10.5281/zenodo.NNNNNNN>` |
 | [Ask DeepWiki](#deepwiki) `deepwiki` | — | on by default |
+| [Live app](#website) `website` | websiteUrl | `--website <url>` |
 | [Documentation](#docs) `docs` | docsUrl | `--docs <url>` |
 | [API reference](#api) `api` | apiUrl | `--api <url>` |
 | [YouTube demo](#youtube) `youtube` | youtubeUrl | `--youtube <url>` |
 | [Deploy to Cloudflare Workers](#deploy-cloudflare) `deploy-cloudflare` | cloudflareDeploy | `--cloudflare-deploy` |
 | [Open in StackBlitz](#stackblitz) `stackblitz` | stackblitzUrl | `--stackblitz <url>` |
+| [Open in GitHub Codespaces](#codespaces) `codespaces` | — | on by default |
 | [GitHub stars](#stars) `stars` | — | on by default |
+| [GitHub forks](#forks) `forks` | — | on by default |
+| [Contributors](#contributors) `contributors` | — | on by default |
+| [Open issues](#issues) `issues` | — | on by default |
+| [Open pull requests](#pull-requests) `pull-requests` | — | on by default |
+| [Merged pull requests](#prs-merged) `prs-merged` | — | on by default |
+| [GitHub Discussions](#discussions) `discussions` | — | on by default |
 | [npm monthly downloads](#npm-downloads) `npm-downloads` | npmPackage | `--npm-package <name>` |
 | [npm version](#npm-version) `npm-version` | npmPackage | `--npm-package <name>` |
 | [npm total downloads](#npm-total-downloads) `npm-total-downloads` | npmPackage | `--npm-package <name>` |
@@ -63,6 +71,14 @@ Enable with: `--doi <10.5281/zenodo.NNNNNNN>`
 Nothing to configure for a public repo — visit deepwiki.com/<owner>/<repo> once to trigger the first index. Private repos need the DeepWiki GitHub App installed.
 
 Included by default — no configuration needed.
+
+### website
+
+**Live app**
+
+The deployed thing, not the repo. It is first in the row on purpose: a visitor who can click through to a running app decides in seconds whether to read the rest. Static badge — nothing checks that the URL is up, which is what the uptime badge is for.
+
+Enable with: `--website <url>`
 
 ### docs
 
@@ -103,6 +119,14 @@ Enable with: `--cloudflare-deploy`
 Nothing to configure — StackBlitz imports a public repo straight from a URL: `https://stackblitz.com/github/<owner>/<repo>/tree/<branch>/<path>`. Point it at a directory that boots on its own (a package with its own package.json, or an `examples/` folder), because StackBlitz installs from the manifest at that path and a bare monorepo root will not run. Node APIs need the WebContainer runtime, which means the directory must be ESM and its deps must be installable from npm.
 
 Enable with: `--stackblitz <url>`
+
+### codespaces
+
+**Open in GitHub Codespaces**
+
+Nothing to configure — the link boots the repo in a default container. Add a `.devcontainer/devcontainer.json` if the default image is missing something your install needs, because the visitor sees the failure, not you. Codespaces bills the visitor's own free hours, so the button costs you nothing.
+
+Included by default — no configuration needed.
 
 ## Quality — is it working, is it tested, is it shipped
 
@@ -193,6 +217,54 @@ Enable with: `--uptime <url>`
 **GitHub stars**
 
 Nothing to configure. Public repos only — shields.io cannot read a private repo.
+
+Included by default — no configuration needed.
+
+### forks
+
+**GitHub forks**
+
+Nothing to configure. Counts direct forks only, not forks of forks, so it undercounts a repo that has been forked along a chain. Public repos only.
+
+Included by default — no configuration needed.
+
+### contributors
+
+**Contributors**
+
+Nothing to configure, but it counts commit authors GitHub could match to an account — commits made with an unregistered email are attributed to nobody and do not appear here. Use `contributors-anon` instead if your history has many of those.
+
+Included by default — no configuration needed.
+
+### issues
+
+**Open issues**
+
+Nothing to configure beyond having Issues enabled (Settings → Features). Read it as a work-in-flight number, not a defect count: shields.io asks GitHub Search, which counts pull requests as issues unless the badge path excludes them — this one uses the `/issues/` path, which already does.
+
+Included by default — no configuration needed.
+
+### pull-requests
+
+**Open pull requests**
+
+Nothing to configure. Counts open PRs including drafts. Pair it with the merged count below — an open count alone reads the same whether the queue moves in a day or has been stuck for a year.
+
+Included by default — no configuration needed.
+
+### prs-merged
+
+**Merged pull requests**
+
+Nothing to configure. shields.io has no "merged" endpoint — `issues-pr-closed` counts every PR that is no longer open, so PRs closed without merging are in this number too. On a repo that closes a lot of stale PRs, label it "PRs closed" instead of overstating what landed.
+
+Included by default — no configuration needed.
+
+### discussions
+
+**GitHub Discussions**
+
+Discussions has to be turned on (Settings → Features → Discussions) or the badge reads "repo not found" — which looks identical to a private repo. Turn it on before adding the badge, not after.
 
 Included by default — no configuration needed.
 

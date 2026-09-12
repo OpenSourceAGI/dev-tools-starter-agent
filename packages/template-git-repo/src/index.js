@@ -19,6 +19,8 @@ export {
   detectNpmPackage,
   detectPackageManager,
   detectPackagesDir,
+  detectStack,
+  detectWorkspaceStack,
   findRepoRoot,
   parseRepoSlug,
   substitute,
