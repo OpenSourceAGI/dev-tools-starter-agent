@@ -3,11 +3,11 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { TEMPLATE_DIR } from '../src/apply.js';
-import { testablePackages, workspaceDirectories, formatOutput } from '../template/scripts/list-test-packages.mjs';
-import { pinWorkspaceDeps, readSiblings } from '../template/scripts/pin-workspace-deps.mjs';
-import { patchVersion, restore } from '../template/scripts/restore-pinned-deps.mjs';
-import { nextFreeVersion, takenVersions } from '../template/scripts/next-free-version.mjs';
-import { workspaceBuildOrder } from '../template/scripts/workspace-build-order.mjs';
+import { testablePackages, workspaceDirectories, formatOutput } from '../template/.github/scripts/list-test-packages.mjs';
+import { pinWorkspaceDeps, readSiblings } from '../template/.github/scripts/pin-workspace-deps.mjs';
+import { patchVersion, restore } from '../template/.github/scripts/restore-pinned-deps.mjs';
+import { nextFreeVersion, takenVersions } from '../template/.github/scripts/next-free-version.mjs';
+import { workspaceBuildOrder } from '../template/.github/scripts/workspace-build-order.mjs';
 
 const temporaryDirectories = [];
 
@@ -183,13 +183,13 @@ describe('next-free-version', () => {
 });
 
 describe('the template ships what the workflows call', () => {
-  it('every scripts/*.mjs referenced in a workflow exists', () => {
+  it('every .github/scripts/*.mjs referenced in a workflow exists', () => {
     const workflowsDir = path.join(TEMPLATE_DIR, '.github', 'workflows');
     const referenced = new Set();
 
     for (const file of fs.readdirSync(workflowsDir)) {
       const yaml = fs.readFileSync(path.join(workflowsDir, file), 'utf8');
-      for (const match of yaml.matchAll(/node\s+(?:"\$repo_root\/")?(scripts\/[\w-]+\.mjs)/g)) {
+      for (const match of yaml.matchAll(/node\s+"?(?:\$repo_root\/)?(\.github\/scripts\/[\w-]+\.mjs)/g)) {
         referenced.add(match[1]);
       }
     }

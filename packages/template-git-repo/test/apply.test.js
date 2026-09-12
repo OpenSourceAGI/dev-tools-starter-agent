@@ -40,11 +40,11 @@ describe('the shipped template', () => {
         '.github/workflows/auto-merge-claude.yml',
         '.github/workflows/auto-merge-and-create-prs.yml',
         '.github/workflows/deploy-test-reports.yml',
-        'scripts/workspace-build-order.mjs',
-        'scripts/next-free-version.mjs',
-        'scripts/pin-workspace-deps.mjs',
-        'scripts/restore-pinned-deps.mjs',
-        'scripts/list-test-packages.mjs',
+        '.github/scripts/workspace-build-order.mjs',
+        '.github/scripts/next-free-version.mjs',
+        '.github/scripts/pin-workspace-deps.mjs',
+        '.github/scripts/restore-pinned-deps.mjs',
+        '.github/scripts/list-test-packages.mjs',
         'turbo.json',
         'codecov.yml',
       ]),
@@ -73,8 +73,15 @@ describe('the shipped template', () => {
   it('every template script parses as JavaScript', async () => {
     // These run in CI with no install step behind them, so a syntax error
     // surfaces as a failed workflow rather than a failed test.
-    for (const file of walk(path.join(TEMPLATE_DIR, 'scripts'))) {
-      await expect(import(path.join(TEMPLATE_DIR, 'scripts', file))).resolves.toBeDefined();
+    const scriptsDir = path.join(TEMPLATE_DIR, '.github', 'scripts');
+    const scripts = walk(scriptsDir);
+
+    // A silent zero here would make the check vacuous the next time the
+    // helpers move, which is exactly how they last went unnoticed.
+    expect(scripts.length).toBeGreaterThan(0);
+
+    for (const file of scripts) {
+      await expect(import(path.join(scriptsDir, file))).resolves.toBeDefined();
     }
   });
 
@@ -133,7 +140,7 @@ describe('applyPlan', () => {
     const root = scratch();
     applyPlan(planFiles({ context: { ...context, root } }));
 
-    const mode = fs.statSync(path.join(root, 'scripts', 'next-free-version.mjs')).mode;
+    const mode = fs.statSync(path.join(root, '.github', 'scripts', 'next-free-version.mjs')).mode;
     expect(mode & 0o111).toBeTruthy();
   });
 });
