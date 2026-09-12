@@ -13,7 +13,7 @@
   decision and the failure behind it: why the publish job resolves versions from
   the registry, why package README badges are generated per package, why badges
   with missing inputs are dropped rather than rendered. `npm-publish.yml` and
-  `scripts/sync-package-readmes.mjs` are the house style — copy that register.
+  `.github/scripts/sync-package-readmes.mjs` are the house style — copy that register.
 - Keep package boundaries clean. These tools ship separately; a cross-package
   import is a coupling you have to maintain forever.
 

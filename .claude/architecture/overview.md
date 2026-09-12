@@ -35,7 +35,7 @@ name is what turbo filters and `--skill` flags use.
 | `react-app-store-buttons` | `react-app-store-buttons` | App Store / Play / platform download buttons for React |
 | `server-shell-setup` | *(not a workspace)* | Plain shell scripts: `install-shell.sh`, `get-node.sh`, `clean-server-disk.sh`. No `package.json`, no build, no tests. |
 | `setup-git-repo` | `setup-git-repo` | One command to set up a GitHub repo: Turborepo, CI workflows, README badges |
-| `template-git-repo` | `template-git-repo` | The badge/README **catalog** that both `setup-git-repo` and `scripts/sync-package-readmes.mjs` build on — one definition of what a badge is, used twice |
+| `template-git-repo` | `template-git-repo` | The badge/README **catalog** that both `setup-git-repo` and `.github/scripts/sync-package-readmes.mjs` build on — one definition of what a badge is, used twice |
 | `verify-phone-sms` | `verify-phone-sms` | SMS phone verification over AWS SNS, Hono server on Workers. No build step. |
 | `web2mobile-wrapper` | `create-mobile-wrapper` *(private)* | Expo/EAS scaffold wrapping a website as a mobile app. **Runs on Jest.** |
 
@@ -43,7 +43,7 @@ name is what turbo filters and `--skill` flags use.
 
 There are only a few, and they are worth knowing before you edit:
 
-- **`template-git-repo` → `scripts/sync-package-readmes.mjs` and
+- **`template-git-repo` → `.github/scripts/sync-package-readmes.mjs` and
   `setup-git-repo`.** The badge catalog and the "skip a badge whose inputs are
   missing" rule live in `template-git-repo`. Changing it changes every package
   README header and the repos `setup-git-repo` scaffolds.

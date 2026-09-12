@@ -150,7 +150,7 @@ jobs:
           unattempted_packages=""
           auth_broken=""
 
-          build_order=$(node scripts/workspace-build-order.mjs)
+          build_order=$(node .github/scripts/workspace-build-order.mjs)
           echo "📋 Build order:"
           echo "$build_order" | sed 's/^/   /'
 
@@ -189,7 +189,7 @@ jobs:
               # from the referenced local package; drop deps on local packages
               # that are not published. Only committed back if the version is
               # bumped.
-              node "$repo_root/scripts/pin-workspace-deps.mjs"
+              node "$repo_root/.github/scripts/pin-workspace-deps.mjs"
 
               # Build before deciding anything: the tarball comparison below
               # needs real dist output, and a package whose build fails is never
@@ -238,7 +238,7 @@ jobs:
                 # any version staged by an interrupted publish, and npm answers
                 # a PUT for one of those with E409 "Cannot publish over
                 # previously staged version".
-                next=$(node "$repo_root/scripts/next-free-version.mjs" "$name" "$version")
+                next=$(node "$repo_root/.github/scripts/next-free-version.mjs" "$name" "$version")
                 echo "🔼 $name content changed since $version — bumping to $next"
                 # --no-workspaces stops npm from doing workspace-aware
                 # processing over bun's symlinks, which trips
@@ -275,7 +275,7 @@ jobs:
                   exit 1
                 fi
 
-                next=$(node "$repo_root/scripts/next-free-version.mjs" "$name" "$version")
+                next=$(node "$repo_root/.github/scripts/next-free-version.mjs" "$name" "$version")
                 echo "↩ npm has $name@$version reserved — retrying as $next"
                 npm version "$next" --no-git-tag-version --no-workspaces
                 version="$next"
@@ -313,7 +313,7 @@ jobs:
           # Bumps made during publish must land back in the repo so the next run
           # sees them. The workspace:* pinning done for the tarballs must not —
           # restore everything except the "version" field.
-          node scripts/restore-pinned-deps.mjs
+          node .github/scripts/restore-pinned-deps.mjs
           git add '{{PACKAGES_GLOB}}/package.json'
           git diff --staged --quiet && echo "No version changes to commit" && exit 0
           git commit -m "chore: bump published package versions [skip ci]"

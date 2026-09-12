@@ -38,7 +38,7 @@ jobs:
 
       - id: list
         name: List packages with a test script
-        run: node scripts/list-test-packages.mjs >> "$GITHUB_OUTPUT"
+        run: node .github/scripts/list-test-packages.mjs >> "$GITHUB_OUTPUT"
 
   test:
     name: ${{ matrix.flag }}

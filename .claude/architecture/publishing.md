@@ -39,7 +39,7 @@ name is wrong".
 
 The top of every `packages/*/README.md` — the badge row and the
 `npx skills@latest add … --skill <name>` line — is **generated** by
-`scripts/sync-package-readmes.mjs`.
+`.github/scripts/sync-package-readmes.mjs`.
 
 ```bash
 bun run readmes          # write

@@ -47,7 +47,7 @@ database, and very little cross-package importing.
 | Cloud infra dashboard | `apps/Cloud-Computer-Control-Panel` (+ `apps/cccp-vscode-ext`) |
 | Per-user VS Code on Cloudflare Containers | `apps/vscode-cloud` |
 | A scaffold that users copy out | `starter-templates/<template>` |
-| The generated README headers | `scripts/sync-package-readmes.mjs` |
+| The generated README headers | `.github/scripts/sync-package-readmes.mjs` |
 
 Full catalog: [`architecture/overview.md`](.claude/architecture/overview.md).
 
@@ -88,3 +88,35 @@ bunx turbo run test --filter=manage-storage     # by npm name, not directory
 | [documentation.md](.claude/architecture/documentation.md) | The docs site, the skills convention, how README → docs sync works |
 | [templates.md](.claude/architecture/templates.md) | `starter-templates/` and the CLIs that consume them |
 | [conventions.md](.claude/architecture/conventions.md) | Code style, commits, PRs, CI, security |
+
+## Per-workspace notes
+
+Every app and package keeps its own note. They live under `.claude/`
+mirroring the workspace path — `packages/manage-storage` is documented in
+`.claude/packages/manage-storage/CLAUDE.md` — so every agent instruction in the repo sits in
+one tree rather than beside the source.
+
+| Workspace | Note |
+| --- | --- |
+| `apps/Cloud-Computer-Control-Panel` | [.claude/apps/Cloud-Computer-Control-Panel/CLAUDE.md](.claude/apps/Cloud-Computer-Control-Panel/CLAUDE.md) |
+| `apps/cccp-vscode-ext` | [.claude/apps/cccp-vscode-ext/CLAUDE.md](.claude/apps/cccp-vscode-ext/CLAUDE.md) |
+| `apps/dev-tools-help-docs` | [.claude/apps/dev-tools-help-docs/CLAUDE.md](.claude/apps/dev-tools-help-docs/CLAUDE.md) |
+| `apps/vscode-cloud` | [.claude/apps/vscode-cloud/CLAUDE.md](.claude/apps/vscode-cloud/CLAUDE.md) |
+| `packages/about-system-info` | [.claude/packages/about-system-info/CLAUDE.md](.claude/packages/about-system-info/CLAUDE.md) |
+| `packages/api2ai-mcp-generator` | [.claude/packages/api2ai-mcp-generator/CLAUDE.md](.claude/packages/api2ai-mcp-generator/CLAUDE.md) |
+| `packages/cloudflare-to-claude-fix` | [.claude/packages/cloudflare-to-claude-fix/CLAUDE.md](.claude/packages/cloudflare-to-claude-fix/CLAUDE.md) |
+| `packages/code-tree-graph` | [.claude/packages/code-tree-graph/CLAUDE.md](.claude/packages/code-tree-graph/CLAUDE.md) |
+| `packages/create-cloud-db` | [.claude/packages/create-cloud-db/CLAUDE.md](.claude/packages/create-cloud-db/CLAUDE.md) |
+| `packages/create-starter-app` | [.claude/packages/create-starter-app/CLAUDE.md](.claude/packages/create-starter-app/CLAUDE.md) |
+| `packages/export-svg-icons-typescript` | [.claude/packages/export-svg-icons-typescript/CLAUDE.md](.claude/packages/export-svg-icons-typescript/CLAUDE.md) |
+| `packages/git0-repo-downloader` | [.claude/packages/git0-repo-downloader/CLAUDE.md](.claude/packages/git0-repo-downloader/CLAUDE.md) |
+| `packages/legal-terms-privacy-policy` | [.claude/packages/legal-terms-privacy-policy/CLAUDE.md](.claude/packages/legal-terms-privacy-policy/CLAUDE.md) |
+| `packages/manage-storage` | [.claude/packages/manage-storage/CLAUDE.md](.claude/packages/manage-storage/CLAUDE.md) |
+| `packages/native-app-wrapper` | [.claude/packages/native-app-wrapper/CLAUDE.md](.claude/packages/native-app-wrapper/CLAUDE.md) |
+| `packages/open-when-ready` | [.claude/packages/open-when-ready/CLAUDE.md](.claude/packages/open-when-ready/CLAUDE.md) |
+| `packages/react-app-store-buttons` | [.claude/packages/react-app-store-buttons/CLAUDE.md](.claude/packages/react-app-store-buttons/CLAUDE.md) |
+| `packages/server-shell-setup` | [.claude/packages/server-shell-setup/CLAUDE.md](.claude/packages/server-shell-setup/CLAUDE.md) |
+| `packages/setup-git-repo` | [.claude/packages/setup-git-repo/CLAUDE.md](.claude/packages/setup-git-repo/CLAUDE.md) |
+| `packages/template-git-repo` | [.claude/packages/template-git-repo/CLAUDE.md](.claude/packages/template-git-repo/CLAUDE.md) |
+| `packages/verify-phone-sms` | [.claude/packages/verify-phone-sms/CLAUDE.md](.claude/packages/verify-phone-sms/CLAUDE.md) |
+| `packages/web2mobile-wrapper` | [.claude/packages/web2mobile-wrapper/CLAUDE.md](.claude/packages/web2mobile-wrapper/CLAUDE.md) |
