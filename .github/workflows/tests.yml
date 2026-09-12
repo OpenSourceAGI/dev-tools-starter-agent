@@ -71,6 +71,12 @@ jobs:
             install: npm install --ignore-scripts --legacy-peer-deps
             coverage: true
 
+          - name: test-google-login
+            dir: packages/test-google-login
+            runtime: bun
+            install: bun install
+            coverage: true
+
           - name: verify-phone-sms
             dir: packages/verify-phone-sms
             runtime: node

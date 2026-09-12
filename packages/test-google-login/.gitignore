@@ -1,0 +1,12 @@
+# The persisted browser session is a live credential — see README.md.
+playwright/.auth/
+*.storage-state.json
+
+.env
+.env.*
+!.env.example
+
+coverage/
+junit.xml
+dist/
+.wrangler/

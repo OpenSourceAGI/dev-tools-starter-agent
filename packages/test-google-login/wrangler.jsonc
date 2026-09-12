@@ -1,0 +1,55 @@
+{
+  // ── Core ────────────────────────────────────────────────────────────────────
+  // The Worker half: a Durable Object that holds one Browser Rendering session
+  // and replays a persisted storageState against your app. Deploying this is
+  // optional — the Playwright half of the package needs none of it.
+  "name": "test-google-login",
+  "main": "src/worker.ts",
+  "compatibility_date": "2025-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // Wrangler deletes plaintext Variables set in the dashboard on every deploy
+  // unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
+
+  // ── Browser Rendering ───────────────────────────────────────────────────────
+  // Requires the Workers Paid plan. The binding is what `@cloudflare/puppeteer`
+  // launches against; there is no Chromium in the bundle.
+  "browser": {
+    "binding": "BROWSER",
+  },
+
+  // ── The session holder ──────────────────────────────────────────────────────
+  // One Durable Object per named session. A browser takes seconds to start, so
+  // the DO keeps it alive between requests and an alarm closes it once idle —
+  // without that, a cold launch is paid on every single check.
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "BROWSER_SESSION",
+        "class_name": "GoogleLoginBrowser",
+      },
+    ],
+  },
+
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["GoogleLoginBrowser"],
+    },
+  ],
+
+  // ── Secrets ─────────────────────────────────────────────────────────────────
+  // Set these with `wrangler secret put <NAME>` — never hardcode values here.
+  //
+  // TEST_AUTH_SECRET   — required. Every request must present it as
+  //                      `x-test-auth-secret`; without it set, the Worker 503s
+  //                      rather than serving an unauthenticated browser.
+  // ALLOW_REAL_GOOGLE_LOGIN — "true" to enable POST /login. Leave unset.
+  // GOOGLE_TEST_EMAIL  — dedicated test account, only with the flag above.
+  // GOOGLE_TEST_PASSWORD — same.
+  "vars": {
+    // Minutes of inactivity before the DO closes its browser. Cheap to raise if
+    // your suite is slow, but an idle browser is billed.
+    "BROWSER_IDLE_MINUTES": "3",
+  },
+}
