@@ -98,6 +98,9 @@
 [![npm downloads](https://img.shields.io/npm/dm/template-git-repo.svg)](https://www.npmjs.com/package/template-git-repo) **[template-git-repo](packages/template-git-repo/)** - One command to give a repo the CI setup from qwksearch-research-agent: GitHub Actions for a discovered per-package test matrix, content-based npm publishing, agent PR auto-merge and hosted test reports, plus `turbo.json`, `codecov.yml` and a README badge block. Detects the repo slug, default branch, package manager and workspace layout; skips badges it has no input for instead of rendering them broken.
 `bunx template-git-repo` · `bunx template-git-repo --dry-run`
 
+[![npm downloads](https://img.shields.io/npm/dm/test-google-login.svg)](https://www.npmjs.com/package/test-google-login) **[test-google-login](packages/test-google-login/)** - End-to-end test harness for Google sign-in. Sign in once by hand, persist the Playwright `storageState` under `playwright/.auth/` (0600, gitignored two ways), and every test after that starts already signed in — with a setup-project guard that throws the exact `playwright codegen` command when the session is missing and how long ago it lapsed when it expired. For CI it mints your app's own session through a test-only endpoint, so no Google password is ever a repo secret. Ships a Cloudflare Browser Rendering Durable Object that replays the same session from a Worker, keeping one browser alive across a suite, and a CLI that inspects or redacts a state file without ever printing a value. Zero runtime dependencies; the whole suite runs without launching a browser.
+`npx test-google-login init` · `npm install --save-dev test-google-login`
+
 [![npm downloads](https://img.shields.io/npm/dm/verify-phone-sms.svg)](https://www.npmjs.com/package/verify-phone-sms) **[verify-phone-sms](packages/verify-phone-sms/)** - SMS phone verification API server built with Hono on Cloudflare Workers, backed by AWS SNS. Sends one-time codes, blocks VoIP numbers, enforces API-key authentication, applies rate limiting, and exposes auto-generated OpenAPI documentation. Includes health-check endpoints and CORS/security-header middleware.
 `npm install verify-phone-sms` · `wrangler deploy`
 
@@ -140,7 +143,7 @@ See [skills/README.md](skills/README.md) for the full index.
 
 ### ✅ Tests
 
-Six packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
+Seven packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
 `junit.xml` (and lcov coverage where its runner can produce one) for
 [`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
 Test Analytics, which tracks run times, failure rates and flaky tests, and comments
@@ -154,6 +157,7 @@ the failing ones on the pull request.
 | [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |
 | [manage-storage](packages/manage-storage/) | Vitest | `bun run test` |
 | [template-git-repo](packages/template-git-repo/) | Vitest | `bun run test` |
+| [test-google-login](packages/test-google-login/) | Vitest | `bun run test` |
 
 Wiring up another package means adding a `test:ci` script that writes `junit.xml`
 into the package directory, then adding a matrix entry to that workflow. Coverage

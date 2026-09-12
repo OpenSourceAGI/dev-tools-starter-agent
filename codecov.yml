@@ -52,6 +52,9 @@ flag_management:
     - name: verify-phone-sms
       paths:
         - packages/verify-phone-sms/
+    - name: test-google-login
+      paths:
+        - packages/test-google-login/
 
 comment:
   layout: "header, diff, flags, files"
