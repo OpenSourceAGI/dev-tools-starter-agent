@@ -43,7 +43,7 @@ database, and very little cross-package importing.
 | You want to change… | Go to |
 | --- | --- |
 | A published CLI or library | `packages/<tool>` — and its skill in `skills/<name>` |
-| The docs site | `apps/docs` (Fumadocs + Next.js; the one Biome workspace) |
+| The docs site | `apps/dev-tools-help-docs` (Fumadocs + Next.js; the one Biome workspace) |
 | Cloud infra dashboard | `apps/Cloud-Computer-Control-Panel` (+ `apps/cccp-vscode-ext`) |
 | Per-user VS Code on Cloudflare Containers | `apps/vscode-cloud` |
 | A scaffold that users copy out | `starter-templates/<template>` |

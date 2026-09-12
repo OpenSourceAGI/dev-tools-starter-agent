@@ -420,7 +420,7 @@ wget -qO- tinyurl.com/shellsetup | bash
 
 ## Documentation
 
-- **Main Docs**: [Starter Kit docs](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/docs/content/docs)
+- **Main Docs**: [Starter Kit docs](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/dev-tools-help-docs/content/docs)
 - **Demo**: [starterdocs.vtempest.workers.dev](https://starterdocs.vtempest.workers.dev)
 - **GitHub**: [github.com/vtempest/Starter-DOCS](https://github.com/vtempest/Starter-DOCS)
 

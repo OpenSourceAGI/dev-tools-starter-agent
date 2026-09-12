@@ -19,7 +19,7 @@ migrations/*
 .docusaurus/*
 */.next/*
 */dist/*
-apps/docs/.next/*
+apps/dev-tools-help-docs/.next/*
 bun.lock
 dist/
 packages/template-fumadocs/.next/*

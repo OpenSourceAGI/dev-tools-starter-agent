@@ -2,8 +2,8 @@
     <img width="350px" src="https://i.imgur.com/OKnr9ns.png" />
 <h3 align="center">
      <a href="https://starterdocs.vtempest.workers.dev">🎮 Demo</a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/docs/content/docs">📑 Docs</a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/docs/content/docs/(index)/guides/starter-docs.mdx#%EF%B8%8F-installation">⬇️ Install </a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/dev-tools-help-docs/content/docs">📑 Docs</a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/dev-tools-help-docs/content/docs/(index)/guides/starter-docs.mdx#%EF%B8%8F-installation">⬇️ Install </a>
     <a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
 </h3>
 <p align="center">
@@ -37,7 +37,7 @@
 
 ### 📦 Packages & Apps
 
-**[docs](apps/docs/)** - Documentation site built with Next.js featuring AI chat, full-text search, and auto-generated API reference from TypeScript types and OpenAPI specs. Serves as the central hub for all starter template documentation.
+**[dev-tools-help-docs](apps/dev-tools-help-docs/)** - Documentation site built with Next.js featuring AI chat, full-text search, and auto-generated API reference from TypeScript types and OpenAPI specs. Serves as the central hub for all starter template documentation.
 `bun dev` · `npm run dev`
 
 **[Cloud-Computer-Control-Panel](apps/Cloud-Computer-Control-Panel/)** - Open-source cloud infrastructure management platform. Automates Dokploy deployment for container orchestration on AWS EC2 — provision servers, manage containers, and monitor services from a single dashboard.
@@ -176,7 +176,7 @@ Every package and app README is then published as a docs page under
 README is the single source and the docs site is a view of it:
 
 ```bash
-bun run docs:sync       # regenerate apps/docs/content/docs/(index)/{packages,apps}
+bun run docs:sync       # regenerate apps/dev-tools-help-docs/content/docs/(index)/{packages,apps}
 ```
 
 Edit the README, run `bun run docs:sync`, and commit both. The badge catalog

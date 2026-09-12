@@ -28,7 +28,7 @@ Three pieces:
 
 ## Recipes
 
-**Scoping the scan** — `paths` are absolute or relative to `process.cwd()`, which for Next.js is the app directory, *not* the MDX file. In a monorepo that usually means `["../packages/core"]` from `apps/docs`. Verify the same relative path resolves under `next build`, which may run from a different cwd than `next dev`.
+**Scoping the scan** — `paths` are absolute or relative to `process.cwd()`, which for Next.js is the app directory, *not* the MDX file. In a monorepo that usually means `["../packages/core"]` from `apps/dev-tools-help-docs`. Verify the same relative path resolves under `next build`, which may run from a different cwd than `next dev`.
 
 **Trimming the graph** — the node-type toggles all default to `false` (`showNpmImports`, `showTypes`, `showPrivateFunctions`, `showExportedFunctions`), so an out-of-the-box graph shows modules and their local imports only. Turn one on at a time; enabling all of them on a large package produces an unreadable chart.
 

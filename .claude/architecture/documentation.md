@@ -8,7 +8,7 @@ is the most common documentation mistake here.
 | How to *use* a published package | That package's `README.md` (prose below the generated header) |
 | How an agent should work on a package | That package's `CLAUDE.md` |
 | Deep, task-shaped guidance for an agent *using* the package | `skills/<name>/SKILL.md` |
-| A guide for the docs site | `apps/docs/content/docs` |
+| A guide for the docs site | `apps/dev-tools-help-docs/content/docs` |
 | Repo-wide agent orientation | root `CLAUDE.md` + `.claude/architecture/` |
 
 There is deliberately **no root `docs/` folder**.
@@ -42,7 +42,7 @@ its own correct command in the generated header.
 **When public behaviour changes, update the skill in the same PR.** The skills
 are what agents actually load; a stale one is worse than a missing one.
 
-## The docs site — `apps/docs`
+## The docs site — `apps/dev-tools-help-docs`
 
 Next.js + Fumadocs, deployed to starterdocs.vtempest.workers.dev. AI chat,
 full-text search, and an auto-generated API reference built from TypeScript
@@ -50,17 +50,17 @@ types and OpenAPI specs.
 
 ```bash
 bun run docs:sync     # from the root — pulls package READMEs into the site
-cd apps/docs && bun run dev
+cd apps/dev-tools-help-docs && bun run dev
 ```
 
 Build is staged: `build:pre` → `next build` → `build:post` (`build:full` runs
 all three). `postinstall` runs `fumadocs-mdx`, so a missing content type after a
 fresh clone usually means that did not run.
 
-**`apps/docs` is the one Biome workspace.** `check`, `lint`, `format` here are
-Biome; nothing else in the repo is formatted by it, and there is no repo-wide
-formatter. Do not run Biome outside `apps/docs`. It also has its own
-`commitlint.config.ts` and a cspell config.
+**`apps/dev-tools-help-docs` is the one Biome workspace.** `check`, `lint`,
+`format` here are Biome; nothing else in the repo is formatted by it, and there
+is no repo-wide formatter. Do not run Biome outside `apps/dev-tools-help-docs`.
+It also has its own `commitlint.config.ts` and a cspell config.
 
 `code-tree-graph` is what renders the dependency graphs and type tables on that
 site — a change to its component props shows up in the docs build, not in its

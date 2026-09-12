@@ -22,11 +22,11 @@ export const categories: Category[] = [
     color: "brand",
     packages: [
       {
-        name: "docs",
+        name: "dev-tools-help-docs",
         icon: "FileText",
         description: "Documentation site built with Next.js featuring AI chat, full-text search, and auto-generated API reference from TypeScript types and OpenAPI specs.",
         commands: ["bun dev", "npm run dev"],
-        path: "apps/docs/"
+        path: "apps/dev-tools-help-docs/"
       },
       {
         name: "Cloud-Computer-Control-Panel",
