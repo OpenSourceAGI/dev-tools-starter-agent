@@ -1,6 +1,6 @@
 {
   "name": "code-tree-graph",
-  "version": "0.1.68",
+  "version": "0.1.69",
   "description": "Code dependency graph and file tree visualization components",
   "repository": {
     "type": "git",
