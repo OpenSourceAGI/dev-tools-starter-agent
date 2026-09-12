@@ -1,13 +1,7 @@
 <p align="center">
-    <img width="350px" src="https://i.imgur.com/OKnr9ns.png" />
+    <img  src="[https://i.imgur.com/OKnr9ns.png](https://i.imgur.com/QL2mfLO.png)" />
 </p>
 
-<h3 align="center">
-     <a href="https://starterdocs.vtempest.workers.dev">🎮 Demo</a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/dev-tools-help-docs/content/docs">📑 Docs</a>
-    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/dev-tools-help-docs/content/docs/(index)/guides/starter-docs.mdx#%EF%B8%8F-installation">⬇️ Install </a>
-    <a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
-</h3>
 
 <!-- template-git-repo:badges:start -->
 <p align="center">
@@ -111,6 +105,10 @@
 `npm run generate` · `node bin/cli.js`
 
 ### Starter Templates
+
+
+<a href="https://v0.app/templates/dashboard-landing-auth-billing-teams-docs-themes-ExDfusFzX6P"> 🎨 v0 Template </a>
+
 
 **[template-git-repo](starter-templates/template-git-repo/)** - The GitHub repo scaffold itself: Turborepo task graph, the five CI workflows, `codecov.yml`, the badge block, and `docs/` covering every badge, workflow and secret. Applied to an existing repo rather than copied into a new one.
 `bunx setup-git-repo`
