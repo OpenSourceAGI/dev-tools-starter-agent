@@ -54,6 +54,6 @@ into the tarball, or fetch them from GitHub) — raise it rather than guessing.
 
 The directory `starter-templates/template-git-repo/` is a scaffold. The
 **package** `packages/template-git-repo/` is something else entirely: the badge
-and README catalog that `scripts/sync-package-readmes.mjs` and
+and README catalog that `.github/scripts/sync-package-readmes.mjs` and
 `packages/setup-git-repo` both build on. Same name, different things — check
 which one you are in.

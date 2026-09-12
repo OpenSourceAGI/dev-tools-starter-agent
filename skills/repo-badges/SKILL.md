@@ -86,7 +86,7 @@ bun run readmes          # write
 bun run readmes:check    # fail if any header is stale
 ```
 
-`scripts/sync-package-readmes.mjs` reads each package's `package.json` for the
+`.github/scripts/sync-package-readmes.mjs` reads each package's `package.json` for the
 npm name (private packages, and everything outside `packages/`, get no npm
 badges), `codecov.yml` for the flag that covers its path, and skips the rest. The
 same pass writes the package's agent-skill install line under the badges, between
