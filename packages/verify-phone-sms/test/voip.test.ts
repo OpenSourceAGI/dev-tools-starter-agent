@@ -1,5 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { createApp } from '../src/verify-phone-server';
+/**
+ * VoIP blocking: the `blockVoip` flag on `POST /api/send`, and the
+ * `isPhoneNumberVoip` lookup behind it.
+ */
+
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { createApp, isPhoneNumberVoip } from '../src/verify-phone-server';
+import { apiRequest, stubNetwork } from './helpers';
 
 describe('VoIP Blocking Functionality', () => {
   let app: ReturnType<typeof createApp>;
@@ -8,106 +14,93 @@ describe('VoIP Blocking Functionality', () => {
     app = createApp(globalThis.env);
   });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
   describe('blockVoip parameter', () => {
-    it('should allow requests when blockVoip is not specified', async () => {
-      const req = new Request('http://localhost/api/send-verification?phoneNumber=%2B1234567890', {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+    it('should skip the lookup entirely when blockVoip is not specified', async () => {
+      const fetchMock = stubNetwork({ lookup: 'voip' });
+
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123' }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
+      const lookups = fetchMock.mock.calls.filter(([url]) => String(url).includes('phone-lookup'));
+      expect(lookups).toHaveLength(0);
     });
 
     it('should allow requests when blockVoip is false', async () => {
-      const req = new Request('http://localhost/api/send-verification?phoneNumber=%2B1234567890&blockVoip=false', {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+      stubNetwork({ lookup: 'voip' });
+
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123', blockVoip: false }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
     });
 
-    it('should accept blockVoip=true parameter', async () => {
-      const req = new Request('http://localhost/api/send-verification?phoneNumber=%2B1234567890&blockVoip=true', {
-        headers: {
-          'X-API-Key': 'test-api-key'
-        }
-      });
-      const res = await app.request(req, globalThis.env);
+    it('should send when blockVoip is true and the number is not VoIP', async () => {
+      stubNetwork({ lookup: 'landline' });
+
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123', blockVoip: true }),
+        undefined,
+        globalThis.env,
+      );
       const data: any = await res.json();
 
       expect(res.status).toBe(200);
       expect(data.success).toBe(true);
+    });
+
+    it('should reject when blockVoip is true and the number is VoIP', async () => {
+      stubNetwork({ lookup: 'voip' });
+
+      const res = await app.request(
+        apiRequest('/api/send', { phoneNumber: '+12025550123', blockVoip: true }),
+        undefined,
+        globalThis.env,
+      );
+      const data: any = await res.json();
+
+      expect(res.status).toBe(400);
+      expect(data).toMatchObject({
+        success: false,
+        error: 'VoIP numbers are not allowed',
+        isVoip: true,
+      });
     });
   });
 
   describe('VoIP detection logic', () => {
-    it('should correctly identify VoIP numbers', async () => {
-      // Import the function from the module
-      const module = await import('../src/verify-phone-server');
-      const { isPhoneNumberVoip } = module;
+    it('should report a Bandwidth/VoIP carrier as VoIP', async () => {
+      stubNetwork({ lookup: 'voip' });
+      await expect(isPhoneNumberVoip('+12025550123')).resolves.toBe(true);
+    });
 
-      // Mock the grab function to return VoIP data
-      const g = globalThis as any;
-      const originalGrab = g.grab;
-      g.grab = {
-        instance: () => ({
-          "phone-lookup": async () => ({
-            carrier: {
-              name: 'Bandwidth',
-              type: 'voip'
-            },
-            portability: {
-              line_type: 'landline'
-            }
-          })
-        })
-      };
-      
-      // Test VoIP number
-      const isVoip = await isPhoneNumberVoip('+1234567890');
-      expect(isVoip).toBe(true);
-      
-      // Mock the grab function to return mobile data
-      g.grab = {
-        instance: () => ({
-          "phone-lookup": async () => ({
-            carrier: {
-              name: 'Verizon Wireless',
-              type: 'mobile'
-            },
-            portability: {
-              line_type: 'mobile'
-            }
-          })
-        })
-      };
-      
-      // Test mobile number
-      const isMobile = await isPhoneNumberVoip('+1234567890');
-      expect(isMobile).toBe(false);
-      
-      // Mock the grab function to return null data
-      g.grab = {
-        instance: () => ({
-          "phone-lookup": async () => null
-        })
-      };
-      
-      // Test null data
-      const isNull = await isPhoneNumberVoip('+1234567890');
-      expect(isNull).toBe(false);
-      
-      // Restore original grab function
-      g.grab = originalGrab;
+    it('should report a landline carrier as not VoIP', async () => {
+      stubNetwork({ lookup: 'landline' });
+      await expect(isPhoneNumberVoip('+12025550123')).resolves.toBe(false);
+    });
+
+    it('should treat an empty lookup response as not VoIP', async () => {
+      stubNetwork({ lookup: 'none' });
+      await expect(isPhoneNumberVoip('+12025550123')).resolves.toBe(false);
+    });
+
+    it('should default to allowing the number when the lookup fails', async () => {
+      stubNetwork({ lookupStatus: 429 });
+      await expect(isPhoneNumberVoip('+12025550123')).resolves.toBe(false);
     });
   });
-}); 
+});
