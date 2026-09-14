@@ -1,4 +1,7 @@
 name = "sms-verification-api"
+# Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+# deploy unless keep_vars is set. Secrets are never deleted either way.
+keep_vars = true
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]

@@ -1,32 +1,32 @@
 <p align="center">
     <img width="300px" src="https://i.imgur.com/nkXljkR.png" />
-<p align="center">
-    <a href="https://discord.gg/SJdBqBz3tV">
-        <img src="https://img.shields.io/discord/1110227955554209923.svg?label=Chat&logo=Discord&colorB=7289da&style=flat"
-            alt="Join Discord" />
-    </a>
-     <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/OpenSourceAGI/starter-app-dev-tools" /></a>
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/OpenSourceAGI/starter-app-dev-tools" />
-    </a>
-<br />
-    <a href="https://github.com/OpenSourceAGI/starter-app-dev-tools/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/OpenSourceAGI/starter-app-dev-tools" />
-    </a>
-    <img src="https://img.shields.io/github/last-commit/OpenSourceAGI/starter-app-dev-tools.svg" alt="GitHub last commit" />
-<br />
-    <img src="https://img.shields.io/badge/Next.js-16-black" alt="Next.js" />
-    <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"
-            alt="PRs Welcome" />
-    </a>
-    <a href="https://codespaces.new/OpenSourceAGI/starter-app-dev-tools">
-    <img src="https://github.com/codespaces/badge.svg" width="150" height="20" />
-    </a>
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/code-tree-graph"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/code-tree-graph"><img src="https://img.shields.io/npm/dm/code-tree-graph.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/code-tree-graph"><img src="https://img.shields.io/npm/v/code-tree-graph.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/code-tree-graph"><img src="https://img.shields.io/npm/dt/code-tree-graph.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/code-tree-graph"><img src="https://img.shields.io/npm/types/code-tree-graph" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=code-tree-graph"><img src="https://packagephobia.com/badge?p=code-tree-graph" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Next.js-black?logo=nextdotjs&logoColor=white" alt="Next.js" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill code-tree-graph` ([what it covers](../../skills/code-tree-graph/SKILL.md))
+<!-- skills:install:end -->
 
 # code-tree-graph
 
@@ -294,3 +294,9 @@ interface AnalysisItem {
 | `@radix-ui/react-tooltip` | Badge tooltips |
 | `lucide-react` | Icons |
 | `svg-toolbelt` | SVG pan/zoom |
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

@@ -1,0 +1,50 @@
+# Enables auto-merge on pull requests opened by trusted agents and maintainers,
+# so an agent-authored change lands on its own once required checks pass.
+#
+# `--auto` is the safe path: GitHub holds the merge until branch protection is
+# satisfied. It only works when "Allow auto-merge" is on in repo settings AND
+# the base branch has protection with at least one required status check —
+# without both, GitHub rejects the flag and the fallback below merges directly.
+# On a repo with no branch protection, that fallback merges without waiting for
+# CI, which is why the actor allowlist matters.
+name: Auto-merge agent PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    # Extend this list with the bots and maintainers whose PRs may self-merge.
+    if: >
+      github.actor == 'claude[bot]' ||
+      github.actor == 'anthropic-claude[bot]' ||
+      github.actor == '{{OWNER}}'
+    steps:
+      - name: Enable auto-merge (or merge directly)
+        env:
+          # A PAT rather than GITHUB_TOKEN: merges made with GITHUB_TOKEN do not
+          # trigger further workflows, so deploy/publish runs on the default
+          # branch would never fire.
+          GH_TOKEN: ${{ secrets.GIT_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          # Long-lived branches must survive their own merges.
+          case "$HEAD_REF" in
+            production|prod|staging|develop) MERGE_OPTS="--squash" ;;
+            *) MERGE_OPTS="--squash --delete-branch" ;;
+          esac
+
+          if gh pr merge "$PR" --repo "$REPO" $MERGE_OPTS --auto; then
+            echo "Auto-merge enabled for PR #$PR"
+          else
+            echo "Auto-merge unavailable, attempting direct merge"
+            gh pr merge "$PR" --repo "$REPO" $MERGE_OPTS
+          fi

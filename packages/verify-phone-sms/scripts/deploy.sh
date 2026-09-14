@@ -31,11 +31,11 @@ deploy_docs() {
     bun run build:docs
     
     if [ "$ENVIRONMENT" = "production" ]; then
-        cd docs && wrangler deploy --env production && cd ..
+        cd docs && wrangler deploy --keep-vars --env production && cd ..
     elif [ "$ENVIRONMENT" = "staging" ]; then
-        cd docs && wrangler deploy --env staging && cd ..
+        cd docs && wrangler deploy --keep-vars --env staging && cd ..
     else
-        cd docs && wrangler deploy && cd ..
+        cd docs && wrangler deploy --keep-vars && cd ..
     fi
     echo "✅ Docs deployment completed!"
 }

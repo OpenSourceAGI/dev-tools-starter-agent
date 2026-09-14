@@ -4,6 +4,48 @@
 @import 'fumadocs-openapi/css/preset.css';
 @import 'shadcn-theme-menu/themes.css';
 
+/*
+ * Plain (non "fd-") shadcn color tokens. Tailwind v4 only generates utility
+ * classes like bg-popover / text-accent-foreground / border-border when a
+ * matching --color-* var is registered here. fumadocs' own CSS only
+ * registers the fd-prefixed tokens above, so components that use plain
+ * shadcn classes (e.g. the shadcn-theme-menu dropdown) rendered with no
+ * background at all until these were added.
+ */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
 /* Custom Refined Beige & Sand Desert Paper Theme Variables */
 :root {
   --color-fd-background: hsl(42, 35%, 97%);
@@ -20,6 +62,40 @@
 
   /* Layout customization */
   --fd-layout-width: 1400px;
+
+  /*
+   * Plain shadcn vars (fallback, active until the shadcn-theme-menu
+   * dropdown applies its own .theme-<name> class). Mirrors the desert
+   * palette above so components using plain shadcn classes match the site.
+   */
+  --radius: 0.5rem;
+  --background: hsl(42, 35%, 97%);
+  --foreground: hsl(28, 30%, 22%);
+  --card: hsl(42, 35%, 97%);
+  --card-foreground: hsl(28, 30%, 22%);
+  --popover: hsl(42, 35%, 95%);
+  --popover-foreground: hsl(28, 30%, 22%);
+  --primary: hsl(38, 45%, 52%);
+  --primary-foreground: hsl(42, 35%, 97%);
+  --secondary: hsl(42, 25%, 92%);
+  --secondary-foreground: hsl(28, 30%, 22%);
+  --muted: hsl(42, 25%, 92%);
+  --muted-foreground: hsl(28, 25%, 42%);
+  --accent: hsl(32, 55%, 62%);
+  --accent-foreground: hsl(28, 30%, 22%);
+  --destructive: hsl(0, 70%, 50%);
+  --destructive-foreground: hsl(42, 35%, 97%);
+  --border: hsl(38, 30%, 82%);
+  --input: hsl(38, 30%, 82%);
+  --ring: hsl(38, 45%, 52%);
+  --sidebar: hsl(42, 25%, 92%);
+  --sidebar-foreground: hsl(28, 30%, 22%);
+  --sidebar-primary: hsl(38, 45%, 52%);
+  --sidebar-primary-foreground: hsl(42, 35%, 97%);
+  --sidebar-accent: hsl(32, 55%, 62%);
+  --sidebar-accent-foreground: hsl(28, 30%, 22%);
+  --sidebar-border: hsl(38, 30%, 82%);
+  --sidebar-ring: hsl(38, 45%, 52%);
 }
 
 .dark {
@@ -34,6 +110,35 @@
   /* Search dialog / popover */
   --color-fd-popover: hsl(28, 20%, 16%);
   --color-fd-popover-foreground: hsl(42, 25%, 88%);
+
+  /* Plain shadcn vars (fallback), dark variant */
+  --background: hsl(28, 20%, 14%);
+  --foreground: hsl(42, 25%, 88%);
+  --card: hsl(28, 20%, 14%);
+  --card-foreground: hsl(42, 25%, 88%);
+  --popover: hsl(28, 20%, 16%);
+  --popover-foreground: hsl(42, 25%, 88%);
+  --primary: hsl(38, 45%, 65%);
+  --primary-foreground: hsl(28, 20%, 14%);
+  --secondary: hsl(28, 25%, 20%);
+  --secondary-foreground: hsl(42, 25%, 88%);
+  --muted: hsl(28, 25%, 20%);
+  --muted-foreground: hsl(42, 20%, 72%);
+  --accent: hsl(32, 55%, 75%);
+  --accent-foreground: hsl(28, 20%, 14%);
+  --destructive: hsl(0, 70%, 55%);
+  --destructive-foreground: hsl(42, 25%, 88%);
+  --border: hsl(28, 30%, 28%);
+  --input: hsl(28, 30%, 28%);
+  --ring: hsl(38, 45%, 65%);
+  --sidebar: hsl(28, 25%, 20%);
+  --sidebar-foreground: hsl(42, 25%, 88%);
+  --sidebar-primary: hsl(38, 45%, 65%);
+  --sidebar-primary-foreground: hsl(28, 20%, 14%);
+  --sidebar-accent: hsl(32, 55%, 75%);
+  --sidebar-accent-foreground: hsl(28, 20%, 14%);
+  --sidebar-border: hsl(28, 30%, 28%);
+  --sidebar-ring: hsl(38, 45%, 65%);
 }
 
 /* Sidebar Glass Effect Override - Comprehensive */

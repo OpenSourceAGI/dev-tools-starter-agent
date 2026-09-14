@@ -1,21 +1,32 @@
 <p align="center">
     <img  src="https://i.imgur.com/LkLbPYE.png" />
 </p>
+
+<!-- template-git-repo:badges:start -->
 <p align="center">
-     <a href="https://github.com/vtempest/export-svg-typescript/discussions">
-     <img alt="GitHub Stars" src="https://img.shields.io/github/stars/vtempest/export-svg-typescript" /></a>
-    <a href="https://npmjs.org/package/export-svg-typescript">
-    <img alt="NPM Version" src="https://img.shields.io/npm/v/export-svg-typescript" />
-    </a>     
-    <img src="https://img.shields.io/github/last-commit/vtempest/export-svg-typescript.svg?style=flat-square" alt="GitHub last commit" />
-    <a href="https://github.com/vtempest/export-svg-typescript/discussions">
-    <img alt="GitHub Discussions"
-        src="https://img.shields.io/github/discussions/vtempest/export-svg-typescript" />
-    </a>
-    <a href="http://makeapullrequest.com">
-        <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome"/>
-    </a>
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/export-svg-icons-typescript"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/dm/export-svg-typescript.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/v/export-svg-typescript.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/dt/export-svg-typescript.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/types/export-svg-typescript" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=export-svg-typescript"><img src="https://packagephobia.com/badge?p=export-svg-typescript" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill export-svg-typescript` ([what it covers](../../skills/export-svg-typescript/SKILL.md))
+<!-- skills:install:end -->
 
 ## export-svg-typescript
 
@@ -50,3 +61,9 @@ import { loadingDoubleRing } from './demo';
 loadingDoubleRing({size: 200, colors: ["#5345bb"] })
 ```
 ![screenshot](https://i.imgur.com/aXczCC2.png)
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

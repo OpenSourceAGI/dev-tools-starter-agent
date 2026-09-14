@@ -29,7 +29,7 @@ export default function DefaultSearchDialog(props: SharedProps) {
   const { locale } = useI18n(); // (optional) for i18n
   const { search, setSearch, query } = useDocsSearch({
     type: 'static',
-    from: '/api/docs-search',
+    from: '/docs/api/docs-search',
     initOrama,
     locale,
   });

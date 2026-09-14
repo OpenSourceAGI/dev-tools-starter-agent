@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'bun:test';
+import { describe, test, expect } from 'vitest';
 import GithubAPI from '../src/github-api.ts';
 
 describe('GithubAPI.parseURL', () => {

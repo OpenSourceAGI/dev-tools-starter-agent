@@ -36,8 +36,8 @@ export default defineConfig({
       name: 'copy-json-files',
       writeBundle() {
         const files = [
-          { src: 'src/bench/cpu-gb6-multicore-top1000.min.json', dst: 'dist/cpu-gb6-multicore-top1000.min.json' },
-          { src: 'src/bench/cpu-geekbench-1k.json', dst: 'dist/cpu-geekbench-1k.json' },
+          { src: 'src/bench/cpu-geekbench.json', dst: 'dist/cpu-geekbench.json' },
+          { src: 'src/bench/gpu-geekbench.json', dst: 'dist/gpu-geekbench.json' },
         ];
         files.forEach(({ src, dst }) => {
           if (fs.existsSync(src)) {

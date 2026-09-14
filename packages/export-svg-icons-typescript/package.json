@@ -3,19 +3,35 @@
   "module": "./export-svg-typescript.js",
   "author": "vtempest",
   "license": "MIT",
-  "version": "0.1.32",
+  "version": "0.1.93",
   "description": "Export SVG to TypeScript",
   "type": "module",
   "scripts": {
     "pub": "npm version patch && npm publish",
-    "demo": "node export-svg-typescript.js -i ./demo -o ./demo/index.ts"
+    "demo": "node export-svg-typescript.js -i ./demo -o ./demo/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "bin": {
-    "export-svg-typescript": "./export-svg-typescript.js"
+    "export-svg-typescript": "export-svg-typescript.js"
   },
+  "keywords": [
+    "svg",
+    "typescript",
+    "icons",
+    "cli",
+    "codegen",
+    "react"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/export-svg-icons-typescript"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/export-svg-icons-typescript"
   },
-  "homepage": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/export-svg-icons-typescript"
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/export-svg-icons-typescript",
+  "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0"
+  }
 }

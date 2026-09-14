@@ -1,3 +1,20 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/Cloud-Computer-Control-Panel"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/Cloud-Computer-Control-Panel"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Next.js-black?logo=nextdotjs&logoColor=white" alt="Next.js" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /> <img src="https://img.shields.io/badge/shadcn%2Fui-000000?logo=shadcnui&logoColor=white" alt="shadcn/ui" /> <img src="https://img.shields.io/badge/Drizzle%20ORM-C5F74F?logo=drizzle&logoColor=white" alt="Drizzle ORM" /> <img src="https://img.shields.io/badge/better--auth-000000" alt="better-auth" /> <img src="https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=white" alt="Zod" />
+</p>
+<!-- template-git-repo:badges:end -->
+
 ![code2cloud](https://i.imgur.com/t6WlnCI.png)
 
 # Cloud Computer Control Panel
@@ -24,20 +41,29 @@ CCCP (Cloud Computer Control Panel) lets you manage your own personal cloud and 
 - **Development Environment Setup**: Automatically install git, docker, nodejs, python3, nginx, and more
 - **Cost Estimator**: Calculate estimated monthly costs before creating instances
 - **Real-time Monitoring**: Track instance status and health in real-time
-- **Secure Credential Management**: AWS credentials stored locally in your browser, never on external servers
+- **Accounts & Sign-in**: Email + password out of the box, plus optional Google OAuth and magic links, powered by [Better Auth](https://better-auth.com)
+- **Encrypted Credential Storage**: AWS keys are sealed with AES-256-GCM and stored per user in a libSQL/SQLite database — the secret key is never sent back to the browser
+- **Multi-tenant**: Every user drives their own AWS account; API routes resolve credentials server-side from the signed-in session
 - **API Documentation**: Built-in Scalar API reference for programmatic access
+- **VS Code Extension**: The same dashboard runs in the editor sidebar via [`apps/cccp-vscode-ext`](../cccp-vscode-ext/), which imports these components directly rather than reimplementing them
 
 ## Tech Stack
 
+This app is built on the [`template-vinext-betterauth-shadcn-themes-teams-stripe`](../../starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe)
+starter template, which supplies the auth, database and theming layers.
+
 - **Frontend**: Next.js 16, React 19, TypeScript
-- **UI Components**: Radix UI, Tailwind CSS, shadcn/ui
-- **AWS Integration**: AWS SDK for JavaScript (EC2, credentials)
-- **Form Handling**: React Hook Form, Zod validation
+- **UI Components**: Radix UI, Tailwind CSS, shadcn/ui, [shadcn-theme-menu](https://github.com/vtempest/GRAB-URL/tree/master/packages/shadcn-theme-menu)
+- **Design tokens**: `app/theme-tokens.css`, kept separate from `app/globals.css` so the VS Code extension can import the palette without re-importing Tailwind
+- **Auth**: Better Auth (email + password, Google OAuth, magic links, anonymous dev login)
+- **Database**: Drizzle ORM over libSQL — a local SQLite file by default, or Turso in production
+- **AWS Integration**: AWS SDK for JavaScript (EC2, SSM, credentials)
+- **Form Handling**: Zod validation
 - **Deployment**: Vercel Analytics, Next Themes for dark mode
 
 ## Prerequisites
 
-- Node.js 18+ and npm/yarn/pnpm
+- [Bun](https://bun.sh) 1.3+ — the monorepo pins `bun@1.3.11`; do not use npm or yarn
 - AWS Account with IAM credentials (Access Key ID + Secret Access Key)
 - Required AWS IAM permissions for EC2 operations:
   - `ec2:DescribeInstances`
@@ -58,42 +84,119 @@ Follow these guides to create programmatic access credentials:
 
 ## Getting Started
 
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/yourusername/aws-manager.git
-cd aws-manager
-```
-
-2. Install dependencies:
+This app is a workspace in the [dev-tools-starter-agent](../../) monorepo, which
+installs with **Bun** — not npm or yarn.
 
 ```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
+git clone https://github.com/OpenSourceAGI/dev-tools-starter-agent.git
+cd dev-tools-starter-agent
+bun install                                    # from the repo root
+
+cd apps/Cloud-Computer-Control-Panel
+cp .env.example .env
+openssl rand -base64 32                        # paste into BETTER_AUTH_SECRET
+bun run db:push                                # applies lib/db/schema.ts
+bun run dev                                    # http://localhost:3000
 ```
 
-3. Run the development server:
+`BETTER_AUTH_SECRET` is the only variable you must set. With `DATABASE_URL`
+unset the app writes a local SQLite file at `./data/cccp.db`, so nothing else
+is needed to sign in and start managing instances — AWS keys are entered in
+the UI, not in `.env`.
+
+Then, in the browser:
+
+1. Click **Sign in** and create an account with an email and password.
+2. In the dashboard, enter your AWS Access Key ID and Secret Access Key.
+3. CCCP verifies them against AWS, encrypts the secret, and stores it against
+   your account.
+
+## Environment variables
+
+Values are read in [`env.ts`](./env.ts) and `lib/`. Put them in
+`apps/Cloud-Computer-Control-Panel/.env` locally, and in your host's
+environment-variable settings in production. Only `BETTER_AUTH_SECRET` is
+required; each of the others turns on one more feature.
+
+### App identity
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `NEXT_PUBLIC_APP_NAME` | The name shown in the header and page titles. | Your own value; defaults to `CCCP`. |
+| `NEXT_PUBLIC_APP_URL` | Absolute URLs, and the OAuth callback origin. | Your own origin — `http://localhost:3000` in development. |
+| `NEXT_PUBLIC_APP_EMAIL`, `NEXT_PUBLIC_APP_DESCRIPTION` | Contact address and meta description. | Your own values. |
+
+### Database — libSQL / Turso
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `DATABASE_URL` (alias `TURSO_DATABASE_URL`) | A hosted database instead of the local file. Leave empty for `./data/cccp.db`. | Run `npm create cloud-db`, or create a database at [turso.tech](https://turso.tech) and copy its libSQL URL. |
+| `DATABASE_AUTH_TOKEN` (alias `TURSO_AUTH_TOKEN`) | Authenticating to that database. | Turso dashboard → your database → **Create Token**, or `turso db tokens create <name>`. |
+
+### Auth
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `BETTER_AUTH_SECRET` | **Required.** Signs sessions, and — unless `CREDENTIALS_ENCRYPTION_KEY` is set — encrypts stored AWS secret keys. | Generate one: `openssl rand -base64 32`. See [better-auth installation](https://www.better-auth.com/docs/installation). |
+| `CREDENTIALS_ENCRYPTION_KEY` | A separate key for credential encryption at rest, so session-secret rotation does not invalidate stored AWS keys. | Generate one: `openssl rand -base64 32`. Rotating it makes already-stored secret keys unreadable — users must re-enter them. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | "Sign in with Google". | [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials) → OAuth client ID (Web application). Authorized redirect URI: `<APP_URL>/api/auth/callback/google`. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | The same client ID, for the browser. | Same value as `GOOGLE_CLIENT_ID`. |
+| `RESEND_API_KEY` (alias `AUTH_RESEND_KEY`) | Magic-link sign-in. Without it, only password and OAuth sign-in work. | [resend.com/api-keys](https://resend.com/api-keys) |
+| `AUTH_TRUSTED_ORIGINS` | Extra comma-separated origins allowed to call the auth endpoints — needed when the VS Code extension webview signs in against a deployed instance. | Your own origins. |
+
+### AWS fallback credentials
+
+Optional, and only for single-tenant installs. A user's own saved credentials
+always take priority over these; see
+[How credentials are stored](#how-credentials-are-stored).
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Server-side fallback credentials when the signed-in user has stored none. | [AWS IAM console](https://console.aws.amazon.com/iam/home#/users) → your user → Security credentials → Create access key. The permissions needed are listed under [Prerequisites](#prerequisites). |
+| `AWS_REGION` | The default region. Defaults to `us-east-1`. | Any [AWS region code](https://docs.aws.amazon.com/general/latest/gr/rande.html). |
+
+## Deploying
+
+The app is a stock Next.js 16 build with a Node server runtime — the AWS SDK,
+`ssh2` and `node-forge` are marked external in
+[`next.config.mjs`](./next.config.mjs), so it needs Node, not an edge runtime.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+bun run build
+bun run start        # serves the production build on :3000
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+To deploy from this monorepo, point your host at the repository root, set the
+root directory to `apps/Cloud-Computer-Control-Panel`, and use `bun install` as
+the install command. Then:
 
-### Configuration
+1. Provision a hosted database and set `DATABASE_URL` / `DATABASE_AUTH_TOKEN` —
+   the default local SQLite file does not survive a container restart.
+2. Run `bun run db:push` once against it to create the schema.
+3. Set `BETTER_AUTH_SECRET` and `CREDENTIALS_ENCRYPTION_KEY` as secrets, and
+   keep them stable across deploys: rotating either signs everyone out, and
+   rotating the second one orphans every stored AWS credential.
+4. Set `NEXT_PUBLIC_APP_URL` to the deployed origin, and add that origin to the
+   Google OAuth client's authorized redirect URIs if you use Google sign-in.
+5. Add `AUTH_TRUSTED_ORIGINS` if the VS Code extension will sign in against
+   this instance.
 
-1. On the home page, enter your AWS Access Key ID and Secret Access Key
-2. Your credentials are stored securely in your browser's localStorage
-3. Click "Connect to AWS" to access the dashboard
+### How credentials are stored
+
+- The secret access key is encrypted with AES-256-GCM (`lib/crypto.ts`) before it
+  reaches the `cloud_credentials` table, keyed by `CREDENTIALS_ENCRYPTION_KEY`
+  (falling back to `BETTER_AUTH_SECRET`).
+- The browser only ever receives a masked access key id — never the secret.
+- API routes send the sentinel `"db"` instead of real keys;
+  `lib/aws-credentials.ts` resolves the actual credentials server-side in this
+  order: keys explicitly sent with the request → the signed-in user's stored
+  keys → the server's `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`.
+- Rotating `CREDENTIALS_ENCRYPTION_KEY` makes existing stored secrets
+  unreadable; users have to re-enter them.
+
+> **Note:** instance metadata (`ec2Managers`) and generated SSH private keys are
+> still kept in the browser's `localStorage`. Only cloud provider credentials
+> have been moved into the database so far.
 
 ## Usage
 
@@ -133,10 +236,16 @@ Access the interactive API documentation at `/api-reference` or click the "API D
 
 Available endpoints:
 
+All `/api/instances`, `/api/managers` and `/api/servers` routes require a signed-in session.
+
+- `GET /api/credentials` - The signed-in user's stored credentials (masked)
+- `POST /api/credentials` - Verify and store AWS credentials, encrypted
+- `DELETE /api/credentials` - Forget the stored credentials
+- `GET|POST /api/auth/*` - Better Auth endpoints (sign-in, sign-up, sign-out, OAuth)
 - `GET /api/instances` - List all instances in a region
 - `GET /api/instances/all-regions` - List instances across all regions
 - `POST /api/instances/install-software` - Install software on an instance
 - `POST /api/servers/create` - Create a new EC2 instance
-- `POST /api/check-credentials` - Validate AWS credentials
+- `GET /api/check-credentials` - Report session and credential status
 - `GET /api/docker-search` - Search Docker Hub
 - `GET /api/github-search` - Search GitHub repositories

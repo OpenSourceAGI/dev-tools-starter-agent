@@ -1,0 +1,10 @@
+{
+  "title": "Apps",
+  "icon": "AppWindow",
+  "description": "Full applications shipped from this repository.",
+  "pages": [
+    "Cloud-Computer-Control-Panel",
+    "cccp-vscode-ext",
+    "vscode-cloud"
+  ]
+}

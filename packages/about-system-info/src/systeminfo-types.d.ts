@@ -129,8 +129,8 @@ export interface SystemInfo {
    * Empty string if CPU not found or benchmark data unavailable
    *
    * @example
-   * - "💪 37.9k #1" (top performing CPU)
-   * - "💪 20.5k #68" (mid-range CPU)
+   * - "37.9k #1" (top performing CPU)
+   * - "20.5k #68" (mid-range CPU)
    * - "" (CPU not in benchmark database)
    */
   bench: string;
@@ -156,8 +156,8 @@ export interface SystemInfo {
    * Empty string if GPU not found or benchmark data unavailable
    *
    * @example
-   * - "💪 37.9k #1" (top performing GPU)
-   * - "💪 20.5k #68" (mid-range GPU)
+   * - "37.9k #1" (top performing GPU)
+   * - "20.5k #68" (mid-range GPU)
    * - "" (GPU not in benchmark database)
    */
   gpu_bench: string;
@@ -202,6 +202,18 @@ export interface SystemInfo {
    * @example "45%", "78%", "12%"
    */
   disk_used: string;
+
+  /**
+   * Disk size (used/total) for each real disk
+   * Format: "used/total GB" when a single real disk is found, or
+   * "mount(used/total GB) ..." per disk when multiple are found
+   * Pseudo filesystems and small system/boot partitions (under 10GB) are
+   * excluded
+   * Empty string if unable to determine
+   *
+   * @example "256/512GB", "/(100/500GB) /Volumes/Backup(900/2000GB)"
+   */
+  disk_size: string;
 
   /**
    * Memory usage in gigabytes

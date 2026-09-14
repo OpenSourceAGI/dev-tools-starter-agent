@@ -1,0 +1,47 @@
+{
+  "name": "about-system-native",
+  "version": "0.1.0",
+  "description": "About System packaged as a native desktop app (scaffolded from native-app-wrapper)",
+  "private": true,
+  "type": "module",
+  "author": "vtempest",
+  "license": "rights.institute/prosper",
+  "scripts": {
+    "configure": "node bin/cli.js configure",
+    "icons": "node scripts/generate-icons.mjs",
+    "icons:placeholder": "node scripts/generate-placeholder-icons.mjs",
+    "build:sidecar": "node scripts/build-sidecar.mjs",
+    "predev": "node bin/cli.js configure && node scripts/build-sidecar.mjs",
+    "dev": "tauri dev",
+    "prebuild:desktop": "node bin/cli.js configure && node scripts/build-sidecar.mjs",
+    "build:desktop": "tauri build"
+  },
+  "keywords": [
+    "tauri",
+    "desktop-app",
+    "webview",
+    "app-wrapper",
+    "windows",
+    "macos",
+    "linux",
+    "android",
+    "ios",
+    "sidecar"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper"
+  },
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/native-app-wrapper",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-deep-link": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-process": "^2",
+    "@tauri-apps/plugin-shell": "^2",
+    "@tauri-apps/plugin-updater": "^2"
+  }
+}

@@ -1,80 +1,81 @@
 #!/bin/sh
 
-# Using Volta to install Node.js is better for system permissions because it avoids the need for
-# administrator rights, prevents global permission errors, and provides isolated, reproducible
-# environments for each user and project. The native installer, by contrast, often requires elevated
-# permissions and can lead to permission conflicts, especially when installing global npm packages
-# or working in multi-user environments
+set -eu
 
-# Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
-NC='\033[0m' # No Color
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
 
-# Install Volta with error handling
-if ! curl -sSf https://get.volta.sh | bash >/dev/null 2>&1; then
-    printf "\n${RED}Error: Volta installation failed${NC}\n"
-    exit 1
-fi
-
-# Configure environment for current session
-export VOLTA_HOME="$HOME/.volta"
-export PATH="$VOLTA_HOME/bin:$PATH"
-
-append_if_missing() {
-    FILE="$1"
-    LINE="$2"
-    grep -qxF "$LINE" "$FILE" 2>/dev/null || echo "$LINE" >> "$FILE"
+die() {
+    printf '\n%b\n' "${RED}${BOLD}✖ Error:${NC} $1" >&2
+    exit "${2:-1}"
 }
 
-# Add Volta bin to Bash, Zsh, and Fish if present
-BASH_RC="$HOME/.bashrc"
-ZSH_RC="$HOME/.zshrc"
-FISH_CONFIG="$HOME/.config/fish/config.fish"
+command -v curl >/dev/null 2>&1 ||
+    die "curl is required but was not found."
 
-if [ -f "$BASH_RC" ]; then
-    append_if_missing "$BASH_RC" 'export VOLTA_HOME="$HOME/.volta"'
-    append_if_missing "$BASH_RC" 'export PATH="$VOLTA_HOME/bin:$PATH"'
+VOLTA_HOME="${VOLTA_HOME:-$HOME/.volta}"
+BUN_INSTALL="${BUN_INSTALL:-$HOME/.bun}"
+
+export VOLTA_HOME
+export BUN_INSTALL
+export PATH="$VOLTA_HOME/bin:$BUN_INSTALL/bin:$PATH"
+
+clear
+
+printf '%b\n' "${CYAN}${BOLD}⚙ Setting up JavaScript tooling...${NC}"
+
+# Reinstall Volta if its installation exists.
+if [ -d "$VOLTA_HOME" ]; then
+    printf '%b\n' "${YELLOW}↻ Existing Volta found — removing it...${NC}"
+    rm -rf "$VOLTA_HOME"
 fi
 
-if [ -f "$ZSH_RC" ]; then
-    append_if_missing "$ZSH_RC" 'export VOLTA_HOME="$HOME/.volta"'
-    append_if_missing "$ZSH_RC" 'export PATH="$VOLTA_HOME/bin:$PATH"'
+# Install a clean copy of Volta.
+printf '%b\n' "${GREEN}↓ Installing Volta...${NC}"
+
+if ! curl --proto '=https' --tlsv1.2 -sSf https://get.volta.sh | bash; then
+    die "Volta installation failed."
 fi
 
-if [ -f "$FISH_CONFIG" ]; then
-    append_if_missing "$FISH_CONFIG" 'set -gx VOLTA_HOME $HOME/.volta'
-    append_if_missing "$FISH_CONFIG" 'set -gx PATH $VOLTA_HOME/bin $PATH'
+export PATH="$VOLTA_HOME/bin:$BUN_INSTALL/bin:$PATH"
+
+command -v volta >/dev/null 2>&1 ||
+    die "Volta installed but could not be found at $VOLTA_HOME/bin/volta."
+
+# Install the current Node release and Yarn through Volta.
+printf '%b\n' "${GREEN}↓ Installing Node.js and Yarn with Volta...${NC}"
+
+if ! volta install node yarn >/dev/null 2>&1; then
+    die "Node.js or Yarn installation failed."
 fi
 
-# Node.js installation with spinner
-printf "${GREEN}Installing Node.js..."
-(
-    i=1
-    sp='|/-\'
-    while :; do
-        printf "\b${sp:i++%${#sp}:1}"
-        sleep 0.1
-    done
-) &
-SPIN_PID=$!
-
-# Capture installation exit code
-INSTALL_EXIT=0
-volta install node >/dev/null 2>&1 || INSTALL_EXIT=$?
-
-# Clean up spinner
-kill $SPIN_PID 2>/dev/null
-wait $SPIN_PID 2>/dev/null
-
-# Handle installation result
-if [ $INSTALL_EXIT -ne 0 ]; then
-    printf "\b${RED}Error: Node.js installation failed (code $INSTALL_EXIT)${NC}\n"
-    exit 2
-else
-    printf "\b${GREEN}Done!${NC}\n"
+# Reinstall Bun if its standard installation directory already exists.
+if [ -d "$BUN_INSTALL" ]; then
+    printf '%b\n' "${YELLOW}↻ Existing Bun found — removing it...${NC}"
+    rm -rf "$BUN_INSTALL"
 fi
 
-# Reload the current shell
-printf "${GREEN}Reloading shell...${NC}\n"
-exec $SHELL
+printf '%b\n' "${GREEN}↓ Installing Bun...${NC}"
+
+if ! curl --proto '=https' --tlsv1.2 -fsSL https://bun.com/install | bash >/dev/null 2>&1; then
+    die "Bun installation failed."
+fi
+
+export PATH="$VOLTA_HOME/bin:$BUN_INSTALL/bin:$PATH"
+
+command -v bun >/dev/null 2>&1 ||
+    die "Bun installed but could not be found at $BUN_INSTALL/bin/bun."
+
+# Clear installation output and show one clean status line.
+clear
+
+printf '%b\n' \
+    "${GREEN}${BOLD}✓ Toolchain ready${NC}  " \
+    "${CYAN}⚡ Volta ${BOLD}$(volta --version)${NC}  " \
+    "${GREEN}⬢ Node ${BOLD}$(node --version)${NC}  " \
+    "${YELLOW}🧶 Yarn ${BOLD}$(yarn --version)${NC}  " \
+    "${RED}🥟 Bun ${BOLD}$(bun --version)${NC}"

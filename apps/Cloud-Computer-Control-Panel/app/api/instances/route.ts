@@ -13,27 +13,29 @@ import {
   releaseAddress,
   describeAddresses,
 } from "@/lib/aws-ec2-client"
+import { resolveAwsCredentials } from "@/lib/aws-credentials"
+import { getSession } from "@/lib/auth/session"
 
 export async function GET(request: Request) {
   try {
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
 
-    let accessKeyId: string | null = null
-    let secretAccessKey: string | null = null
+    const credentials = await resolveAwsCredentials({
+      accessKeyId: searchParams.get("accessKeyId"),
+      secretAccessKey: searchParams.get("secretAccessKey"),
+      region: searchParams.get("region"),
+    })
 
-    if (searchParams.get("accessKeyId") === "env") {
-      accessKeyId = process.env.AWS_ACCESS_KEY_ID || ""
-      secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || ""
-    } else {
-      accessKeyId = searchParams.get("accessKeyId")
-      secretAccessKey = searchParams.get("secretAccessKey")
-    }
-
-    const region = searchParams.get("region") || process.env.AWS_REGION || "us-east-1"
-
-    if (!accessKeyId || !secretAccessKey) {
+    if (!credentials) {
       return NextResponse.json({ message: "Missing AWS credentials" }, { status: 400 })
     }
+
+    const { accessKeyId, secretAccessKey, region } = credentials
 
     const instances = await describeInstances(accessKeyId, secretAccessKey, region)
     return NextResponse.json({ instances })
@@ -45,24 +47,20 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-
-    let accessKeyId: string
-    let secretAccessKey: string
-
-    if (body.accessKeyId === "env") {
-      accessKeyId = process.env.AWS_ACCESS_KEY_ID || ""
-      secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY || ""
-    } else {
-      accessKeyId = body.accessKeyId
-      secretAccessKey = body.secretAccessKey
+    const session = await getSession()
+    if (!session) {
+      return NextResponse.json({ message: "Sign in required" }, { status: 401 })
     }
 
-    if (!accessKeyId || !secretAccessKey) {
+    const body = await request.json()
+
+    const credentials = await resolveAwsCredentials(body)
+
+    if (!credentials) {
       return NextResponse.json({ message: "Missing AWS credentials" }, { status: 400 })
     }
 
-    const region = body.region || process.env.AWS_REGION || "us-east-1"
+    const { accessKeyId, secretAccessKey, region } = credentials
     const action = body.action
     const instanceId = body.instanceId
 

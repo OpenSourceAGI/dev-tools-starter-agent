@@ -198,14 +198,15 @@ Both components are included automatically on every docs page via the page templ
 
 ### 6. LLM-Friendly Routes
 
-Two built-in API routes serve documentation content optimized for LLM consumption:
+Built-in API routes serve documentation content optimized for LLM and search consumption. All of them live under `app/docs/` alongside the doc pages themselves, so the whole `/docs` section — pages, search, and LLM routes — is self-contained and portable as a single folder.
 
-| Route | Description |
-|-------|-------------|
-| `/docs/llms-full.txt` | All documentation pages concatenated as plain text |
-| `/docs/<path>.mdx` | Individual page as raw Markdown (via URL rewrite) |
+| Route | Source file | Description |
+|-------|-------------|-------------|
+| `/docs/llms-full.txt` | `app/docs/llms-full.txt/route.ts` | All documentation pages concatenated as plain text |
+| `/docs/<path>.mdx` | `app/docs/llms.mdx/docs/[[...slug]]/route.ts` | Individual page as raw Markdown (via URL rewrite) |
+| `/docs/api/docs-search` | `app/docs/api/docs-search/route.ts` | Static Orama search index, consumed by the search dialog |
 
-These are configured in `next.config.ts` and cached indefinitely (`revalidate = false`).
+The `.mdx` route is reached through a rewrite in `next.config.ts` (`/docs/:path*.mdx` → `/docs/llms.mdx/docs/:path*`) rather than being requested directly. All three are cached indefinitely (`revalidate = false`).
 
 ---
 
@@ -311,29 +312,104 @@ Uses `fumadocs-ui/layouts/notebook` for the docs section, providing a clean read
 ```
 docs/
 ├── app/
-│   ├── (home)/           # Home page layout
-│   ├── docs/             # Documentation pages (notebook layout)
-│   │   ├── llms-full.txt/# LLM full-text route
-│   │   ├── llms.mdx/     # LLM per-page MDX route
-│   ├── actions.ts        # Server actions (remote repo analysis)
-│   ├── layout.config.tsx # Shared layout options
-│   └── provider.tsx      # Root provider (search, theme)
+│   ├── (home)/            # Home page layout
+│   ├── docs/              # Self-contained /docs section — copy this whole folder to reuse it
+│   │   ├── [[...slug]]/page.tsx        # Doc page renderer
+│   │   ├── layout.tsx                  # Notebook layout (sidebar + TOC)
+│   │   ├── api/docs-search/route.ts    # Orama search index route
+│   │   ├── llms-full.txt/route.ts      # LLM full-text route
+│   │   └── llms.mdx/docs/[[...slug]]/route.ts  # LLM per-page MDX route
+│   ├── actions.ts         # Server actions (remote repo analysis)
+│   ├── layout.config.tsx  # Shared layout options
+│   └── provider.tsx       # Root provider (search, theme)
 ├── components/fumadocs/
-│   ├── ai/               # LLM copy button, Ask AI dropdown
-│   ├── api/              # OpenAPI page components
-│   ├── file-tree/        # FileTreeView, FileTreeTable, badges, tooltips
-│   ├── graph/            # DependencyGraph, Mermaid renderer
-│   ├── layout/           # Search dialog, theme toggle
-│   └── typography/       # Markdown renderer with highlighting
-├── content/docs/         # MDX documentation files
+│   ├── ai/                # LLM copy button, Ask AI dropdown
+│   ├── api/               # OpenAPI page components
+│   ├── file-tree/         # FileTreeView, FileTreeTable, badges, tooltips
+│   ├── graph/             # DependencyGraph, Mermaid renderer
+│   ├── layout/            # Search dialog, theme toggle
+│   └── typography/        # Markdown renderer with highlighting
+├── content/docs/          # MDX documentation files
 ├── lib/fumadocs/
-│   ├── customize-docs.ts # Site configuration
+│   ├── customize-docs.ts  # Site configuration
 │   ├── generate-filetree.ts    # AST analysis engine
 │   ├── generate-api-docs.ts    # OpenAPI doc generator
-│   └── source.tsx        # Page loader & plugins
-├── mdx-components.tsx    # MDX component registry
-└── next.config.ts        # Next.js + MDX config
+│   └── source.tsx         # Page loader & plugins
+├── mdx-components.tsx     # MDX component registry
+├── source.config.ts       # fumadocs-mdx collection config
+└── next.config.ts         # Next.js + MDX config, docs `.mdx` rewrite
 ```
+
+## Importing `/docs` into an Existing Next.js App
+
+The entire documentation section — pages, notebook layout, search, and the LLM-friendly routes (`llms-full.txt`, `<path>.mdx`, search API) — is self-contained under `app/docs/`. To drop it into a bigger app and get it mounted at `/docs`, copy over only what that section needs:
+
+**1. Copy these folders/files into the target app**
+
+| From this template | To |
+|---|---|
+| `app/docs/` | `app/docs/` |
+| `lib/fumadocs/` | `lib/fumadocs/` |
+| `components/fumadocs/` | `components/fumadocs/` |
+| `content/docs/` | `content/docs/` |
+| `mdx-components.tsx` | `mdx-components.tsx` (merge if one exists) |
+| `source.config.ts` | `source.config.ts` (merge if one exists) |
+| `app/layout.config.tsx` | wherever you keep shared nav config; referenced by `app/docs/layout.tsx` |
+| `app/provider.tsx` | merge its `RootProvider` (with `search.SearchDialog`) into your root layout/provider |
+
+`app/(home)/` and `app/actions.ts` are specific to this template's landing page — skip them.
+
+**2. Install dependencies**
+
+```bash
+npm install fumadocs-core fumadocs-ui fumadocs-mdx fumadocs-openapi \
+  @orama/orama fuse.js next-themes lucide-react \
+  @radix-ui/react-collapsible @radix-ui/react-dialog @radix-ui/react-tooltip @radix-ui/react-slot \
+  class-variance-authority clsx marked mermaid
+```
+
+Drop `fumadocs-typescript`, `fumadocs-openapi`, `mermaid`, `fuse.js`, or `jszip` if you don't use the OpenAPI page, dependency graph, or file-tree components.
+
+**3. Wrap `next.config.ts` with the MDX plugin and add the docs rewrite**
+
+```ts
+import { createMDX } from 'fumadocs-mdx/next';
+
+const withMDX = createMDX({});
+
+const config = {
+  // ...your existing config
+  async rewrites() {
+    return [
+      // ...your existing rewrites
+      {
+        source: '/docs/:path*.mdx',
+        destination: '/docs/llms.mdx/docs/:path*',
+      },
+    ];
+  },
+};
+
+export default withMDX(config);
+```
+
+**4. Add the Fumadocs CSS to your global stylesheet**
+
+```css
+@import 'fumadocs-ui/css/shadcn.css';
+@import 'fumadocs-ui/css/preset.css';
+@import 'fumadocs-openapi/css/preset.css'; /* only if using OpenAPI */
+```
+
+Requires Tailwind CSS v4 (`@tailwindcss/postcss` in `postcss.config.mjs`), since Fumadocs' preset styles are Tailwind-based.
+
+**5. Point `docsConfig` at the target app**
+
+Edit `lib/fumadocs/customize-docs.ts` (`title`, `github`, `githubDocs`, `topLinks`, etc.) to match the host app.
+
+**6. Verify the routes**
+
+After merging, `/docs`, `/docs/<page>`, `/docs/<page>.mdx`, `/docs/llms-full.txt`, and `/docs/api/docs-search` should all resolve — run `npm run build` and check the route list in the build output.
 
 ## Key Dependencies
 

@@ -1,0 +1,162 @@
+{
+  "name": "cccp-vscode",
+  "displayName": "CCCP Cloud Computer Control Panel",
+  "description": "Provision and manage your own personal cloud — EC2 instances, Dokploy, Docker images and GitHub repos — from the VS Code sidebar.",
+  "version": "0.1.0",
+  "private": true,
+  "publisher": "opensourceagi",
+  "author": "vtempest",
+  "license": "rights.institute/PROSPER",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpenSourceAGI/dev-tools-starter-agent",
+    "directory": "apps/cccp-vscode-ext"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "aws",
+    "ec2",
+    "dokploy",
+    "docker",
+    "cloud"
+  ],
+  "icon": "media/icon.png",
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "cccp",
+          "title": "Cloud Control Panel",
+          "icon": "media/sidebar-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "cccp": [
+        {
+          "type": "webview",
+          "id": "cccp.panelView",
+          "name": "Control Panel"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "cccp.signIn",
+        "title": "CCCP: Sign In",
+        "category": "CCCP"
+      },
+      {
+        "command": "cccp.signOut",
+        "title": "CCCP: Sign Out",
+        "category": "CCCP"
+      },
+      {
+        "command": "cccp.focus",
+        "title": "CCCP: Open Control Panel",
+        "category": "CCCP"
+      },
+      {
+        "command": "cccp.openInEditor",
+        "title": "CCCP: Open Control Panel in an Editor Tab",
+        "category": "CCCP",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "cccp.setServerUrl",
+        "title": "CCCP: Set Server URL",
+        "category": "CCCP",
+        "icon": "$(server)"
+      },
+      {
+        "command": "cccp.openInBrowser",
+        "title": "CCCP: Open the Web Dashboard in a Browser",
+        "category": "CCCP",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "cccp.reload",
+        "title": "CCCP: Reload Panel",
+        "category": "CCCP",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "cccp.reload",
+          "when": "view == cccp.panelView",
+          "group": "navigation@1"
+        },
+        {
+          "command": "cccp.openInEditor",
+          "when": "view == cccp.panelView",
+          "group": "navigation@2"
+        },
+        {
+          "command": "cccp.setServerUrl",
+          "when": "view == cccp.panelView",
+          "group": "1_config@1"
+        },
+        {
+          "command": "cccp.openInBrowser",
+          "when": "view == cccp.panelView",
+          "group": "1_config@2"
+        },
+        {
+          "command": "cccp.signOut",
+          "when": "view == cccp.panelView",
+          "group": "9_auth@1"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "CCCP",
+      "properties": {
+        "cccp.serverUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Base URL of the Cloud Computer Control Panel deployment this extension talks to. Point it at your own self-hosted instance of apps/Cloud-Computer-Control-Panel."
+        },
+        "cccp.followVsCodeTheme": {
+          "type": "boolean",
+          "default": true,
+          "description": "Match the panel's light/dark mode to the active VS Code color theme. Turn this off to always use CCCP's own dark palette."
+        },
+        "cccp.requestTimeoutMs": {
+          "type": "number",
+          "default": 60000,
+          "minimum": 1000,
+          "description": "How long to wait for a response from the CCCP server before giving up. EC2 provisioning calls can be slow, so keep this generous."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build:webview": "cd webview-ui && bun run build",
+    "build": "bun run compile",
+    "compile": "bun run build:webview && node esbuild.mjs",
+    "watch": "node esbuild.mjs --watch",
+    "package": "bun run build:webview && node esbuild.mjs --production",
+    "vscode:prepublish": "bun run package",
+    "type-check": "tsc --noEmit -p ./ && cd webview-ui && bun run type-check",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.85.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "esbuild": "^0.28.1",
+    "jsdom": "^30.0.1",
+    "typescript": "^5.7.2",
+    "vitest": "^4.0.18"
+  }
+}

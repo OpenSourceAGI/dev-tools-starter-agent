@@ -21,6 +21,7 @@ import { user, hostname, os_info, kernel, device } from "./info/platform";
 import { cpu, gpu, screen_resolution, bench, cpu_bench_info, gpu_bench, gpu_bench_info } from "./info/hardware";
 import {
   disk_used,
+  disk_size,
   ram_used,
   memory_available,
   swap_used,
@@ -64,6 +65,7 @@ const CACHE_DURATION = {
   containers: 5 * 60 * 1000,
   top_process: 5 * 1000,
   disk_used: 60 * 1000,
+  disk_size: 60 * 1000,
   ram_used: 10 * 1000,
   services_running: 5 * 60 * 1000,
   temperature: 30 * 1000,
@@ -200,6 +202,7 @@ export const infoFunctions = {
   gpu_bench,
   gpu_bench_info,
   disk_used,
+  disk_size,
   ram_used,
   top_process,
   uptime,

@@ -1,0 +1,25 @@
+# Rust / Tauri build output
+src-tauri/target/
+src-tauri/gen/
+gen/
+
+# Sidecar binaries are compiled per platform by scripts/build-sidecar.mjs (or
+# the app's own equivalent) and are far too large to track.
+src-tauri/binaries/
+
+node_modules/
+
+# Mobile signing material — never commit keystores/certs/provisioning profiles
+*.keystore
+*.jks
+*.p12
+*.mobileprovision
+*.p8
+
+# OS junk
+.DS_Store
+
+# The repository root ignores `dist/` everywhere as build output. Here it is the
+# opposite: dist/ is the app's bundled frontend, and in local mode it IS the
+# app's UI, so it has to be tracked.
+!dist/

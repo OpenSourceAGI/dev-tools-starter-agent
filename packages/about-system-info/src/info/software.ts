@@ -3,15 +3,17 @@
  * @module info/software
  */
 
+import os from "os";
 import process from "process";
 import type { InfoContext } from "../types/internal-types";
-import { IS_LINUX } from "../utils/platform";
+import { IS_WINDOWS } from "../utils/platform";
 import { execCommand, commandExists } from "../utils/command";
 import { getCachedValue, setCachedValue } from "../cache/cache";
 
 /**
  * Gets the current shell name
- * Uses ps command to find parent process shell (Linux/Unix only)
+ * Uses the user's login shell (macOS/Linux), falls back to ps for the
+ * parent process shell
  * @returns Shell name or empty string on Windows
  * @example "bash", "zsh", "fish", "nu"
  */
@@ -19,7 +21,16 @@ export function shell(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "shell");
   if (cached !== null) return cached;
 
-  if (IS_LINUX) {
+  if (!IS_WINDOWS) {
+    try {
+      const loginShell = os.userInfo().shell;
+      if (loginShell) {
+        const shellName = loginShell.split("/").pop() as string;
+        setCachedValue(context.cache, "shell", shellName);
+        return shellName;
+      }
+    } catch {}
+
     try {
       const ppid = process.ppid;
       const shellName = execCommand(`ps -p ${ppid} -o comm=`).split("/").pop();
@@ -47,6 +58,7 @@ export function packages(context: InfoContext): string {
 
   const commands = [
     "apt",
+    "brew",
     "npm",
     "uv",
     "docker",

@@ -1,0 +1,47 @@
+[package]
+name = "native-app-wrapper"
+version = "0.1.0"
+description = "Tauri wrapper that packages a website or a bundled CLI as a native app"
+authors = ["OpenSourceAGI"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "native_app_wrapper_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-deep-link = "2"
+# Backs the `sidecar_output` command: local-mode apps bundle a CLI next to the
+# binary and read its stdout instead of reimplementing it in Rust.
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2"
+urlencoding = "2"
+
+# Desktop-only plugins: neither single-instance (used to route a second
+# deep-link launch's argv into the already-running app) nor the updater apply
+# to the mobile targets, which have their own OS-level equivalents (Android/
+# iOS both already dedupe app launches, and app-store updates replace the
+# updater's job on mobile).
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-single-instance = "2"
+tauri-plugin-updater = "2"
+# Backs the fullscreen toggle: a profile can open the window in true OS
+# fullscreen, which has no title bar to click a restore button on, so an
+# OS-level shortcut is the only reliable way out regardless of what the wrapped
+# page's own JS does.
+tauri-plugin-global-shortcut = "2"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

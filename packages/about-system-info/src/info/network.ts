@@ -5,7 +5,7 @@
 
 import os from "os";
 import type { InfoContext } from "../types/internal-types";
-import { IS_LINUX } from "../utils/platform";
+import { IS_LINUX, IS_MAC } from "../utils/platform";
 import { execCommand } from "../utils/command";
 import { getCachedValue, setCachedValue } from "../cache/cache";
 
@@ -135,16 +135,16 @@ export async function isp(context: InfoContext): Promise<string> {
 
 /**
  * Gets active network interface names
- * Lists non-loopback interfaces with IPv4 addresses (Linux only)
+ * Lists non-loopback interfaces with IPv4 addresses (Linux/macOS only)
  * @param context - Info context with cache
  * @returns Space-separated interface names or empty string
- * @example "eth0 wlan0", "enp0s3"
+ * @example "eth0 wlan0", "en0 en1"
  */
 export function network_interfaces(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "network_interfaces");
   if (cached !== null) return cached;
 
-  if (!IS_LINUX) {
+  if (!IS_LINUX && !IS_MAC) {
     setCachedValue(context.cache, "network_interfaces", "");
     return "";
   }
@@ -174,7 +174,7 @@ export function network_interfaces(context: InfoContext): string {
 }
 /**
  * Gets open TCP ports with service names
- * Uses lsof to find listening TCP ports (Linux only)
+ * Uses lsof to find listening TCP ports (Linux/macOS only)
  * @param context - Info context with cache
  * @returns Space-separated port+process pairs or empty string
  * @example "80http 443http 22ssh", "3000node 5432post"
@@ -183,7 +183,7 @@ export function ports(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "ports");
   if (cached !== null) return cached;
 
-  if (IS_LINUX) {
+  if (IS_LINUX || IS_MAC) {
     try {
       const lsof = execCommand("lsof -nP -iTCP -sTCP:LISTEN");
       const lines = lsof.split("\n").slice(1);

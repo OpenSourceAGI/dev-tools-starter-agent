@@ -30,7 +30,7 @@ export interface DocsConfig {
   description?: string;
   /** URL to the GitHub repository */
   github?: string;
-  /** Base URL for document editing on GitHub */
+  /** Base URL for editing the docs pages on GitHub */
   githubDocs?: string;
   /** Base URL for the packages directory on GitHub */
   githubPackages?: string;

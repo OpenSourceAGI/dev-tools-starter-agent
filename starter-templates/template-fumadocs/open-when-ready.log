@@ -1,4 +1,25 @@
+⚠ Port 3000 is in use by process 4309, using available port 3002 instead.
 ▲ Next.js 16.2.10 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://10.219.61.32:3000
-✓ Ready in 610ms
+- Local:         http://localhost:3002
+- Network:       http://10.161.111.116:3002
+✓ Ready in 455ms
+[MDX] generated files in 13.194124999999985ms
+[MDX] started dev server
+
+○ Compiling / ...
+ GET / 200 in 6.8s (next.js: 6.4s, application-code: 358ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+[MDX] closing dev server
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3002
+- Network:       http://10.161.111.116:3002
+✓ Ready in 2.2s
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          34417
+- Dir:          /Users/admin/Developer/dev-tools-starter-agent/starter-templates/template-fumadocs
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 34417 to stop it.
+[?25h

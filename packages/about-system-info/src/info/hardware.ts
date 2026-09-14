@@ -6,7 +6,7 @@
 import os from "os";
 import fs from "fs";
 import type { InfoContext } from "../types/internal-types";
-import { IS_WINDOWS, IS_LINUX } from "../utils/platform";
+import { IS_WINDOWS, IS_MAC, IS_LINUX } from "../utils/platform";
 import { execCommand } from "../utils/command";
 import { getCachedValue, setCachedValue } from "../cache/cache";
 import Fuse from "fuse.js";
@@ -133,6 +133,19 @@ export function gpu(context: InfoContext): string {
       setCachedValue(context.cache, "gpu", result);
       return result;
     }
+  } else if (IS_MAC) {
+    try {
+      const profile = execCommand("system_profiler SPDisplaysDataType");
+      const gpus = Array.from(profile.matchAll(/Chipset Model:\s*(.+)/g)).map(
+        (match) => match[1].trim()
+      );
+
+      if (gpus.length > 0) {
+        const result = gpus.join(", ");
+        setCachedValue(context.cache, "gpu", result);
+        return result;
+      }
+    } catch {}
   } else if (IS_LINUX) {
     try {
       const lspci = execCommand("lspci");
@@ -173,12 +186,23 @@ export function gpu(context: InfoContext): string {
 }
 
 /**
- * Gets screen resolution from X11 display
- * Uses xrandr command (Linux with X11/Xorg only)
+ * Gets screen resolution
+ * Uses xrandr on Linux (X11/Xorg only) or system_profiler on macOS
  * @returns Resolution in WIDTHxHEIGHT format or empty string
  * @example "1920x1080", "2560x1440", "3840x2160"
  */
 export function screen_resolution(): string {
+  if (IS_MAC) {
+    try {
+      const profile = execCommand("system_profiler SPDisplaysDataType");
+      const resolutionMatch = profile.match(/Resolution:\s*(\d+) x (\d+)/);
+      if (resolutionMatch) {
+        return `${resolutionMatch[1]}x${resolutionMatch[2]}`;
+      }
+    } catch {}
+    return "";
+  }
+
   if (!IS_LINUX) return "";
 
   try {
@@ -198,7 +222,7 @@ export function screen_resolution(): string {
  * Uses fuzzy matching to find similar CPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "💪 37.9k #1", "💪 20.5k #68"
+ * @example "37.9k #1", "20.5k #68"
  */
 export function bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "bench");
@@ -212,7 +236,7 @@ export function bench(context: InfoContext): string {
 
   try {
     let benchmarkPath: string;
-    const benchmarkFile = "cpu-geekbench-1k.json";
+    const benchmarkFile = "cpu-geekbench.json";
 
     // Try multiple resolution strategies
     if (fs.existsSync(benchmarkFile)) {
@@ -252,7 +276,7 @@ export function bench(context: InfoContext): string {
       const match = results[0].item;
       const score = Math.round(match.score / 100) / 10;
       const rank = match.rank;
-      const result = `💪 ${score}k #${rank}`;
+      const result = `${score}k #${rank}`;
       setCachedValue(context.cache, "bench", result);
       return result;
     }
@@ -283,7 +307,7 @@ export function cpu_bench_info(context: InfoContext): string {
 
   try {
     let benchmarkPath: string;
-    const benchmarkFile = "cpu-geekbench-1k.json";
+    const benchmarkFile = "cpu-geekbench.json";
 
     // Try multiple resolution strategies
     if (fs.existsSync(benchmarkFile)) {
@@ -357,7 +381,7 @@ export function cpu_bench_info(context: InfoContext): string {
  * Uses fuzzy matching to find similar GPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "💪 37.9k #1", "💪 20.5k #68"
+ * @example "37.9k #1", "20.5k #68"
  */
 export function gpu_bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "gpu_bench");
@@ -411,7 +435,7 @@ export function gpu_bench(context: InfoContext): string {
       const match = results[0].item;
       const score = Math.round(match.score / 100) / 10;
       const rank = match.rank;
-      const result = `💪 ${score}k #${rank}`;
+      const result = `${score}k #${rank}`;
       setCachedValue(context.cache, "gpu_bench", result);
       return result;
     }

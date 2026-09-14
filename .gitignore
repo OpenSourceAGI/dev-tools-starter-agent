@@ -19,10 +19,24 @@ migrations/*
 .docusaurus/*
 */.next/*
 */dist/*
-apps/docs/.next/*
+apps/dev-tools-help-docs/.next/*
 bun.lock
 dist/
 packages/template-fumadocs/.next/*
 .next/
-.claude/
 .svelte-kit/
+# Test result / coverage artifacts uploaded to Codecov by .github/workflows/tests.yml
+junit.xml
+coverage/
+
+# Turborepo local cache and task logs
+.turbo
+
+.claude/*
+# Agent docs for Claude Code — checked in on purpose (see CLAUDE.md)
+!.claude/apps
+!.claude/packages
+!.claude/architecture
+!.claude/settings.json
+.claude/settings.local.json
+CLAUDE.local.md

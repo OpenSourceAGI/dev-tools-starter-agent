@@ -1,3 +1,30 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/verify-phone-sms"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dm/verify-phone-sms.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/v/verify-phone-sms.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dt/verify-phone-sms.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/types/verify-phone-sms" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=verify-phone-sms"><img src="https://packagephobia.com/badge?p=verify-phone-sms" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=verify-phone-sms&label=verify-phone-sms%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/verify-phone-sms"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Cloudflare%20Workers-F38020?logo=cloudflareworkers&logoColor=white" alt="Cloudflare Workers" /> <img src="https://img.shields.io/badge/Hono-E36002?logo=hono&logoColor=white" alt="Hono" /> <img src="https://img.shields.io/badge/Zod-3E67B1?logo=zod&logoColor=white" alt="Zod" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill verify-phone-sms` ([what it covers](../../skills/verify-phone-sms/SKILL.md))
+<!-- skills:install:end -->
+
 # SMS Verification API Server
 
 A complete Hono-based server for SMS verification using AWS SNS. Built for Cloudflare Workers with comprehensive API documentation and security features.
@@ -17,24 +44,15 @@ A complete Hono-based server for SMS verification using AWS SNS. Built for Cloud
 
 
 
-## Other Verifications
-
-- add with persona api inergration $250/month (includes 166 verification )
-
-- auto-sign in api with phone of registered users
-- sell corps ability to verify their customers are real
-- past addresses are better than legal id which can be ai-gen or reused
-- demographic info for ads
-
-- [Leaderboard](https://pages.nist.gov/frvt/html/frvt11.html)
-- [Liveliness Check](https://github.com/Faceplugin-ltd/FaceRecognition-Android)
-- [Face Check](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK)
-- [FaceLivenessDetection-SDK](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK)
-
-
 ## Quick Start
 
-### 1. Install Dependencies
+### 1. Install
+
+```bash
+npm install verify-phone-sms   # use verifyPhone() from your own backend
+```
+
+Or clone the repo and install its dependencies to run the server itself:
 
 ```bash
 npm install
@@ -234,7 +252,9 @@ X-API-Key: your_api_key
 
 ## API Documentation
 
-Visit `/docs` to see the interactive OpenAPI documentation.
+Visit `/docs` for the interactive Swagger UI, or `/openapi.json` for the
+OpenAPI 3.0 spec it renders. Both, along with `/` and `/health`, are
+unauthenticated.
 
 ## Authentication
 
@@ -462,6 +482,40 @@ Common HTTP status codes:
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
+## Roadmap: Identity Verification
+
+Phone verification proves control of a number. The next tier proves the person
+behind that number is real — and turns that proof into something businesses pay
+for.
+
+### Planned integrations
+
+- **Persona API** — document and selfie identity verification. Entry plan is
+  **$250/month, including 166 verifications** (~$1.50 each); volume past the
+  included allowance is billed per verification.
+- **Auto sign-in by phone** — once a registered user's number is verified and on
+  file, authenticate them from the phone itself instead of re-sending a code on
+  every login.
+- **Address history over legal ID** — a chain of past addresses is a stronger
+  identity signal than a photo of a government ID, which can be AI-generated or
+  reused across accounts. Treat document capture as corroboration, not proof.
+- **Liveness and face check** — confirm a live human is present at capture time,
+  rather than a printed photo, a replayed video, or a generated face.
+
+### Product opportunities
+
+- **Verification as a service** — sell corporations the ability to confirm their
+  customers are real people, with this stack as the verification backend.
+- **Verified demographics** — verified age, location, and demographic attributes
+  make high-quality ad targeting inventory, subject to user consent and
+  applicable privacy law.
+
+### References
+
+- [NIST FRVT 1:1 leaderboard](https://pages.nist.gov/frvt/html/frvt11.html) — accuracy rankings for face recognition algorithms
+- [Faceplugin FaceRecognition-Android](https://github.com/Faceplugin-ltd/FaceRecognition-Android) — on-device face recognition with liveness check
+- [Doubango FaceLivenessDetection-SDK](https://github.com/DoubangoTelecom/FaceLivenessDetection-SDK) — passive face liveness / anti-spoofing
+
 ## Contributing
 
 1. Fork the repository
@@ -473,3 +527,9 @@ Common HTTP status codes:
 ## License
 
 MIT License - see LICENSE file for details. 
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

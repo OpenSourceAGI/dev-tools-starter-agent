@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/remote-schema.json",
+  "identifier": "remote",
+  "description": "Scoped IPC access for the wrapped site itself (the profile's trustedOrigins), so its login page can ask the wrapper to open the system browser for OAuth. Nothing else is exposed to remote content.",
+  "windows": [
+    "main"
+  ],
+  "remote": {
+    "urls": [
+      "https://example.com/*",
+      "https://*.example.com/*"
+    ]
+  },
+  "permissions": [
+    "opener:allow-open-url"
+  ]
+}

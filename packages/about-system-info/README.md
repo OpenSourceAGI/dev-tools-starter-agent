@@ -2,6 +2,33 @@
   <img src="https://i.imgur.com/1kwKBTR.png" />
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/about-system-info"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/about-system"><img src="https://img.shields.io/npm/dm/about-system.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/about-system"><img src="https://img.shields.io/npm/v/about-system.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/about-system"><img src="https://img.shields.io/npm/dt/about-system.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/about-system"><img src="https://img.shields.io/npm/types/about-system" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=about-system"><img src="https://packagephobia.com/badge?p=about-system" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=about-system-info&label=about-system-info%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system-info"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill about-system` ([what it covers](../../skills/about-system/SKILL.md))
+<!-- skills:install:end -->
+
 # About System Info
 
 A TypeScript/Node.js library to display comprehensive system information with customizable output.
@@ -27,6 +54,52 @@ about-system
 ```bash
 bun x about-system
 ```
+
+### Desktop app
+
+The same 30+ metrics as a window you can leave open, built natively for every desktop OS. The CLI
+is compiled into the app as a [Tauri sidecar](https://v2.tauri.app/develop/sidecar/), so an
+installer runs on a machine with no Node, no Bun, and no package manager on it.
+
+#### Download an installer
+
+Every tagged release attaches a native build for each desktop system
+([Releases](https://github.com/OpenSourceAGI/dev-tools-starter-agent/releases?q=about-system-desktop)):
+
+| System | Architecture | Installer |
+| --- | --- | --- |
+| Windows 10 1803+ / 11 | x86_64 | `About System_<version>_x64_en-US.msi`, `About System_<version>_x64-setup.exe` |
+| macOS 10.15+ | Apple Silicon + Intel (universal) | `About System_<version>_universal.dmg` |
+| Linux (Debian/Ubuntu) | x86_64, aarch64 | `About System_<version>_amd64.deb`, `About System_<version>_arm64.deb` |
+| Linux (Fedora/RHEL) | x86_64, aarch64 | `About System-<version>-1.x86_64.rpm`, `About System-<version>-1.aarch64.rpm` |
+| Linux (any distro) | x86_64, aarch64 | `About System_<version>_amd64.AppImage`, `About System_<version>_aarch64.AppImage` |
+
+Installers are unsigned by default, so macOS shows an "unidentified developer" warning and Windows
+shows a SmartScreen prompt on first launch.
+
+#### Build it yourself
+
+Needs [Rust](https://rustup.rs) 1.77.2+, Node 18+, [Bun](https://bun.sh), and your platform's
+[Tauri prerequisites](https://v2.tauri.app/start/prerequisites/):
+
+```bash
+bun install                # the CLI's dependencies — the sidecar is compiled from its source
+cd native
+npm install
+npm run build:desktop      # regenerates config, compiles the sidecar, builds the installers
+```
+
+Artifacts land in `native/src-tauri/target/release/bundle/`. **Each installer must be built on its
+own OS and architecture** — neither Tauri nor the `bun build --compile` sidecar cross-compiles,
+which is why `.github/workflows/about-system-desktop.yml` runs the same two commands on a Windows,
+a macOS, an x86_64 Linux, and an aarch64 Linux runner and attaches every artifact to one release.
+
+The app is scaffolded from [`packages/native-app-wrapper`](../native-app-wrapper/) — a Tauri shell
+that turns one JSON profile into a native app — and owns its whole identity (name, bundle id,
+version, window, sidecar command) in `native/profiles/about-system.json`. See
+[`native/README.md`](native/README.md) for the development loop, the universal-macOS build, and the
+known limitations (no Windows-on-ARM build, since Bun has no `windows-arm64` compile target; and no
+mobile build, since Android and iOS don't let an app spawn a bundled executable).
 
 ## Examples
 
@@ -121,6 +194,7 @@ async function getBasicInfo() {
 | `cpu`         | CPU information            | `📈 Intel Core i7-8700K`     |
 | `gpu`         | Graphics card              | `🎮 NVIDIA GeForce RTX 3080` |
 | `disk_used`   | Disk usage percentage      | `📁 75%`                     |
+| `disk_size`   | Disk size per real disk    | `💽 256/512GB`               |
 | `ram_used`    | Memory usage               | `💾 8/16GB`                  |
 | `top_process` | Highest CPU process        | `🔝 15% chrome`              |
 | `uptime`      | System uptime              | `⏱️ 2d 5h 30m`             |
@@ -209,7 +283,8 @@ about-system --cache-clear
   },
   "display": {
     "show_emojis": true,
-    "single_line": false,
+    "show_backgrounds": true,
+    "single_line": true,
     "line_wrap_length": 100
   },
   "network": {
@@ -230,9 +305,19 @@ Available color options for each info block:
 - `red`, `orange`, `yellow`, `green`, `blue`, `cyan`, `purple`, `magenta`, `gray`, `lightblue`
 - Use `multicolor` for ports to get a rainbow effect
 
+All colors use darker, more saturated shades so they stay readable on both light and dark terminal backgrounds.
+
 ```bash
 about-system --set colors.user blue
 about-system --set colors.hostname green
+```
+
+#### Backgrounds
+
+By default, every info block is rendered as a colored background badge with a contrasting text color, so it stays legible no matter what background color your terminal uses. Disable it to fall back to plain colored text:
+
+```bash
+about-system --set display.show_backgrounds false
 ```
 
 #### Emojis
@@ -257,6 +342,15 @@ Customize the text labels for each info block:
 about-system --set labels.cpu "Processor"
 about-system --set labels.hostname "Computer"
 about-system --set labels.ram_used "Memory"
+```
+
+#### Line Wrapping
+
+By default, output is printed as one continuous line and lets the terminal soft-wrap it on resize. To instead hard-wrap at a fixed width (filling each line completely, breaking mid-block if needed), disable `single_line`:
+
+```bash
+about-system --set display.single_line false
+about-system --set display.line_wrap_length 100
 ```
 
 ### Platform-Specific Features
@@ -347,3 +441,9 @@ import type {
 
 - [Repository](https://github.com/OpenSourceAGI/StarterDOCS/tree/master/packages/about-system-info)
 - [Issues](https://github.com/OpenSourceAGI/StarterDOCS/issues)
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

@@ -2,6 +2,31 @@
     <img width="400px" src="https://i.imgur.com/RQP3lma.png" />
 </p>
 
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/cloudflare-to-claude-fix"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dm/cloudflare-to-claude-fix.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/v/cloudflare-to-claude-fix.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dt/cloudflare-to-claude-fix.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/types/cloudflare-to-claude-fix" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=cloudflare-to-claude-fix"><img src="https://packagephobia.com/badge?p=cloudflare-to-claude-fix" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/Cloudflare%20Workers-F38020?logo=cloudflareworkers&logoColor=white" alt="Cloudflare Workers" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill cloudflare-to-claude-fix` ([what it covers](../../skills/cloudflare-to-claude-fix/SKILL.md))
+<!-- skills:install:end -->
+
 A Cloudflare Workers **Queue consumer** that fires a **Claude Code routine** whenever a Workers build fails. Required Workers Paid and Claude Pro.
 
 ---
@@ -151,3 +176,9 @@ wrangler tail cloudflare-to-claude-fix
 ```
 
 ---
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟

@@ -22,5 +22,8 @@ export const docs = defineDocs({
 export default defineConfig({
   mdxOptions: {
     remarkPlugins: [remarkMdxFiles],
+    remarkImageOptions: {
+      onError: 'ignore',
+    },
   },
 });

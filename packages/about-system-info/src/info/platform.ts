@@ -50,7 +50,12 @@ export function os_info(context: InfoContext): string {
       osName = `Windows ${release}`;
     }
   } else if (IS_MAC) {
-    osName = `macOS ${release}`;
+    const productName = execCommand("sw_vers -productName");
+    const productVersion = execCommand("sw_vers -productVersion");
+    osName =
+      productName && productVersion
+        ? `${productName} ${productVersion}`
+        : `macOS ${release}`;
   } else if (IS_LINUX) {
     try {
       const osRelease = fs.readFileSync("/etc/os-release", "utf8");
@@ -119,6 +124,14 @@ export function device(context: InfoContext): string {
         return device;
       }
     } catch {}
+  } else if (IS_MAC) {
+    const profile = execCommand("system_profiler SPHardwareDataType");
+    const nameMatch = profile.match(/Model Name:\s*(.+)/);
+    if (nameMatch) {
+      const device = nameMatch[1].trim();
+      setCachedValue(context.cache, "device", device);
+      return device;
+    }
   } else if (IS_LINUX) {
     try {
       if (commandExists("getprop")) {

@@ -1,0 +1,84 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Example App",
+  "version": "0.1.0",
+  "identifier": "com.example.app",
+  "build": {
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Example App",
+        "url": "https://example.com",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 480,
+        "minHeight": 480,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "capabilities": [
+        "default",
+        "remote"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "publisher": "Example, Inc.",
+    "copyright": "Example, Inc.",
+    "category": "Productivity",
+    "shortDescription": "One-line description shown in store listings.",
+    "longDescription": "One-line description shown in store listings.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15"
+    },
+    "linux": {
+      "deb": {
+        "depends": []
+      }
+    },
+    "android": {
+      "minSdkVersion": 24
+    },
+    "iOS": {
+      "minimumSystemVersion": "14.0"
+    }
+  },
+  "plugins": {
+    "deep-link": {
+      "desktop": {
+        "schemes": [
+          "exampleapp"
+        ]
+      },
+      "mobile": [
+        {
+          "scheme": [
+            "exampleapp"
+          ],
+          "appLink": false
+        }
+      ]
+    }
+  }
+}

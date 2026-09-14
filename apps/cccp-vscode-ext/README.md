@@ -1,0 +1,161 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/cccp-vscode-ext"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+# CCCP for VS Code
+
+The [Cloud Computer Control Panel](../Cloud-Computer-Control-Panel/) dashboard, in the VS Code sidebar.
+
+![the panel in the sidebar](https://i.imgur.com/t6WlnCI.png)
+
+Provision EC2 instances, install Dokploy, deploy Docker images and GitHub repos, and manage your
+encrypted AWS credentials — without leaving the editor.
+
+## It is the same UI, not a copy of it
+
+The panel does not re-implement the dashboard. `webview-ui` imports CCCP's own React components
+straight out of `apps/Cloud-Computer-Control-Panel` and renders them unchanged:
+
+| Reused as-is | From |
+| --- | --- |
+| Instance list, start/stop/terminate/snapshot, Dokploy install | `components/dashboard/manager-list.tsx` |
+| Instance controls and SSH software install | `components/instance/instance-controls.tsx`, `add-software-modal.tsx` |
+| Create-instance form, cost estimate, region globe | `components/instance/create-manager.tsx` |
+| AWS credential settings | `components/dashboard/credentials-settings.tsx` |
+| Docker Hub and GitHub search | `components/search/*.tsx` |
+| shadcn/ui primitives and the design tokens | `components/ui/*`, `app/theme-tokens.css` |
+
+Only the shell around them is written here, because a 400px sidebar wants a different frame than a
+full page — and because VS Code already supplies what the web header did (theming, the account
+menu, external links). Change a component in the Next.js app and the panel changes with it.
+
+Two mechanisms make that possible, both in `webview-ui/src/bridge.ts`:
+
+- **`fetch("/api/...")`** — the components issue the same relative requests they do in the browser.
+  A webview has no origin to be relative to, so the patched `fetch` posts each request to the
+  extension host, which resolves it against `cccp.serverUrl` and adds the session cookie.
+- **`window.open(...)`** — a webview cannot open windows, so those calls (and `target="_blank"`
+  links) are routed to `vscode.env.openExternal` and land in the user's real browser.
+
+## Architecture
+
+```
+webview (webview-ui/dist/main.js)          extension host (dist/extension.js)
+  CCCP components, unchanged                 AuthManager  — session cookie in SecretStorage
+  bridge.ts  fetch → postMessage    ←──→     apiProxy.ts  — fetch to cccp.serverUrl
+  theme.ts   VS Code kind → .dark            panel.ts     — sidebar view + editor tab
+```
+
+The session cookie never enters the webview, and the webview can never reach the network itself:
+its Content-Security-Policy sets `connect-src 'none'`, and the proxy refuses any path that is not
+relative to the configured server.
+
+## Setup
+
+1. Run a CCCP deployment — `cd ../Cloud-Computer-Control-Panel && bun dev` for a local one.
+2. Install this extension (see **Development** below, or install the packaged `.vsix`).
+3. Open the cloud icon in the activity bar and choose **Sign in to CCCP**. You are prompted for the
+   server URL, then email and password; **Create an account** registers on that deployment.
+4. Save your AWS IAM keys from the panel's settings (gear) icon. They are encrypted by the CCCP
+   server before storage and are never sent back — the panel only ever holds a masked key id.
+
+Signing in with Google or a magic link needs a browser round-trip an extension cannot drive: sign in
+on the website for those, then use email + password here, or point `cccp.serverUrl` at the same
+deployment and sign in with a password you set there.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `CCCP: Open Control Panel` | Reveals the sidebar view |
+| `CCCP: Open Control Panel in an Editor Tab` | The same panel at full editor width, for the create form |
+| `CCCP: Sign In` / `CCCP: Sign Out` | Manages the session held in SecretStorage |
+| `CCCP: Set Server URL` | Points the panel at a different deployment |
+| `CCCP: Open the Web Dashboard in a Browser` | Opens `/dashboard` on the configured server |
+| `CCCP: Reload Panel` | Re-renders the webview |
+
+## Configuration
+
+An extension has no `.env` — **this extension reads no environment variables at
+all.** Everything it needs is either a VS Code setting or a secret VS Code holds
+for it:
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| `cccp.serverUrl` | `http://localhost:3000` | Base URL of your CCCP deployment |
+| `cccp.followVsCodeTheme` | `true` | Match the panel's light/dark mode to the editor theme |
+| `cccp.requestTimeoutMs` | `60000` | How long to wait on the server; provisioning calls are slow |
+
+Change them in **Settings → Extensions → CCCP**, or with
+`CCCP: Set Server URL`.
+
+The session cookie lives in VS Code's
+[SecretStorage](https://code.visualstudio.com/api/references/vscode-api#SecretStorage)
+(`AuthManager` in `src/`), not in a setting file, and your AWS keys never live
+here at all — they are encrypted and stored by the CCCP server you sign in to.
+Every key CCCP itself needs (`BETTER_AUTH_SECRET`, the database URL, Google
+OAuth, Resend) is configured on that deployment; see
+[its README](../Cloud-Computer-Control-Panel/README.md#environment-variables).
+
+## Development
+
+```bash
+bun install
+cd webview-ui && bun install && cd ..
+
+bun run compile   # builds webview-ui/dist and dist/extension.js
+bun run test      # host transport, session and bridge tests
+bun run type-check
+```
+
+Then press <kbd>F5</kbd> in VS Code to launch an Extension Development Host.
+
+`webview-ui` resolves the neighbouring app's bare imports (`react`, `lucide-react`, Radix) against
+its own `node_modules` — see `resolveCccpImportsHere()` in `webview-ui/vite.config.ts` and the `"*"`
+path fallback in `webview-ui/tsconfig.json` — so the Next.js app does not need to be installed to
+build the panel.
+
+## Packaging and publishing
+
+```bash
+bun run package                      # production bundle: webview-ui/dist + dist/extension.js
+bunx @vscode/vsce package            # → cccp-vscode-<version>.vsix
+```
+
+Install the result locally with **Extensions → … → Install from VSIX**, or
+`code --install-extension cccp-vscode-<version>.vsix`.
+
+To publish to the Marketplace under the `opensourceagi` publisher, you need a
+Personal Access Token with the **Marketplace → Manage** scope from an Azure
+DevOps organization — see
+[Publishing Extension](https://code.visualstudio.com/api/working-with-extensions/publishing-extension)
+for the walkthrough and
+[dev.azure.com](https://dev.azure.com) to create the token. Then:
+
+```bash
+bunx @vscode/vsce login opensourceagi   # paste the PAT once
+bunx @vscode/vsce publish               # bump "version" in package.json first
+```
+
+`vscode:prepublish` runs `bun run package` for you, so the bundle is always
+rebuilt before it ships. The PAT is a credential: keep it in `vsce`'s own
+keychain entry, never in the repository.
+
+## Notes
+
+- The instance list keeps its manager configs and generated SSH keys in the webview's
+  `localStorage`, exactly as the web dashboard does in the browser's. They are per-surface: keys
+  generated in the browser are not visible to the panel, and vice versa.
+- The list polls every 10 seconds while the view is open, matching the web dashboard.

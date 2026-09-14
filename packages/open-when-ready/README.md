@@ -1,3 +1,33 @@
+<p align="center">
+    <img width="800px" src="https://i.imgur.com/lyvk8iy.png" />
+</p>
+
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/open-when-ready"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/dm/open-ready.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/v/open-ready.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/dt/open-ready.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/types/open-ready" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=open-ready"><img src="https://packagephobia.com/badge?p=open-ready" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/open-when-ready"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill open-ready` ([what it covers](../../skills/open-ready/SKILL.md))
+<!-- skills:install:end -->
+
 # open-ready
 
 Smart dev server launcher that watches your server's output and automatically opens the browser when ready — or opens an AI assistant with the error context when something goes wrong.
@@ -62,3 +92,7 @@ For Next.js projects, the log is written to `.next/port.log`; otherwise `open-wh
 ## License
 
 MIT
+
+---
+
+Please star this repo for updates! 🌟

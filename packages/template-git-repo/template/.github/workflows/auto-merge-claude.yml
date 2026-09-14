@@ -1,0 +1,54 @@
+# Merges pull requests opened by an agent (or by the maintainers) as soon as
+# their checks pass, so agent-authored work does not sit waiting for a human to
+# click a button.
+#
+# The actor allowlist is the whole safety model: this must never fire for a PR
+# from an arbitrary contributor. Edit the `if:` below to match the accounts you
+# actually want merged automatically.
+
+name: Auto-merge agent PRs
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: >
+      github.actor == 'claude[bot]' ||
+      github.actor == 'anthropic-claude[bot]' ||
+      github.actor == '{{OWNER}}'
+    steps:
+      - name: Enable auto-merge (or merge directly)
+        env:
+          # A PAT rather than GITHUB_TOKEN: merges pushed with GITHUB_TOKEN do
+          # not trigger further workflow runs, so a publish workflow listening
+          # on the default branch would never fire for the merge commit.
+          GH_TOKEN: ${{ secrets.GIT_TOKEN || secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          # Never delete long-lived branches after merging them.
+          case "$HEAD_REF" in
+            production|prod|staging|develop) MERGE_OPTS="--squash" ;;
+            *) MERGE_OPTS="--squash --delete-branch" ;;
+          esac
+
+          # Preferred path: let GitHub merge once required checks pass. Needs
+          # "Allow auto-merge" in repo settings plus branch protection with at
+          # least one required status check.
+          if gh pr merge "$PR" --repo "$REPO" $MERGE_OPTS --auto; then
+            echo "Auto-merge enabled for PR #$PR"
+          else
+            # Fallback for unprotected branches (no required checks): merge now
+            # if the PR is mergeable. Without branch protection there is nothing
+            # for --auto to wait on, so GitHub rejects it outright.
+            echo "Auto-merge unavailable, attempting direct merge"
+            gh pr merge "$PR" --repo "$REPO" $MERGE_OPTS
+          fi

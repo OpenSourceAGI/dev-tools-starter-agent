@@ -1,12 +1,23 @@
 {
   "name": "code-tree-graph",
-  "version": "0.1.14",
+  "version": "0.1.73",
   "description": "Code dependency graph and file tree visualization components",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/code-tree-graph"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/code-tree-graph"
   },
-  "homepage": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/code-tree-graph",
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph",
+  "keywords": [
+    "code-graph",
+    "dependency-graph",
+    "file-tree",
+    "visualization",
+    "react",
+    "typescript",
+    "ast",
+    "mermaid"
+  ],
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,7 +34,10 @@
   ],
   "scripts": {
     "build": "vite build",
-    "dev": "vite build --watch"
+    "dev": "vite build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.4",
@@ -45,10 +59,13 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "@vitest/coverage-v8": "^4.1.0",
+    "jsdom": "^28.0.1",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "vite": "^6.3.5",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.0"
   },
   "peerDependencies": {
     "fumadocs-core": "*",

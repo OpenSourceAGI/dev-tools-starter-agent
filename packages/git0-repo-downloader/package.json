@@ -1,14 +1,17 @@
 {
     "name": "git0",
     "description": "CLI tool to search GitHub repositories, download source & releases for your system, and instantly set up, then install dependencies and open code editor.",
-    "version": "0.2.30",
+    "version": "0.2.91",
     "author": "vtempest",
     "scripts": {
         "build": "bun build src/cli.ts --outdir dist --target node --format esm --sourcemap",
         "test": "bun test",
+        "test:ci": "bun test --reporter=junit --reporter-outfile=./junit.xml --coverage --coverage-reporter=lcov --coverage-dir=./coverage",
         "docs": "cd docs-config && bun run build:docs",
         "demo": "bun src/cli.ts react template",
-        "publish:npm": "npm version patch && npm publish --access public"
+        "publish:npm": "npm version patch && npm publish --access public",
+        "test:watch": "vitest",
+        "coverage": "vitest run --coverage"
     },
     "dependencies": {
         "chalk": "^5.4.1",
@@ -22,10 +25,10 @@
         ".": "./dist/cli.js"
     },
     "bin": {
-        "g": "./dist/cli.js",
-        "gg": "./dist/cli.js",
-        "fm": "./src/fm.js",
-        "git0": "./dist/cli.js"
+        "g": "dist/cli.js",
+        "gg": "dist/cli.js",
+        "fm": "src/fm.js",
+        "git0": "dist/cli.js"
     },
     "type": "module",
     "keywords": [
@@ -39,7 +42,12 @@
     "license": "MIT",
     "repository": {
         "type": "git",
-        "url": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/git0-repo-downloader"
+        "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+        "directory": "packages/git0-repo-downloader"
     },
-    "homepage": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/git0-repo-downloader"
+    "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/git0-repo-downloader",
+    "devDependencies": {
+        "@vitest/coverage-v8": "^4.1.0",
+        "vitest": "^4.1.0"
+    }
 }

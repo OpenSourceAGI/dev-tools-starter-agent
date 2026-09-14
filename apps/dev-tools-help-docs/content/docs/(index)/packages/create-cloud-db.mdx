@@ -1,0 +1,129 @@
+---
+title: 'create-cloud-db'
+description: 'CLI to create a Turso database and write TURSO_* env vars to .env file'
+icon: Database
+---
+
+{/* Generated from packages/create-cloud-db/README.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
+
+<div align="center">
+    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/create-cloud-db"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/dm/create-cloud-db.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/v/create-cloud-db.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/dt/create-cloud-db.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/create-cloud-db"><img src="https://img.shields.io/npm/types/create-cloud-db" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=create-cloud-db"><img src="https://packagephobia.com/badge?p=create-cloud-db" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/create-cloud-db"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</div>
+
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill create-cloud-db` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/create-cloud-db/SKILL.md))
+
+`create-cloud-db` is a small CLI that creates a Turso database and manages the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` values in your local `.env` file.
+
+It is designed for quick local setup so you can be ready to connect from Node, frameworks, or serverless environments with minimal manual configuration.
+
+## Installation
+
+You must first login to turso with:
+
+```bash
+bun i -g turso
+turso auth login
+
+# or
+bun x turso auth login
+```
+
+Then run:
+
+```bash
+# will ask for name
+npm create cloud-db
+
+# or
+npx create-cloud-db
+
+# or
+npx create-cloud-db [myapp-db]
+
+```
+
+Or install globally:
+
+```bash
+npm install -g create-cloud-db
+create-cloud-db myapp-db
+```
+
+## What it does
+
+When you run the command, the CLI:
+
+1. Ensures you are logged into Turso via `turso auth login`.  
+2. Creates a Turso database if it does not already exist.  
+3. Generates a database URL and an auth token via the Turso CLI.  
+4. Overwrites (not appends) the `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` entries in your local `.env` file.  
+
+After running, your `.env` file will contain something like:
+
+```dotenv
+TURSO_DATABASE_URL=libsql://your-db-name.region.turso.io
+TURSO_AUTH_TOKEN=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9...
+```
+
+## Add to package.json
+
+```json
+    "db:create": "create-cloud-db",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+```
+
+## Environment file behavior
+
+- The CLI reads your existing `.env` file if present.  
+- It updates or inserts `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` keys.  
+- The `.env` file is rewritten, so old placeholder values are removed and replaced with valid values.
+
+### Example with Drizzle
+
+```ts
+// drizzle.config.ts
+
+import { defineConfig } from 'drizzle-kit';
+
+export default defineConfig({
+  dialect: 'turso',
+  schema: './src/lib/db/schema.ts',
+  out: './drizzle',
+  dbCredentials: {
+    url: process.env.TURSO_DATABASE_URL || 'file:./localdb.sqlite',
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  },
+});
+```
+
+## 📝 License
+
+MIT License - Star this repo so it can grow features! 🌟
+
+---
+
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request)
+
+Please star this repo for updates! 🌟
+
+---
+
+Source: [`packages/create-cloud-db/README.md`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/create-cloud-db/README.md)

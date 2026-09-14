@@ -1,13 +1,7 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import { resolve } from 'path';
 
-const withMDX = createMDX({
-  // mdxOptions: {
-  //   remarkImageOptions: {
-  //     onError: "ignore", // or "hide"
-  //   },
-  // },
-});
+const withMDX = createMDX({});
 
 type MDXNextConfig = NonNullable<Parameters<typeof withMDX>[0]>;
 

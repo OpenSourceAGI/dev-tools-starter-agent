@@ -1,0 +1,37 @@
+{
+  "_comment": "Copy this file to profiles/<your-app>.json and fill in every field, or scaffold a fresh copy of the wrapper somewhere else with `node bin/cli.js init <dir> --profile-file <your-profile.json>`. JSON has no comments, so field docs live in profiles/README.md.",
+
+  "appName": "Example App",
+  "productName": "Example App",
+  "identifier": "com.example.app",
+  "version": "0.1.0",
+  "mode": "remote",
+  "url": "https://example.com",
+  "deepLinkScheme": "exampleapp",
+  "iconSource": "../assets/icon-source.png",
+  "placeholderIcon": {
+    "background": ["#1e293b", "#0b1220"],
+    "accent": "#f8fafc"
+  },
+  "copyright": "Example, Inc.",
+  "category": "Productivity",
+  "shortDescription": "One-line description shown in store listings.",
+  "trustedOrigins": ["https://example.com", "https://*.example.com"],
+  "window": {
+    "title": "Example App",
+    "width": 1280,
+    "height": 800,
+    "minWidth": 480,
+    "minHeight": 480,
+    "fullscreen": false,
+    "resizable": true
+  },
+  "android": {
+    "packageName": "com.example.app",
+    "minSdkVersion": 24
+  },
+  "ios": {
+    "bundleId": "com.example.app",
+    "minimumSystemVersion": "14.0"
+  }
+}

@@ -1,6 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "template-nextjs-stripe-teams",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
   "main": "worker/index.ts",
   "compatibility_date": "2026-03-10",
   "compatibility_flags": ["nodejs_compat"],
@@ -20,7 +23,6 @@
   ],
   "env": {
     "production": {
-      "keep_vars": true,
       "images": {
         "binding": "IMAGES",
       },

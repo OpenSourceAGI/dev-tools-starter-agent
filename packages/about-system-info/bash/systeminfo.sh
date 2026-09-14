@@ -3,6 +3,9 @@
 # =========================================================
 #   System Info with Emojis - Bash Script Version
 # =========================================================
+#
+#   wget -qO- tinyurl.com/25um7xjd | bash
+#
 #   Bash script to display key system information with emojis
 #   The output and order are fully customizable: edit DISPLAY_ORDER
 #   to control which info blocks are shown and in what order.

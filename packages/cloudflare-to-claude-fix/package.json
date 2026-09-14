@@ -1,18 +1,34 @@
 {
   "name": "cloudflare-to-claude-fix",
-  "version": "1.0.17",
+  "version": "1.0.78",
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/cloudflare-to-claude-fix"
+    "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
+    "directory": "packages/cloudflare-to-claude-fix"
   },
-  "homepage": "https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/master/packages/cloudflare-to-claude-fix",
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/cloudflare-to-claude-fix",
+  "keywords": [
+    "cloudflare",
+    "cloudflare-workers",
+    "claude",
+    "claude-code",
+    "queue",
+    "wrangler",
+    "ci",
+    "build-failure"
+  ],
   "scripts": {
     "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "tail": "wrangler tail"
+    "tail": "wrangler tail",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.1.0",
+    "vitest": "^4.1.0",
     "wrangler": "^3.x"
   }
 }

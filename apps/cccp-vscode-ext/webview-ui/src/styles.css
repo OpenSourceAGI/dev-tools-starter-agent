@@ -1,0 +1,58 @@
+/* Tailwind is pulled from this package's own dependencies, and the palette from
+ * the Next.js app next door, so the panel and the web dashboard render the same
+ * components against the same tokens. */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../../../Cloud-Computer-Control-Panel/app/theme-tokens.css";
+
+/* Tailwind only scans from this package by default; the reused CCCP components
+ * live outside it and hold most of the class names that need generating. */
+@source "./";
+@source "../../../Cloud-Computer-Control-Panel/components";
+@source "../../../Cloud-Computer-Control-Panel/hooks";
+
+/* VS Code hands the webview its editor font stack and theme kind. Borrowing the
+ * font is what makes the panel read as part of the editor rather than as an
+ * embedded website; the colors stay CCCP's own so the UI is recognisably the
+ * same product. */
+@theme inline {
+  --font-sans: var(--vscode-font-family, "Geist", "Geist Fallback", system-ui, sans-serif);
+  --font-mono: var(--vscode-editor-font-family, "Geist Mono", "Geist Mono Fallback", monospace);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    /* The sidebar is narrow and the host already scrolls it. */
+    overflow-x: hidden;
+    font-size: var(--vscode-font-size, 13px);
+  }
+
+  /* Match the editor's own scrollbars instead of the platform default. */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--vscode-scrollbarSlider-background, oklch(0.5 0 0 / 0.4));
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--vscode-scrollbarSlider-hoverBackground, oklch(0.5 0 0 / 0.6));
+  }
+}
+
+/* Radix portals (dialogs, selects) mount at the end of <body>, outside #root, so
+ * the dark-mode ancestor has to be the document element for them too -- see
+ * applyTheme() in theme.ts. */

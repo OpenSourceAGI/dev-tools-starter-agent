@@ -12,6 +12,7 @@ import {
   Settings,
   DEFAULT_SETTINGS,
   colors,
+  backgrounds,
   SETTINGS_FILE,
   CACHE_FILE,
   loadSettings,
@@ -21,11 +22,25 @@ import {
 // Platform detection
 const IS_WINDOWS = os.platform() === "win32";
 
+// Foreground code -> [background code, contrasting text code] for the
+// legacy 8-color multicolor rotation (ports/pacman rainbow mode).
+const MULTICOLOR_BG: Record<number, [number, number]> = {
+  31: [41, 97], // red
+  32: [42, 30], // green
+  33: [43, 30], // yellow
+  34: [44, 97], // blue
+  35: [45, 97], // magenta
+  36: [46, 30], // cyan
+};
+
 function formatValue(key: string, value: string, settings: Settings): string {
   if (!value || value.trim() === "") return "";
 
-  const color =
-    colors[settings.colors[key] as keyof typeof colors] || colors.reset;
+  const showBackgrounds = settings.display.show_backgrounds !== false;
+  const colorName = settings.colors[key] as keyof typeof colors;
+  const bg = backgrounds[colorName as keyof typeof backgrounds];
+  const style = (showBackgrounds && bg) || colors[colorName] || colors.reset;
+  const suffix = showBackgrounds ? colors.reset : "";
   const emoji = settings.display.show_emojis ? settings.emojis[key] || "" : "";
 
   // Special handling for battery emoji
@@ -33,7 +48,7 @@ function formatValue(key: string, value: string, settings: Settings): string {
     const batteryEmoji = value.includes("+")
       ? settings.emojis.battery_charging
       : settings.emojis.battery;
-    return `${color}${batteryEmoji}${value}`;
+    return `${style}${batteryEmoji}${value}${suffix}`;
   }
 
   // Multicolor handling for ports
@@ -44,7 +59,12 @@ function formatValue(key: string, value: string, settings: Settings): string {
     const colorCodes = [31, 32, 33, 34, 35, 36];
     ports.forEach((port, index) => {
       const colorCode = colorCodes[index % colorCodes.length];
-      output += `\x1b[${colorCode}m${port}\x1b[0m `;
+      if (showBackgrounds) {
+        const [bgCode, textCode] = MULTICOLOR_BG[colorCode];
+        output += `\x1b[${bgCode}m\x1b[${textCode}m${port}\x1b[0m `;
+      } else {
+        output += `\x1b[${colorCode}m${port}\x1b[0m `;
+      }
     });
     return output.trim();
   }
@@ -52,10 +72,10 @@ function formatValue(key: string, value: string, settings: Settings): string {
   // Multicolor handling for pacman
   if (key === "pacman" && settings.colors[key] === "multicolor" && value) {
     const emoji = settings.display.show_emojis ? settings.emojis.pacman : "";
-    return `${color}${emoji}${value}`;
+    return `${style}${emoji}${value}${suffix}`;
   }
 
-  return `${color}${emoji}${value}`;
+  return `${style}${emoji}${value}${suffix}`;
 }
 
 /**
@@ -230,6 +250,10 @@ function handleSettingsCommand(args: string[]): boolean {
       const parsedValue =
         value.startsWith("{") || value.startsWith("[")
           ? JSON.parse(value)
+          : value === "true"
+          ? true
+          : value === "false"
+          ? false
           : value;
 
       const keys = key.split(".");
@@ -400,6 +424,7 @@ Examples:
   about-system disk_used            # Show only disk usage
   about-system --install
   about-system --set display.show_emojis false
+  about-system --set display.show_backgrounds false
   about-system --set colors.user blue
   about-system --set emojis.cpu "🚀 "
   about-system --set labels.cpu "Processor"
