@@ -1,5 +1,5 @@
 <p align="center">
-    <img width="800px" src="https://i.imgur.com/0YBVCCK.png" />
+    <img  src="https://i.imgur.com/0YBVCCK.png" />
     <br/>
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/open-when-ready"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
