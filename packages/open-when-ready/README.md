@@ -1,9 +1,6 @@
 <p align="center">
-    <img width="800px" src="https://i.imgur.com/lyvk8iy.png" />
-</p>
-
-<!-- template-git-repo:badges:start -->
-<p align="center">
+    <img width="800px" src="https://i.imgur.com/0YBVCCK.png" />
+    <br/>
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/open-when-ready"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
