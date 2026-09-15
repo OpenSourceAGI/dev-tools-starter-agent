@@ -1,6 +1,6 @@
 {
   "name": "code2app",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Tauri scaffold that packages a website or a bundled CLI as a native desktop + mobile app, configured from a single JSON profile",
   "type": "module",
   "author": "vtempest",
