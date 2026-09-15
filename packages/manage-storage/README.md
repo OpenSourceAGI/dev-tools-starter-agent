@@ -1,17 +1,12 @@
 <p align="center">
-    <img width="350px" src="https://i.imgur.com/qEdTwly.png" />
-</p>
-
-<!-- template-git-repo:badges:start -->
-<p align="center">
+    <img width="800px" src="https://i.imgur.com/z1oIadb.png" />
+<br/>
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/manage-storage"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/dm/manage-storage.svg" alt="NPM Monthly Downloads" /></a>
     <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/v/manage-storage.svg" alt="npm version" /></a>
     <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/dt/manage-storage.svg" alt="NPM Total Downloads" /></a>
-    <a href="https://www.npmjs.com/package/manage-storage"><img src="https://img.shields.io/npm/types/manage-storage" alt="TypeScript types" /></a>
-    <a href="https://packagephobia.com/result?p=manage-storage"><img src="https://packagephobia.com/badge?p=manage-storage" alt="Install size" /></a>
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=manage-storage&label=manage-storage%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
