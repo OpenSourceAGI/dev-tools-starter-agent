@@ -14,6 +14,7 @@
     <a href="https://packagephobia.com/result?p=create-starter-app"><img src="https://packagephobia.com/badge?p=create-starter-app" alt="Install size" /></a>
     <a href="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent"><img src="https://codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/graph/badge.svg" alt="Coverage" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml"><img src="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml/badge.svg?branch=master" alt="CI status" /></a>
+    <img src="https://img.shields.io/badge/%EB%AA%A8%20lines-8k-yellow" />
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/graphs/contributors"><img src="https://img.shields.io/github/contributors/OpenSourceAGI/dev-tools-starter-agent" alt="Contributors" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/forks"><img src="https://img.shields.io/github/forks/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Forks" /></a>
