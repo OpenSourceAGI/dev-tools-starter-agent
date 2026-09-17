@@ -445,7 +445,7 @@ export default function SettingsPage() {
                     )}
                   </Button>
                 </div>
-                <h4 className="font-medium mb-2"><a target="_blank" href="/api/docs">API Documentation</a></h4>
+                <h4 className="font-medium mb-2"><a target="_blank" href="/api">API Documentation</a></h4>
               </div>
             </CardContent>
           </Card>

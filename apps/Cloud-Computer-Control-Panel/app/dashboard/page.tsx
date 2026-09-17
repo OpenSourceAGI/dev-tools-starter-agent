@@ -76,7 +76,7 @@ export default function DashboardPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => window.open("/api-reference", "_blank")}
+                onClick={() => window.open("/api", "_blank")}
                 className="hidden md:flex"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
