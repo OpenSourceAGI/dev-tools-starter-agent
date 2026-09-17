@@ -78,7 +78,7 @@ export function ControlPanel({ auth }: { auth: AuthState }) {
             variant="ghost"
             size="icon"
             title="API reference"
-            onClick={() => openExternal(`${auth.serverUrl}/api-reference`)}
+            onClick={() => openExternal(`${auth.serverUrl}/api`)}
           >
             <BookOpen className="h-4 w-4" />
           </Button>
