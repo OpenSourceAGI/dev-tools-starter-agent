@@ -1,6 +1,6 @@
 {
   "name": "automate-google-login-scraper",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "End-to-end test harness for Google sign-in: persist a Playwright storageState once, reuse it everywhere, and replay it from a Cloudflare Workers Browser Rendering Durable Object",
   "type": "module",
   "main": "./dist/index.js",
