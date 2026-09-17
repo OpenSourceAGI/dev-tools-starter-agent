@@ -3,11 +3,11 @@
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/test-google-login"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
-    <a href="https://www.npmjs.com/package/test-google-login"><img src="https://img.shields.io/npm/dm/test-google-login.svg" alt="NPM Monthly Downloads" /></a>
-    <a href="https://www.npmjs.com/package/test-google-login"><img src="https://img.shields.io/npm/v/test-google-login.svg" alt="npm version" /></a>
-    <a href="https://www.npmjs.com/package/test-google-login"><img src="https://img.shields.io/npm/dt/test-google-login.svg" alt="NPM Total Downloads" /></a>
-    <a href="https://www.npmjs.com/package/test-google-login"><img src="https://img.shields.io/npm/types/test-google-login" alt="TypeScript types" /></a>
-    <a href="https://packagephobia.com/result?p=test-google-login"><img src="https://packagephobia.com/badge?p=test-google-login" alt="Install size" /></a>
+    <a href="https://www.npmjs.com/package/automate-google-login-scraper"><img src="https://img.shields.io/npm/dm/automate-google-login-scraper.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/automate-google-login-scraper"><img src="https://img.shields.io/npm/v/automate-google-login-scraper.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/automate-google-login-scraper"><img src="https://img.shields.io/npm/dt/automate-google-login-scraper.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/automate-google-login-scraper"><img src="https://img.shields.io/npm/types/automate-google-login-scraper" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=automate-google-login-scraper"><img src="https://packagephobia.com/badge?p=automate-google-login-scraper" alt="Install size" /></a>
     <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=test-google-login&label=test-google-login%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
