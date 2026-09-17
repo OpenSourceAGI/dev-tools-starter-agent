@@ -19,14 +19,32 @@ and launch an IDE. Four bins: `git0`, `g`, `gg`, `fm`.
 - It **writes to the user's filesystem and runs installers**. Keep the
   confirmation prompts; never auto-execute a downloaded repo's scripts without
   one.
+- **`printLogo` is idempotent by design.** Several entry points print the banner
+  so no path is left unbranded; the guard in `utils.ts` is what stops it showing
+  twice. Call it freely — do not "fix" it by deleting call sites.
+- **A sub-path is a prefix match and then a path join**, so `normalizeSubPath`
+  rejects `..` rather than resolving it. Keep that gate in front of anything that
+  reaches `tar` or `fs`.
+- **History is fetched last on purpose.** `--history` starts *after* extraction
+  and is awaited at the very end, so it overlaps the install and the IDE launch.
+  Moving the `await` earlier silently gives back the speed the feature exists to
+  keep — `benchmark/` is what measures that.
 
 ## Layout
 
-`src/cli.ts` · `src/github-api.ts` · `src/download.ts` · `src/install.ts` ·
-`src/ide.ts` · `src/package-menu.ts` · `src/platform.ts` · `src/fm.js`
+`src/cli.ts` · `src/args.ts` · `src/github-api.ts` · `src/download.ts` ·
+`src/history.ts` · `src/install.ts` · `src/ide.ts` · `src/package-menu.ts` ·
+`src/platform.ts` · `src/fm.js`
+
+`cli.ts` runs `main()` at import, so anything worth unit-testing lives elsewhere
+— that is why flag parsing is `args.ts` and not a function in `cli.ts`.
+
+`benchmark/` is not collected by `bun test` (the runner file is `.bench.ts`) and
+talks to github.com. Its pure reporting helpers are tested; the runner is not.
 
 ```bash
 cd packages/git0-repo-downloader
 bun run test
 bun run build
+bun run bench          # network, opt-in, never in CI
 ```
