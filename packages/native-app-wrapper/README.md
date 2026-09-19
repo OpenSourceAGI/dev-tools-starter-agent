@@ -3,6 +3,11 @@
     <a href="https://starterdocs.vtempest.workers.dev/docs/packages/native-app-wrapper"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/code2app"><img src="https://img.shields.io/npm/dm/code2app.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/code2app"><img src="https://img.shields.io/npm/v/code2app.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/code2app"><img src="https://img.shields.io/npm/dt/code2app.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/code2app"><img src="https://img.shields.io/npm/types/code2app" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=code2app"><img src="https://packagephobia.com/badge?p=code2app" alt="Install size" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>

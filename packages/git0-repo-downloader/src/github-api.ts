@@ -7,6 +7,92 @@ import { categorizeReleasesByPlatform, filterReleasesByPlatform } from './releas
 import { downloadRepo, downloadPackage } from './download.js';
 
 /**
+ * What the CLI was pointed at: a repository, and optionally one path inside it.
+ */
+export interface RepoTarget {
+  /** Repository owner. */
+  owner: string;
+  /** Repository name. */
+  name: string;
+  /** Canonical `https://github.com/owner/name` URL. */
+  href: string;
+  /** Branch, tag or commit named by the URL, or `''`. */
+  ref: string;
+  /** Repository-relative path to limit the download to, or `''`. */
+  subPath: string;
+  /** `'blob'` when the path names a file, `'tree'` when a folder, `''` when unstated. */
+  subPathType: string;
+}
+
+/**
+ * Parses a GitHub reference — including one that points *into* a repository —
+ * into the pieces a download needs.
+ *
+ * The deep forms are the ones people actually have in the clipboard. A link
+ * copied out of the GitHub UI carries the branch and the path
+ * (`/tree/main/packages/ui`, `/blob/main/src/index.ts`), and that is exactly
+ * the scope the user is asking for, so it is read rather than thrown away and
+ * the whole repository downloaded instead. The `owner/repo/path` shorthand is
+ * handled separately from `git-url-parse`, which reads every leading segment of
+ * a plain path as part of the owner.
+ *
+ * @param query - URL, shorthand, or an unrelated search string.
+ * @returns A {@link RepoTarget}, or `false` when the input is not a GitHub
+ *   reference (i.e. it should be treated as a search query).
+ *
+ * @example
+ * parseTarget('https://github.com/debate/debate-ai.com/blob/master/.continue/agents/new-config.yaml');
+ * // → { owner: 'debate', name: 'debate-ai.com', ref: 'master',
+ * //     subPath: '.continue/agents/new-config.yaml', subPathType: 'blob', … }
+ *
+ * @example
+ * parseTarget('facebook/react/packages/react-dom');
+ * // → { owner: 'facebook', name: 'react', subPath: 'packages/react-dom', subPathType: '', … }
+ *
+ * parseTarget('react starter'); // → false
+ */
+export function parseTarget(query: string): RepoTarget | false {
+  const looksLikeUrl =
+    query.includes('github.com') ||
+    query.startsWith('git@github.com:') ||
+    query.startsWith('https://') ||
+    query.startsWith('git://');
+
+  if (!looksLikeUrl) {
+    // `owner/repo`, optionally followed by a path into the repository.
+    const shorthand = query.match(/^([\w-]+)\/([\w.-]+)(?:\/(.+))?$/);
+    if (!shorthand) return false;
+
+    const [, owner, name, subPath = ''] = shorthand;
+    return {
+      owner,
+      name,
+      href: `https://github.com/${owner}/${name}`,
+      ref: '',
+      subPath,
+      subPathType: '',
+    };
+  }
+
+  const parsed = gitUrlParse(query) as any;
+  if (!parsed?.owner || !parsed?.name) return false;
+
+  // Forks arrive with the fork chain in `owner`, e.g. "upstream/fork".
+  const owner = parsed.owner.includes('/')
+    ? parsed.owner.split('/').slice(-1)[0]
+    : parsed.owner;
+
+  return {
+    owner,
+    name: parsed.name,
+    href: `https://github.com/${owner}/${parsed.name}`,
+    ref: parsed.ref || '',
+    subPath: parsed.filepath || '',
+    subPathType: parsed.filepathtype || '',
+  };
+}
+
+/**
  * GitHub API client for searching repositories, downloading source tarballs,
  * and fetching release assets.
  *
@@ -66,14 +152,20 @@ class GithubAPI {
    *
    * @param repo      - Full GitHub URL or `owner/repo` shorthand.
    * @param targetDir - Optional extraction folder name; defaults to the repo name.
+   * @param options   - `subPath` / `subPathType` / `ref`, as produced by
+   *   {@link parseTarget}, to download one folder of the repository.
    * @returns Absolute path of the extracted project directory.
    *
    * @example
    * const dir = await github.downloadRepo('https://github.com/vitejs/vite');
    * // → '/current/working/dir/vite'
    */
-  async downloadRepo(repo: string, targetDir: string | null = null): Promise<string> {
-    return downloadRepo(this.callGithub, repo, targetDir);
+  async downloadRepo(
+    repo: string,
+    targetDir: string | null = null,
+    options: { subPath?: string | null; subPathType?: string; ref?: string } = {}
+  ): Promise<string> {
+    return downloadRepo(this.callGithub, repo, targetDir, options);
   }
 
   /**
@@ -177,6 +269,20 @@ class GithubAPI {
    *
    * github.parseURL('just a search query'); // → false
    */
+  /**
+   * Parses a GitHub reference into owner, repo, ref and sub-path.
+   *
+   * Delegates to {@link parseTarget}. Prefer this over {@link parseURL} for
+   * anything that downloads — it is the one that understands `/tree/` and
+   * `/blob/` links.
+   *
+   * @param query - URL, `owner/repo[/path]` shorthand, or a search string.
+   * @returns A {@link RepoTarget}, or `false` for a search string.
+   */
+  parseTarget(query: string): RepoTarget | false {
+    return parseTarget(query);
+  }
+
   parseURL(query: string): ReturnType<typeof gitUrlParse> | false {
     if (
       query.includes('github.com') ||
