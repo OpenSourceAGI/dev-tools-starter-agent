@@ -4,7 +4,7 @@
 #   System Info with Emojis - Bash Script Version
 # =========================================================
 # 
-#    curl -fsSL https://tinyurl.com/25um7xjd | sh
+#    curl -fsSL https://tinyurl.com/25um7xjd | bash
 # 
 #   Bash script to display key system information with emojis
 #   The output and order are fully customizable: edit DISPLAY_ORDER
