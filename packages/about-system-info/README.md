@@ -1,9 +1,5 @@
 <p align="center">
-  <img src="https://i.imgur.com/1kwKBTR.png" />
-</p>
-
-<!-- template-git-repo:badges:start -->
-<p align="center">
+<a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/">  <img src="https://github.com/user-attachments/assets/05e1fb45-9db9-40c0-80ee-fcfe453453a7" /></a>
     <a href="https://starterdocs.js.org/docs/guides/about-system"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/about-system"><img src="https://img.shields.io/npm/dm/about-system.svg" alt="NPM Monthly Downloads" /></a>
