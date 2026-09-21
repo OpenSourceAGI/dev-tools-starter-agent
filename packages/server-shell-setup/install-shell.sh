@@ -105,11 +105,11 @@ install_base_deps() {
     case "$OS" in
     ubuntu | debian)
         sudo apt update
-        sudo apt install -y git wget curl fzf ripgrep hostname python3 python3-pip util-linux unzip
+        sudo apt install -y git gh wget curl fzf ripgrep hostname python3 python3-pip util-linux unzip software-properties-common 
         print_success "Base dependencies installed"
         ;;
     fedora)
-        sudo dnf install -y git wget curl fzf ripgrep python3 python3-pip util-linux unzip
+        sudo dnf install -y git gh wget curl fzf ripgrep python3 python3-pip util-linux unzip
         print_success "Base dependencies installed"
         ;;
     arch)
@@ -126,7 +126,7 @@ install_base_deps() {
 
             # Update system and install required tools
             sudo pacman -Syu --noconfirm
-            sudo pacman -S --needed --noconfirm base-devel git gcc glibc
+            sudo pacman -S --needed --noconfirm base-devel git gcc glibc github-cli
 
             # Install yay from AUR
             cd /tmp
@@ -146,7 +146,7 @@ install_base_deps() {
         print_success "Base dependencies installed"
         ;;
     alpine)
-        sudo apk add git wget curl fzf ripgrep python3 py3-pip util-linux unzip
+        sudo apk add git wget curl fzf ripgrep python3 py3-pip util-linux unzip github-cli
         print_success "Base dependencies installed"
         ;;
     android)
@@ -154,7 +154,7 @@ install_base_deps() {
         for f in $PREFIX/etc/apt/sources.list $PREFIX/etc/apt/sources.list.d/*.sources; do [ -f "$f" ] && sed -i 's|https://packages.termux.dev|https://gnlug.org/pub/termux|g' "$f"; done && pkg update
         pkg update
         pkg upgrade -y
-        pkg i -y git ripgrep wget curl fzf python libcurl openssl openssh proot-distro pulseaudio unzip
+        pkg i -y git ripgrep wget curl fzf python libcurl openssl openssh proot-distro pulseaudio unzip gh
         
         #ubuntu
         proot-distro install ubuntu
@@ -175,7 +175,7 @@ install_base_deps() {
             print_msg "$YELLOW" "Installing Homebrew..."
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         fi
-        brew install git wget curl python unzip
+        brew install git wget curl python unzip gh
         print_success "Base dependencies installed via Homebrew"
         ;;
     *)
