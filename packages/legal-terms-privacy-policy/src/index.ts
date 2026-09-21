@@ -2,9 +2,10 @@
  * legal-terms-privacy-policy — one configurable Terms of Service + Privacy
  * Policy document, in two presentations.
  *
- * This entry point is framework-free: content, config and the Markdown / HTML /
- * plain-text renderers. Import `legal-terms-privacy-policy/react` for the
- * React page component.
+ * This entry point is framework-free: content, config, the Markdown / HTML /
+ * plain-text renderers, and the cookie consent record the banner writes.
+ * Import `legal-terms-privacy-policy/react` for the React page component and
+ * the consent banner.
  */
 export type {
   Accent,
@@ -38,6 +39,15 @@ export {
 
 export { FULL_SECTIONS } from './content/full';
 export { SUMMARY_SECTIONS } from './content/summary';
+
+export {
+  COOKIE_CONSENT_CHOICES,
+  COOKIE_CONSENT_STORAGE_KEY,
+  clearCookieConsent,
+  readCookieConsent,
+  writeCookieConsent,
+} from './cookie-consent';
+export type { CookieConsentChoice, CookieConsentRecord } from './cookie-consent';
 
 export { renderMarkdown, toMarkdown } from './render/markdown';
 export { LEGAL_CSS, escapeHtml, renderHtml, toHtml } from './render/html';
