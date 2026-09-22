@@ -86,6 +86,45 @@ To publish only one presentation, set `variant` and turn the switch off:
 <LegalTermsPrivacyPolicy appName="Acme" variant="full" features={{ variantSwitch: false }} />
 ```
 
+## Cookie consent banner
+
+The banner makes the same promises the policy makes, in a smaller box — so it ships from here, and the two stay one thing.
+
+```tsx
+import { CookieConsent } from 'legal-terms-privacy-policy/react';
+
+<CookieConsent
+  appName="QwkSearch"
+  links={[{ url: '/legal/privacy', text: 'Privacy' }, { url: '/ethics', text: 'Ethics' }]}
+  heightVar="--app-bottom-right-inset"
+/>;
+```
+
+It shows only when no decision is on record, and that check runs in an effect — so it renders to nothing on the server, and a cached page never shows it to someone who already answered.
+
+| Prop | Does |
+| --- | --- |
+| `appName` | Named in the default copy |
+| `links` | The row under the copy. Point one at the page above — consent without the policy in reach is not informed consent |
+| `title` / `message` | Replace the default heading and body copy |
+| `acceptLabel` / `rejectLabel` | Default to "Accept All" and "Reject" |
+| `storageKey` | `localStorage` key holding the decision. Defaults to `cookie-consent` |
+| `dismissible` | The × that hides the banner without recording a decision. Defaults to `true` |
+| `heightVar` | A CSS custom property on `<html>` to publish the banner's measured height into while it is up, so other bottom-right chrome can sit above it |
+| `onDecision` | Called with the stored record when the visitor answers |
+| `className` | Extra classes on the fixed wrapper |
+
+The decision is readable without React, from the package root:
+
+```ts
+import { readCookieConsent, clearCookieConsent } from 'legal-terms-privacy-policy';
+
+if (readCookieConsent()?.analytics) loadAnalytics();
+clearCookieConsent(); // a "change my choices" link — the banner asks again
+```
+
+The record is `{ analytics, marketing, functional, timestamp }`. "Reject" records essential cookies only rather than nothing at all — `functional` stays true, since rejecting it would be rejecting the login — and the timestamp is what proves when consent was given. A malformed or half-written record reads as no decision, so a bad value cannot wedge the page.
+
 ## Configuration
 
 Every option below works the same way in the React component, the renderers and the CLI.
@@ -229,7 +268,7 @@ The summary is a plain-language restatement; the full text is what binds. If you
 npm test
 ```
 
-Covers token substitution, part and id filtering, patching, insertion, ordering, and each renderer — including that neither variant ships an unsubstituted `{{token}}` and that interpolated values cannot inject markup.
+Covers token substitution, part and id filtering, patching, insertion, ordering, and each renderer — including that neither variant ships an unsubstituted `{{token}}` and that interpolated values cannot inject markup. The consent tests stub `localStorage` (the suite runs in `node`, not jsdom) and cover the browsers that refuse storage outright.
 
 ## License
 

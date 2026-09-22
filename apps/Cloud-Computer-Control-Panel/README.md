@@ -232,7 +232,7 @@ From the "Managers" tab:
 
 ### API Reference
 
-Access the interactive API documentation at `/api-reference` or click the "API Docs" button in the dashboard.
+Access the interactive API documentation at `/api` or click the "API Docs" button in the dashboard.
 
 Available endpoints:
 

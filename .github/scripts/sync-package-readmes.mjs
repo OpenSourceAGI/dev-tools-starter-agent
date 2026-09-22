@@ -85,7 +85,8 @@ const SECTIONS = [
  * two rows together are what tells them apart.
  */
 const PACKAGE_BADGES = [
-  // row 1 — where to read about it
+  // row 1 — where to read about it, and where to try it
+  'website',
   'docs',
   // row 2 — this package: its downloads, its size, its coverage
   'npm-version',
@@ -233,6 +234,25 @@ export function readCodecovFlags(root) {
 }
 
 /**
+ * The package's own site, if it has one.
+ *
+ * Read off `homepage` rather than a list kept here, and only when it points
+ * somewhere other than this repository. npm already asks for that field and
+ * renders it on the package page, so a package that has a site has usually
+ * filled it in — and the ones that have not left it at the GitHub tree URL the
+ * publish flow writes, which is the repo the reader is already looking at. A
+ * badge back to the page you are on is noise, so those get no website badge.
+ *
+ * @param {Record<string, any> | null} manifest the package's package.json
+ * @returns {string | undefined} an absolute URL, or undefined
+ */
+export function siteUrl(manifest) {
+  const homepage = manifest?.homepage
+  if (typeof homepage !== 'string' || !/^https?:\/\//.test(homepage)) return undefined
+  return /^https?:\/\/(www\.)?github\.com\//.test(homepage) ? undefined : homepage
+}
+
+/**
  * Every package/app with a README, and the badge context that describes it.
  *
  * @param {Record<string, any>} repoContext the repo-level context (slug, branch)
@@ -267,6 +287,7 @@ export function collectEntries(repoContext) {
         readme,
         overrides: {
           npmPackage: published,
+          websiteUrl: siteUrl(manifest),
           codecovFlag: codecovFlags.get(`${relative}/`),
           docsUrl: `${DOCS_SITE}/docs/${docsSlug}/${child.name}`,
           // Not gated on `published`: StackBlitz boots from the manifest at the

@@ -1,7 +1,7 @@
 {
   "name": "legal-terms",
-  "version": "0.1.25",
-  "description": "Configurable Terms of Service and Privacy Policy — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page, plus Markdown/HTML/text renderers and a CLI.",
+  "version": "0.2.5",
+  "description": "Configurable Terms of Service and Privacy Policy — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page and cookie consent banner, plus Markdown/HTML/text renderers and a CLI.",
   "type": "module",
   "author": "vtempest",
   "license": "rights.institute/prosper",
@@ -48,6 +48,8 @@
     "ccpa",
     "coppa",
     "compliance",
+    "cookie-consent",
+    "cookie-banner",
     "react",
     "nextjs"
   ],

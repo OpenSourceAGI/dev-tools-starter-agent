@@ -44,7 +44,13 @@ jobs:
           - name: git0-repo-downloader
             dir: packages/git0-repo-downloader
             runtime: bun
-            install: bun install
+            # --ignore-scripts for the same reason tests.yml's sibling workflow
+            # gives: `bun install` resolves the workspace root even when run from
+            # a package directory, so it runs *every* workspace's postinstall —
+            # including ones that need runtime env vars CI does not have. One of
+            # them failing takes the install down, and the job never reaches the
+            # tests. Nothing this suite covers depends on a postinstall.
+            install: bun install --ignore-scripts
             coverage: true
 
           - name: setup-git-repo
