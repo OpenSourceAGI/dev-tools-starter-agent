@@ -1,6 +1,6 @@
 <!-- template-git-repo:badges:start -->
 <p align="center">
-    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/verify-phone-sms"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/packages/verify-phone-sms"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/verify-phone-sms"><img src="https://img.shields.io/npm/dm/verify-phone-sms.svg" alt="NPM Monthly Downloads" /></a>

@@ -426,7 +426,7 @@ export default function DocsHomepage() {
           </div>
           <nav className="flex items-center gap-5">
             <a
-              href="https://starterdocs.vtempest.workers.dev"
+              href="https://1computer.online"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:block"

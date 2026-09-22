@@ -3,8 +3,8 @@
     <img  src="https://i.imgur.com/QL2mfLO.png" />
         <br />
     <a href="https://deepwiki.com/OpenSourceAGI/dev-tools-starter-agent"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
-    <a href="https://starterdocs.vtempest.workers.dev"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
-    <a href="https://starterdocs.vtempest.workers.dev"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
+    <a href="https://1computer.online"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/dm/create-starter-app.svg" alt="NPM Monthly Downloads" /></a>
@@ -178,7 +178,7 @@ is how a README ends up advertising another package's skill. The script fails if
 a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
 
 Every package and app README is then published as a docs page under
-[`/docs/packages`](https://starterdocs.vtempest.workers.dev/docs/packages), so the
+[`/docs/packages`](https://1computer.online/docs/packages), so the
 README is the single source and the docs site is a view of it:
 
 ```bash

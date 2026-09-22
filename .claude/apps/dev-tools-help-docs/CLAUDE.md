@@ -1,6 +1,6 @@
 # CLAUDE.md — `apps/dev-tools-help-docs`
 
-The documentation site (starterdocs.vtempest.workers.dev): Next.js + Fumadocs,
+The documentation site (1computer.online): Next.js + Fumadocs,
 with AI chat, full-text search, and an auto-generated API reference built from
 TypeScript types and OpenAPI specs.
 

@@ -44,7 +44,7 @@ are what agents actually load; a stale one is worse than a missing one.
 
 ## The docs site — `apps/dev-tools-help-docs`
 
-Next.js + Fumadocs, deployed to starterdocs.vtempest.workers.dev. AI chat,
+Next.js + Fumadocs, deployed to 1computer.online. AI chat,
 full-text search, and an auto-generated API reference built from TypeScript
 types and OpenAPI specs.
 
