@@ -174,7 +174,7 @@ is how a README ends up advertising another package's skill. The script fails if
 a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
 
 Every package and app README is then published as a docs page under
-[`/docs/packages`](https://starterdocs.vtempest.workers.dev/docs/packages), so the
+[`/docs/packages`](https://1computer.online/docs/packages), so the
 README is the single source and the docs site is a view of it:
 
 ```bash
