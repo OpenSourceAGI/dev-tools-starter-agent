@@ -1,0 +1,15 @@
+{
+  "title": "git0",
+  "description": "Download Git Repo on Step Zero",
+  "icon": "Book",
+  "root": true,
+  "pages": [
+    "---Getting Started---",
+    "index",
+    "---API Reference---",
+    "modules",
+    "git0",
+    "github-api",
+    "fm"
+  ]
+}

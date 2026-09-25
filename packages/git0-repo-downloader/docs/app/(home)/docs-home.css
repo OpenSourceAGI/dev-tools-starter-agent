@@ -1,0 +1,235 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* Beige light theme */
+:root {
+  --background: oklch(0.96 0.02 85);
+  --foreground: oklch(0.25 0.02 60);
+  --card: oklch(0.93 0.02 85);
+  --card-foreground: oklch(0.25 0.02 60);
+  --popover: oklch(0.93 0.02 85);
+  --popover-foreground: oklch(0.25 0.02 60);
+  --primary: oklch(0.45 0.12 200);
+  --primary-foreground: oklch(0.98 0.01 85);
+  --secondary: oklch(0.88 0.03 85);
+  --secondary-foreground: oklch(0.25 0.02 60);
+  --muted: oklch(0.88 0.03 85);
+  --muted-foreground: oklch(0.5 0.02 60);
+  --accent: oklch(0.65 0.15 55);
+  --accent-foreground: oklch(0.25 0.02 60);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.98 0.01 85);
+  --border: oklch(0.82 0.03 85);
+  --input: oklch(0.88 0.03 85);
+  --ring: oklch(0.45 0.12 200);
+  --chart-1: oklch(0.45 0.12 200);
+  --chart-2: oklch(0.65 0.15 55);
+  --chart-3: oklch(0.55 0.1 150);
+  --chart-4: oklch(0.6 0.15 30);
+  --chart-5: oklch(0.5 0.1 280);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.93 0.02 85);
+  --sidebar-foreground: oklch(0.25 0.02 60);
+  --sidebar-primary: oklch(0.45 0.12 200);
+  --sidebar-primary-foreground: oklch(0.98 0.01 85);
+  --sidebar-accent: oklch(0.88 0.03 85);
+  --sidebar-accent-foreground: oklch(0.25 0.02 60);
+  --sidebar-border: oklch(0.82 0.03 85);
+  --sidebar-ring: oklch(0.45 0.12 200);
+}
+
+/* Beige dark theme */
+.dark {
+  --background: oklch(0.18 0.02 60);
+  --foreground: oklch(0.92 0.02 85);
+  --card: oklch(0.22 0.02 60);
+  --card-foreground: oklch(0.92 0.02 85);
+  --popover: oklch(0.22 0.02 60);
+  --popover-foreground: oklch(0.92 0.02 85);
+  --primary: oklch(0.65 0.15 55);
+  --primary-foreground: oklch(0.18 0.02 60);
+  --secondary: oklch(0.28 0.02 60);
+  --secondary-foreground: oklch(0.92 0.02 85);
+  --muted: oklch(0.28 0.02 60);
+  --muted-foreground: oklch(0.65 0.02 85);
+  --accent: oklch(0.65 0.15 55);
+  --accent-foreground: oklch(0.18 0.02 60);
+  --destructive: oklch(0.5 0.2 27);
+  --destructive-foreground: oklch(0.92 0.02 85);
+  --border: oklch(0.32 0.02 60);
+  --input: oklch(0.28 0.02 60);
+  --ring: oklch(0.65 0.15 55);
+  --chart-1: oklch(0.65 0.15 55);
+  --chart-2: oklch(0.55 0.12 200);
+  --chart-3: oklch(0.6 0.1 150);
+  --chart-4: oklch(0.65 0.15 30);
+  --chart-5: oklch(0.55 0.1 280);
+  --sidebar: oklch(0.22 0.02 60);
+  --sidebar-foreground: oklch(0.92 0.02 85);
+  --sidebar-primary: oklch(0.65 0.15 55);
+  --sidebar-primary-foreground: oklch(0.18 0.02 60);
+  --sidebar-accent: oklch(0.28 0.02 60);
+  --sidebar-accent-foreground: oklch(0.92 0.02 85);
+  --sidebar-border: oklch(0.32 0.02 60);
+  --sidebar-ring: oklch(0.65 0.15 55);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Added animated border gradient keyframes */
+@keyframes border-rotate {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Animated border card styles */
+.animated-border-card {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.animated-border-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 1px;
+  background: linear-gradient(var(--border-angle, 0deg), transparent 40%, var(--primary) 50%, transparent 60%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-rotate 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.animated-border-card:hover::before {
+  opacity: 1;
+}
+
+/* Shimmer text effect */
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--foreground) 0%,
+    var(--primary) 25%,
+    var(--foreground) 50%,
+    var(--primary) 75%,
+    var(--foreground) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Updated grid colors for both themes */
+.animated-grid-bg {
+  background-image: linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gradient-shift 20s ease infinite;
+}
+
+.grid-glow {
+  background: radial-gradient(ellipse at center, var(--primary) 0%, transparent 70%);
+  opacity: 0.15;
+  animation: pulse-glow 4s ease-in-out infinite;
+}

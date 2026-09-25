@@ -1,0 +1,13 @@
+{
+  "name": "git0-docs",
+  // Wrangler deletes plaintext Variables set in the Cloudflare dashboard on every
+  // deploy unless keep_vars is set. Secrets are never deleted either way.
+  "keep_vars": true,
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": ".vinext/worker.js",
+  "assets": {
+    "directory": ".vinext/assets",
+    "binding": "ASSETS"
+  }
+}
