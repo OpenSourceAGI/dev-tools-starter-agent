@@ -39,6 +39,11 @@ and launch an IDE. Four bins: `git0`, `g`, `gg`, `fm`.
 `cli.ts` runs `main()` at import, so anything worth unit-testing lives elsewhere
 — that is why flag parsing is `args.ts` and not a function in `cli.ts`.
 
+`docs/` is the git0.js.org site — a copy of `starter-templates/template-fumadocs`
+(Next.js + Fumadocs) with the homepage in `docs/components/DocsHomepage` and the
+pages in `docs/content/docs`. It is not a workspace: `bun run docs` /
+`bun run docs:build` install and run it on their own.
+
 `benchmark/` is not collected by `bun test` (the runner file is `.bench.ts`) and
 talks to github.com. Its pure reporting helpers are tested; the runner is not.
 
@@ -47,4 +52,5 @@ cd packages/git0-repo-downloader
 bun run test
 bun run build
 bun run bench          # network, opt-in, never in CI
+bun run docs:build     # the docs site in docs/
 ```
