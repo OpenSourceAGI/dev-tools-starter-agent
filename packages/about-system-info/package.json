@@ -1,6 +1,6 @@
 {
   "name": "about-system",
-  "version": "0.9.32",
+  "version": "0.10.0",
   "description": "A Node.js script to display key system information with emojis. Cross-platform support for Windows, macOS, and Linux with customizable output and caching.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,11 +26,14 @@
     }
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --config web/vite.config.ts",
+    "build:web": "vite build --config web/vite.config.ts",
     "build:tsc": "tsc",
     "dev": "vite build --watch",
+    "dev:web": "vite --config web/vite.config.ts",
     "ship": "npm run build && npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
     "start": "npm run build && node dist/about-system-cli.js",
+    "web": "npm run build && node dist/about-system-cli.js web",
     "install-greeting": "npm run build && node dist/about-system-cli.js --install",
     "show-settings": "npm run build && node dist/about-system-cli.js --settings-show",
     "reset-settings": "npm run build && node dist/about-system-cli.js --settings-reset",
@@ -39,6 +42,7 @@
     "app:dev": "cd native && npm run dev",
     "app:build": "cd native && npm run build:desktop",
     "test": "vitest run",
+    "typecheck:web": "tsc -p web/tsconfig.json",
     "test:ci": "vitest run --reporter=junit --outputFile=./junit.xml --coverage --coverage.reporter=lcov",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage"
@@ -57,6 +61,7 @@
     "greeting",
     "emoji",
     "system-monitoring",
+    "dashboard",
     "desktop-app",
     "tauri"
   ],
@@ -89,8 +94,21 @@
     "ora": "^9.0.0"
   },
   "devDependencies": {
+    "@radix-ui/react-progress": "^1.1.16",
+    "@radix-ui/react-slot": "^1.3.3",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^25.0.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5",
     "@vitest/coverage-v8": "^4.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.48.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vite-plugin-dts": "^4.5.4",

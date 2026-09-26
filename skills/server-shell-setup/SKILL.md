@@ -1,6 +1,6 @@
 ---
 name: server-shell-setup
-description: Guide to server-shell-setup (packages/server-shell-setup), the one-command dev-environment bootstrap for fish, nushell, nvim, helix, node via Volta, bun, docker, starship, code-server and more — interactive vs unattended installs, selecting individual components, the fish aliases it adds, and the supported distros. Use when working with server-shell-setup or troubleshooting it — the installer aborting on a fresh server, sudo or password prompts, a shell that doesn't become the default, docker rootless issues, or components that silently skip on an unsupported distro.
+description: Guide to server-shell-setup (packages/server-shell-setup), the one-command dev-environment bootstrap for fish, nushell, nvim, helix, yazi, node via Volta, bun, docker, starship, code-server and more — interactive vs unattended installs, selecting individual components, the fish aliases it adds, and the supported distros. Use when working with server-shell-setup or troubleshooting it — the installer aborting on a fresh server, sudo or password prompts, a shell that doesn't become the default, docker rootless issues, or components that silently skip on an unsupported distro.
 ---
 
 # Working With server-shell-setup
@@ -36,6 +36,7 @@ The `-s --` is what forwards arguments through the pipe to bash — dropping it 
 | `nushell` | Structured-data shell |
 | `nvim` | Neovim preconfigured with NvChad |
 | `helix` | Modal editor, no config needed |
+| `yazi` | Yazi file manager + a `y` wrapper (bash/fish/nu) that `cd`s to the last directory on quit. Distro package on Arch/Alpine/macOS/Termux; prebuilt GitHub release into `/usr/local/bin` on Debian/Ubuntu and Fedora/RHEL (x86_64/aarch64 only) |
 | `node` | Node via Volta (no sudo/permission problems), plus pnpm, yarn, git0, vite, turbo |
 | `bun` | Bun runtime + package manager |
 | `docker` | Docker with rootless mode |

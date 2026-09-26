@@ -121,6 +121,22 @@ about-system --json
 about-system --help
 ```
 
+### Web Dashboard
+
+`about-system web` starts a small HTTP server with a React + [shadcn/ui](https://ui.shadcn.com) dashboard: usage bars for memory and disk, every info block grouped into cards, a filter box, light/dark mode, and auto-refresh every 10 seconds.
+
+```bash
+about-system web                              # http://127.0.0.1:3777
+about-system web --port 8080                  # or PORT=8080 about-system web
+about-system web --host 0.0.0.0 --port 8080   # reachable from other machines
+```
+
+It listens on localhost by default. Pass `--host 0.0.0.0` to reach it on a remote server, but note that anyone who can reach the port sees the public IP, open ports, and running processes — prefer an SSH tunnel (`ssh -L 3777:localhost:3777 server`) or put it behind auth.
+
+The page reads `GET /api/info`, which returns the same object as `about-system --json`.
+
+To work on the dashboard itself (`web/`), run `about-system web` in one terminal and `bun run dev:web` in another — the Vite dev server proxies `/api` to port 3777.
+
 ### Installation as Shell Greeting
 
 ```bash

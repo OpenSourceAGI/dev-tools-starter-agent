@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { getSystemInfo } from "./system-info-api";
 import type { SystemInfo, SystemInfoOptions } from "./systeminfo-types";
+import { startWebServer, DEFAULT_WEB_PORT, DEFAULT_WEB_HOST } from "./web-server";
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -380,6 +381,33 @@ function installShellGreeting(): void {
   }
 }
 
+/** Reads `--flag value` or `--flag=value` from args. */
+function flagValue(args: string[], flag: string): string | undefined {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === flag) return args[i + 1];
+    if (args[i].startsWith(flag + "=")) return args[i].slice(flag.length + 1);
+  }
+  return undefined;
+}
+
+async function runWebServer(args: string[]): Promise<void> {
+  const rawPort = flagValue(args, "--port") ?? process.env.PORT;
+  const port = rawPort === undefined ? DEFAULT_WEB_PORT : Number(rawPort);
+  if (!Number.isInteger(port) || port < 0 || port > 65535) {
+    throw new Error(`Invalid port: ${rawPort}`);
+  }
+  const host = flagValue(args, "--host") ?? DEFAULT_WEB_HOST;
+
+  const { url } = await startWebServer({ port, host });
+  console.log(`About System web UI running at ${url}`);
+  if (host === DEFAULT_WEB_HOST) {
+    console.log("Listening on localhost only. Use --host 0.0.0.0 to expose it on the network.");
+  } else {
+    console.log("Warning: system details (public IP, ports, processes) are visible to anyone who can reach this port.");
+  }
+  console.log("Press Ctrl+C to stop.");
+}
+
 function parseCLIMode(args: string[]): string[] | null {
   for (const arg of args) {
     if (!arg.startsWith("--") && arg.includes(",")) {
@@ -406,6 +434,7 @@ System Info Script - TypeScript Version
 Usage:
   about-system [options]
   about-system <part1,part2,...>    # CLI mode: show specific parts only
+  about-system web [--port N] [--host H]   # Serve the web dashboard
 
 Options:
   --help, -h           Show this help message
@@ -429,6 +458,8 @@ Examples:
   about-system --set emojis.cpu "🚀 "
   about-system --set labels.cpu "Processor"
   about-system --json
+  about-system web                  # http://127.0.0.1:${DEFAULT_WEB_PORT}
+  about-system web --port 8080 --host 0.0.0.0
 
 Settings file: ${SETTINGS_FILE}
 Cache file: ${CACHE_FILE}
@@ -467,6 +498,11 @@ async function main(): Promise<void> {
 
   if (args.includes("--install")) {
     installShellGreeting();
+    return;
+  }
+
+  if (args[0] === "web" || args.includes("--web")) {
+    await runWebServer(args);
     return;
   }
 

@@ -24,6 +24,7 @@ The package is **ESM-only** (`"type": "module"`) and ships four entry points: `.
 | Everything, formatted | `about-system` |
 | Only some blocks | `about-system cpu,ram_used,disk_used` — positional, comma-separated, no flag |
 | Machine-readable output | `about-system --json` |
+| Browser dashboard | `about-system web [--port 3777] [--host 127.0.0.1]` — React/shadcn UI + `GET /api/info` (same JSON as `--json`). Localhost-only unless `--host 0.0.0.0`; UI source in `web/`, built to `dist/web` by `bun run build` |
 | One value in a script/dashboard | `import { getSystemInfo } from "about-system"` → `(await getSystemInfo()).cpu` |
 | One block, cheaply, no full sweep | `import { infoFunctions } from "about-system/api"` → `infoFunctions.cpu({ cache: {} })` |
 | Run on every terminal launch | `about-system --install` |
@@ -57,6 +58,8 @@ const uptime = infoFunctions.uptime();
 
 | Symptom | Cause → fix |
 | --- | --- |
+| `about-system web` answers "Dashboard not found" | `dist/web` is missing — the dashboard is built by the second half of `bun run build` (or `bun run build:web`). A plain `vite build` only builds the library. |
+| Web UI unreachable from another machine | It binds `127.0.0.1` by default. Use `--host 0.0.0.0` (exposes system details to anyone who can reach the port) or an SSH tunnel. |
 | `infoFunctions is not exported` / undefined import | The root entry exports only `getSystemInfo`, `loadCache`, `saveCache` and types. `infoFunctions` lives in the `about-system/api` subpath — the README's root import is wrong. |
 | `--cache-clear` does nothing / unknown flag | That flag in the README doesn't exist. The real one is `--refresh`. |
 | Values are stale (IP, disk, uptime) | Cached by design, per-block TTL (IP 5 min, CPU/OS/device 24 h, top process 5 s). Run `--refresh`, or delete `systeminfo-cache.json` in the OS temp dir. |
