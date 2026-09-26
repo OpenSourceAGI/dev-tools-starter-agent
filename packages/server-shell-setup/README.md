@@ -26,7 +26,7 @@
 
 > If you hold a unix shell up to your ear, can you hear the C?
 
-One-command setup for a modern dev environment: `fish`, `nvim`, `nushell`, `bun`, `node`, `helix`, `starship`, `docker`, and more. Includes fish aliases for `service_manager`, `killport`, `search`, and others.
+One-command setup for a modern dev environment: `fish`, `nvim`, `nushell`, `bun`, `node`, `helix`, `yazi`, `starship`, `docker`, and more. Includes fish aliases for `service_manager`, `killport`, `search`, and others.
 
 **Supported systems**: Arch, Ubuntu/Debian, Android (Termux), macOS, Fedora, Alpine
 
@@ -78,7 +78,7 @@ The `-s --` is what forwards arguments through the pipe to `bash`. Dropping it s
 | `\| bash -s -- fish,node,docker` | Only the named components, unattended |
 | `\| bash -s -- sudo` | Passwordless sudo only (CLI-only, not in the menu) |
 
-Valid CLI component names: `fish`, `nushell`, `nvim`, `helix`, `node`, `bun`, `pacstall`, `docker`, `starship`, `systeminfo`, `code`, `sudo`. An unrecognized name exits with an error and lists the valid ones.
+Valid CLI component names: `fish`, `nushell`, `nvim`, `helix`, `yazi`, `node`, `bun`, `pacstall`, `docker`, `starship`, `systeminfo`, `code`, `sudo`. An unrecognized name exits with an error and lists the valid ones.
 
 Two things to know about `all`:
 - The interactive menu's "Install Everything" includes `code` (code-server); the CLI `all` argument does not. Pass `code` explicitly if you want it unattended.
@@ -96,6 +96,7 @@ When the run finishes, the script `exec`s into fish if fish is on the PATH — s
 | `nushell` | Data-oriented shell that handles structured data natively | `npm i -g nushell` (`pkg` on Termux) | `nu --version` |
 | `nvim` | Neovim with [NvChad](https://nvchad.com) config pre-installed | distro package + git clone | `nvim --version` |
 | `helix` | Modal terminal editor written in Rust, no config needed | distro package | `hx --version` |
+| `yazi` | [Yazi](https://yazi-rs.github.io) terminal file manager, plus a `y` wrapper for bash, fish, and nushell that `cd`s into the last directory on quit | distro package on Arch, Alpine, macOS, Termux; official prebuilt release to `/usr/local/bin` on Debian/Ubuntu and Fedora/RHEL | `yazi --version` |
 | `node` | Node.js via [Volta](https://volta.sh) version manager (no sudo issues); also installs pnpm, yarn, git0, vite, turbo | [get.volta.sh](https://get.volta.sh) | `node -v`, `volta -v` |
 | `bun` | Fast JavaScript runtime, bundler, and package manager | [bun.sh/install](https://bun.sh/install) | `bun --version` |
 | `docker` | Docker with rootless mode enabled | get.docker.com + rootless setuptool | `docker version` |
@@ -218,6 +219,20 @@ The script clones the [NvChad starter](https://github.com/NvChad/starter) to `~/
 | `:LspInfo` | Which language servers are attached |
 | `:checkhealth` | Diagnose a broken install |
 | `:w` / `:q` / `:wq` / `:q!` | Write / quit / write+quit / force quit |
+
+### yazi — terminal file manager
+
+Run `y` (not `yazi`) so that quitting leaves your shell in the directory you browsed to.
+
+| Key | Action |
+|-----|--------|
+| `h/j/k/l` | Parent / down / up / enter |
+| `Space` | Toggle selection |
+| `y` / `x` / `p` | Yank / cut / paste |
+| `d` / `r` / `a` | Trash / rename / create (end with `/` for a directory) |
+| `/` / `z` | Find in directory / jump with fzf |
+| `.` | Toggle hidden files |
+| `q` | Quit (and `cd` there, via `y`) |
 
 ### helix — modal editor, batteries included
 
@@ -444,11 +459,11 @@ Useful for auditing before you run it, or for undoing parts afterward.
 | Path | Written by | Contents |
 |------|-----------|----------|
 | `~/.config/fish/config.fish` | fish, starship, systeminfo, docker | Prompt init, greeting, `about-system` call, PATH additions |
-| `~/.config/fish/functions/*.fish` | fish | `in`, `e`, `del`, `setup`, `search`, `killport`, `service_manager` |
-| `~/.config/nushell/config.nu` | nushell, starship, systeminfo | Banner off, `EDITOR=nvim`, starship autoload, `about-system` call |
+| `~/.config/fish/functions/*.fish` | fish, yazi | `in`, `e`, `del`, `setup`, `search`, `killport`, `service_manager`, `y` |
+| `~/.config/nushell/config.nu` | nushell, starship, systeminfo, yazi | Banner off, `EDITOR=nvim`, starship autoload, `about-system` call |
 | `~/.config/nvim` | nvim | NvChad starter clone (existing config moved to `~/.config/nvim.bak`) |
 | `~/.config/starship.toml` | starship | Overwritten with the `ƒ` prompt character config |
-| `~/.bashrc` | node, starship, systeminfo, docker | Volta PATH, starship init, `about-system` call, `/usr/bin` on PATH |
+| `~/.bashrc` | node, starship, systeminfo, docker, yazi | Volta PATH, starship init, `about-system` call, `/usr/bin` on PATH, `y` function |
 | `~/.volta/` | node | Volta toolchain and shims |
 | `~/.hushlogin` | systeminfo | Suppresses the default login banner |
 | `/etc/motd`, `/etc/update-motd.d` | systeminfo | **Deleted** so the custom greeting is the only banner |

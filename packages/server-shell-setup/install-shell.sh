@@ -718,6 +718,92 @@ install_helix() {
   success "Helix installed"
 }
 
+# Yazi is packaged on Arch, Alpine, Homebrew, and Termux. Debian/Ubuntu and
+# Fedora/RHEL do not ship it in their default repositories, so on those (or if
+# the distro package is unavailable) install the official prebuilt release.
+install_yazi_release() {
+  have curl || die "curl is required to download the Yazi release."
+  have unzip || die "unzip is required to extract the Yazi release."
+
+  local arch libc
+  case "$(uname -m)" in
+    x86_64|amd64) arch="x86_64" ;;
+    aarch64|arm64) arch="aarch64" ;;
+    *) die "No prebuilt Yazi release exists for architecture: $(uname -m)." ;;
+  esac
+  libc="gnu"
+  [[ "$PLATFORM" == "alpine" ]] && libc="musl"
+
+  local target="yazi-${arch}-unknown-linux-${libc}"
+  local url="https://github.com/sxyazi/yazi/releases/latest/download/${target}.zip"
+
+  if (( DRY_RUN )); then
+    printf '%b+%b download %q and install yazi, ya to /usr/local/bin\n' "$YELLOW" "$NC" "$url"
+    return 0
+  fi
+
+  local workdir
+  workdir=$(mktemp -d)
+  curl -fsSL -o "$workdir/yazi.zip" "$url"
+  unzip -q "$workdir/yazi.zip" -d "$workdir"
+  sudo install -m 0755 "$workdir/$target/yazi" "$workdir/$target/ya" /usr/local/bin/
+  rm -rf -- "${workdir:?}"
+}
+
+install_yazi() {
+  header "Installing Yazi file manager"
+
+  case "$PLATFORM" in
+    debian|fedora)
+      install_packages file
+      have yazi && log "Already installed: yazi" || install_yazi_release
+      ;;
+    alpine)
+      install_packages file
+      if ! have yazi; then
+        install_packages yazi || {
+          warn "The yazi apk is unavailable; installing the prebuilt release instead."
+          install_yazi_release
+        }
+      fi
+      ;;
+    arch) install_packages yazi file ;;
+    macos) install_packages yazi ;;
+    termux) install_packages yazi file ;;
+  esac
+
+  # `y` wraps yazi so quitting it changes the shell into the last directory.
+  append_managed_block "$HOME/.bashrc" "yazi" 'y() {
+  local tmp cwd
+  tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+  command yazi "$@" --cwd-file="$tmp"
+  IFS= read -r -d "" cwd < "$tmp"
+  [ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+  command rm -f -- "$tmp"
+}'
+
+  replace_managed_block "$CONFIG_DIR/fish/functions/y.fish" "function-y" 'function y --wraps=yazi --description "Open Yazi and cd to its last directory on exit"
+    set tmp (mktemp -t "yazi-cwd.XXXXXX")
+    command yazi $argv --cwd-file="$tmp"
+    if read -z cwd < "$tmp"; and test "$cwd" != "$PWD"; and test -d "$cwd"
+        builtin cd -- "$cwd"
+    end
+    command rm -f -- "$tmp"
+end'
+
+  append_managed_block "$CONFIG_DIR/nushell/config.nu" "yazi" 'def --env y [...args] {
+    let tmp = (mktemp -t "yazi-cwd.XXXXXX")
+    yazi ...$args --cwd-file $tmp
+    let cwd = (open $tmp)
+    if $cwd != "" and $cwd != $env.PWD {
+        cd $cwd
+    }
+    rm -fp $tmp
+}'
+
+  success "Yazi installed; run y to browse and cd on exit"
+}
+
 install_node() {
   header "Installing Node.js with Volta"
 
@@ -984,7 +1070,7 @@ print_help() {
 Usage: ${SCRIPT_NAME} [options]
 
 Options:
-  --components LIST             Comma-separated list: fish,nushell,nvim,helix,node,bun,pacstall,docker,starship,systeminfo,code,sudo,ssh,all
+  --components LIST             Comma-separated list: fish,nushell,nvim,helix,yazi,node,bun,pacstall,docker,starship,systeminfo,code,sudo,ssh,all
   --node-version VERSION        Node major/version for Volta (default: ${NODE_VERSION})
   --set-fish-default-shell      Ask to make Fish the login shell after installation
   --yes, -y                     Accept confirmation prompts
@@ -1017,6 +1103,7 @@ Select components to install (comma-separated numbers, component names, or all):
   12) code-server
   13) Enable passwordless sudo (advanced/security-sensitive)
   14) Enable SSH password authentication (advanced/security-sensitive)
+  15) Yazi terminal file manager
 
 EOF
 }
@@ -1034,7 +1121,7 @@ select_all_components() {
   # `all` deliberately excludes security-sensitive sudo/SSH settings and
   # excludes Docker/code-server because those are infrastructure choices, not
   # universally desirable workstation defaults.
-  COMPONENTS=(fish nushell nvim helix node bun pacstall starship systeminfo)
+  COMPONENTS=(fish nushell nvim helix yazi node bun pacstall starship systeminfo)
 }
 
 parse_component_token() {
@@ -1054,6 +1141,7 @@ parse_component_token() {
     12|code|code-server) add_component code ;;
     13|sudo) add_component sudo ;;
     14|ssh) add_component ssh ;;
+    15|yazi) add_component yazi ;;
     '') ;;
     *) die "Unknown component: ${token}" ;;
   esac
@@ -1104,7 +1192,7 @@ parse_args() {
         print_help
         exit 0
         ;;
-      all|fish|nushell|nu|nvim|neovim|helix|node|bun|pacstall|docker|starship|systeminfo|code|code-server|sudo|ssh)
+      all|fish|nushell|nu|nvim|neovim|helix|yazi|node|bun|pacstall|docker|starship|systeminfo|code|code-server|sudo|ssh)
         # Backward-compatible positional component list support.
         parse_component_list "$1"
         shift
@@ -1137,6 +1225,8 @@ verify_component() {
     nvim) have nvim && success "Verified: $(nvim --version | head -n1)" || warn "Neovim was not found on PATH."
       ;;
     helix) have hx && success "Verified: $(hx --version | head -n1)" || warn "Helix was not found on PATH."
+      ;;
+    yazi) have yazi && success "Verified: $(yazi --version | head -n1)" || warn "Yazi was not found on PATH."
       ;;
     node)
       if have node; then
@@ -1177,6 +1267,7 @@ install_components() {
       nushell) install_nushell ;;
       nvim) install_nvim ;;
       helix) install_helix ;;
+      yazi) install_yazi ;;
       node) install_node ;;
       bun) install_bun ;;
       pacstall) install_pacstall ;;
