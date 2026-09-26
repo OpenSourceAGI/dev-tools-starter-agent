@@ -5,23 +5,33 @@
  * output for a "ready" signal, and automatically opens the local URL in the
  * browser. If an error is detected first, it opens an AI assistant with the
  * error context for troubleshooting.
+ *
+ * When portless (npm: portless) is installed, the
+ * command is run through it by default so the app gets a stable named URL
+ * such as https://myapp.localhost, and that URL is the one opened.
  */
 
 import fsPromises from "fs/promises";
 import fs from "fs";
 import path from "path";
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
+import { fileURLToPath } from "url";
 import opener from "opener";
 import minimist from "minimist";
 import waitOn from "wait-on";
 
-const argv = minimist(process.argv.slice(2));
+const rawArgs = process.argv.slice(2);
+const argv = minimist(rawArgs, { string: ["name"], boolean: ["portless"] });
 const cmdArgs = argv._;
 const aiBase = argv["ai-base"] || "https://perplexity.ai?q=";
 const noAi = argv.noAi || argv.noai || argv.ai === false;
 const noOpen = argv.noOpen || argv.noopen || false;
 const maxErrorContextChars = 1000;
 const pollDelay = argv.pollDelay || 1200;
+// minimist defaults booleans to false, so read the explicit flags from argv.
+const noPortless =
+  argv.noPortless || argv.noportless || rawArgs.includes("--no-portless");
+const forcePortless = rawArgs.includes("--portless");
 
 const nextDir = path.join(".", ".next");
 const logPath = fs.existsSync(nextDir)
@@ -73,6 +83,138 @@ function extractUrl(log) {
 }
 
 /**
+ * Derives a portless-safe app name (a single DNS label) from a package name or
+ * directory name: drops an npm scope, lowercases, and collapses anything that
+ * isn't a letter, digit or hyphen.
+ * @param {string} raw - Package or directory name
+ * @returns {string} Sanitized name, or empty string if nothing usable remains
+ */
+function sanitizeAppName(raw) {
+  return String(raw || "")
+    .replace(/^@[^/]+\//, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]+/g, "-")
+    .replace(/-{2,}/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 63)
+    .replace(/-+$/, "");
+}
+
+/**
+ * Infers the app name for portless: package.json "name" in `cwd`, falling back
+ * to the directory name, then "app".
+ * @param {string} [cwd=process.cwd()] - Directory to infer from
+ * @returns {string} App name
+ */
+function inferAppName(cwd = process.cwd()) {
+  try {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(cwd, "package.json"), "utf8"),
+    );
+    const fromPkg = sanitizeAppName(pkg.name);
+    if (fromPkg) return fromPkg;
+  } catch {}
+  return sanitizeAppName(path.basename(path.resolve(cwd))) || "app";
+}
+
+/**
+ * Locates the portless binary: a local node_modules/.bin (walking up from
+ * `cwd`), then the PATH.
+ * @param {string} [cwd=process.cwd()] - Directory to start searching from
+ * @param {string} [envPath=process.env.PATH] - PATH to search
+ * @returns {string|null} Absolute path to the binary, or null if not installed
+ */
+function findPortless(cwd = process.cwd(), envPath = process.env.PATH || "") {
+  const names =
+    process.platform === "win32"
+      ? ["portless.cmd", "portless.exe", "portless"]
+      : ["portless"];
+  const dirs = [];
+  for (let dir = path.resolve(cwd); ; dir = path.dirname(dir)) {
+    dirs.push(path.join(dir, "node_modules", ".bin"));
+    if (path.dirname(dir) === dir) break;
+  }
+  dirs.push(...envPath.split(path.delimiter).filter(Boolean));
+  for (const dir of dirs) {
+    for (const name of names) {
+      const candidate = path.join(dir, name);
+      try {
+        if (fs.statSync(candidate).isFile()) return candidate;
+      } catch {}
+    }
+  }
+  return null;
+}
+
+/**
+ * Builds the shell command to spawn. With a portless binary, the command is
+ * wrapped as `portless run --name <app> <command>`; otherwise it runs as-is.
+ * @param {string[]} args - The wrapped command and its arguments
+ * @param {{portlessBin?: string|null, appName?: string}} [opts]
+ * @returns {string} Shell command line
+ */
+function buildCommand(args, { portlessBin = null, appName = "" } = {}) {
+  const command = args.join(" ");
+  if (!portlessBin) return command;
+  return `"${portlessBin}" run --name ${appName} ${command}`;
+}
+
+/**
+ * Parses log output for the URL portless prints when it registers the app
+ * (a line like `-> https://myapp.localhost`).
+ * @param {string} log - Raw log output
+ * @returns {string|null} The portless URL, or null if not found
+ */
+function extractPortlessUrl(log) {
+  const clean = log.replace(/\x1b\[[0-9;]*m/g, "");
+  const match = clean.match(/^\s*->\s+(https?:\/\/\S+)/m);
+  return match ? match[1].replace(/\/+$/, "") : null;
+}
+
+/**
+ * Makes sure the portless proxy is running before the dev command is spawned.
+ * The wrapped command runs with piped, detached stdio, so portless cannot
+ * prompt for sudo (to bind 443 and trust its CA) from inside it. Starting the
+ * proxy here, attached to the terminal, lets that one-time prompt happen.
+ * @param {string} portlessBin - Path to the portless binary
+ * @returns {boolean} True if the proxy is (now) running
+ */
+function ensurePortlessProxy(portlessBin) {
+  const result = spawnSync(`"${portlessBin}" proxy start`, {
+    stdio: "inherit",
+    shell: true,
+  });
+  return !result.error && result.status === 0;
+}
+
+/**
+ * Decides whether to run through portless and prepares it.
+ * @returns {{portlessBin: string|null, appName: string}}
+ */
+function resolvePortless() {
+  const appName = sanitizeAppName(argv.name) || inferAppName();
+  if (noPortless) return { portlessBin: null, appName };
+  const interactive = !!process.stdin.isTTY && !process.env.CI;
+  if (!interactive && !forcePortless) return { portlessBin: null, appName };
+  const portlessBin = findPortless();
+  if (!portlessBin) {
+    if (forcePortless) {
+      console.error(
+        "[open-ready] --portless given but portless is not installed (npm install -g portless). Running without it.",
+      );
+    }
+    return { portlessBin: null, appName };
+  }
+  if (interactive && !ensurePortlessProxy(portlessBin)) {
+    console.error(
+      "[open-ready] Could not start the portless proxy. Running without it.",
+    );
+    return { portlessBin: null, appName };
+  }
+  return { portlessBin, appName };
+}
+
+/**
  * Main entry point. Spawns the dev server command, pipes its output to a log
  * file, and polls the log for ready/error signals to open the browser or AI helper.
  */
@@ -81,7 +223,8 @@ async function run() {
     await fsPromises.rm(logPath, { force: true });
   } catch {}
 
-  const proc = spawn(cmdArgs.join(" "), [], {
+  const { portlessBin, appName } = resolvePortless();
+  const proc = spawn(buildCommand(cmdArgs, { portlessBin, appName }), [], {
     stdio: ["ignore", "pipe", "pipe", "ipc"],
     shell: true,
     detached: true,
@@ -135,11 +278,16 @@ async function run() {
         opened = true;
         lastReadySeen = true;
         const url = extractUrl(currentLog);
-        if (url && !noOpen) {
-          try {
-            await waitOn(url, { timeout: 10000, http: true });
-          } catch {}
-          opener(url);
+        const portlessUrl = portlessBin ? extractPortlessUrl(currentLog) : null;
+        if ((url || portlessUrl) && !noOpen) {
+          // Wait on the app's own port; the portless URL sits behind a proxy
+          // with a locally-trusted CA that Node itself may not trust.
+          if (url) {
+            try {
+              await waitOn(url, { timeout: 10000, http: true });
+            } catch {}
+          }
+          opener(portlessUrl || url);
         }
         clearInterval(poll);
         return;
@@ -154,4 +302,25 @@ async function run() {
   });
 }
 
-run().catch(console.error);
+export {
+  sanitizeAppName,
+  inferAppName,
+  findPortless,
+  buildCommand,
+  extractPortlessUrl,
+  extractUrl,
+  getErrorContext,
+};
+
+function isMain() {
+  try {
+    return (
+      fs.realpathSync(process.argv[1]) ===
+      fs.realpathSync(fileURLToPath(import.meta.url))
+    );
+  } catch {
+    return false;
+  }
+}
+
+if (isMain()) run().catch(console.error);

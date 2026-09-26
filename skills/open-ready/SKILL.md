@@ -1,6 +1,6 @@
 ---
 name: open-ready
-description: Guide to open-ready (packages/open-when-ready), the dev-server wrapper that opens the browser when the server is ready and an AI assistant when it errors — wrapping any CLI command, the --ai-base / --noAi / --noOpen / --pollDelay flags, how ready and error signals are detected, and where the log file goes. Use when working with open-ready or troubleshooting it — the browser never opening, opening too early or at the wrong port, an AI tab opening on a harmless log line, or flags being swallowed by the wrapped command.
+description: Guide to open-ready (packages/open-when-ready), the dev-server wrapper that opens the browser when the server is ready and an AI assistant when it errors — wrapping any CLI command, the default portless integration that serves the app at https://<name>.localhost, the --ai-base / --noAi / --noOpen / --pollDelay / --name / --no-portless / --portless flags, how ready and error signals are detected, and where the log file goes. Use when working with open-ready or troubleshooting it — the browser never opening, opening too early or at the wrong port, an AI tab opening on a harmless log line, the portless URL not being used, or flags being swallowed by the wrapped command.
 ---
 
 # Working With open-ready
@@ -24,6 +24,19 @@ Node ≥18. It wraps anything that prints to stdout/stderr — `next dev`, `vite
 | `--noAi` | `false` | Never open an AI tab on error |
 | `--noOpen` | `false` | Never open the browser on ready |
 | `--pollDelay <ms>` | `1200` | How often the log is re-read |
+| `--name <app>` | inferred | App name for the portless URL |
+| `--no-portless` | `false` | Skip portless even when installed |
+| `--portless` | `false` | Use portless without a TTY / under `CI` (proxy must already run) |
+
+## Portless (default when installed)
+
+If a `portless` binary is found — `node_modules/.bin` walking up from the cwd, then `PATH` — and the terminal is interactive (stdin is a TTY, `CI` unset), open-ready:
+
+1. Runs `portless proxy start` attached to the terminal, so the first-run sudo / CA-trust prompt can happen (the wrapped command's stdio is piped and detached, so portless can't prompt from there).
+2. Spawns `portless run --name <app> <command>`. `<app>` is `--name`, else the `package.json` name without scope, else the directory name — lowercased, non-`[a-z0-9-]` collapsed to `-`.
+3. On the ready signal, waits on the framework's own `http://localhost:<port>` (Node may not trust the portless CA), then opens the URL portless printed (`-> https://<app>.localhost`, including any worktree prefix or custom TLD).
+
+No portless, a failed proxy start, `--no-portless`, or a non-interactive run without `--portless` → the original localhost behaviour. portless itself needs Node ≥ 24; it is not a dependency of open-ready.
 
 ## How the signals work
 
@@ -49,6 +62,8 @@ Node ≥18. It wraps anything that prints to stdout/stderr — `next dev`, `vite
 | Browser opens before the app responds | Rare, since the port is polled after the ready signal; if the framework prints ready before binding, raise `--pollDelay`. |
 | An AI tab opens on a benign line | The error matcher is substring-based, so a log line containing "error" (e.g. an "0 errors" summary) trips it. Use `--noAi` for noisy servers. |
 | Flags land on the wrapped command instead | Everything after the command is forwarded. Put `open-ready`'s own flags at the end (`open-ready npm run dev --noAi`) and check the wrapped tool isn't consuming them. |
+| Localhost port opens instead of `https://<app>.localhost` | portless wasn't found on `PATH`/`node_modules/.bin`, stdin isn't a TTY / `CI` is set (pass `--portless`), or `--no-portless` was given. |
+| "Could not start the portless proxy" | The sudo prompt was declined or port 443 is taken. Start it yourself (`portless proxy start`, or `-p 1355` for no sudo) and rerun. |
 | Nothing at all happens | The wrapped command exited immediately or wrote nothing to stdout/stderr. Run it bare first. |
 | Log file keeps growing | It's a plain append-only file — delete `open-when-ready.log` / `.next/port.log` between runs if size matters, and gitignore it. |
 | Output looks buffered or colorless | The child's output is piped, so tools that detect a TTY may disable colors or batch writes. Force color with the tool's own flag (`--color`, `FORCE_COLOR=1`). |

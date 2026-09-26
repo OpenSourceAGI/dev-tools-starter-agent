@@ -22,7 +22,7 @@
 
 <!-- template-git-repo:badges:start -->
 <p align="center">
-    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/open-when-ready"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/packages/open-when-ready"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/open-ready"><img src="https://img.shields.io/npm/dm/open-ready.svg" alt="NPM Monthly Downloads" /></a>
@@ -52,7 +52,7 @@
 
 Smart dev server launcher that watches your server's output and automatically opens the browser when ready — or opens an AI assistant with the error context when something goes wrong.
 
-Works with Next.js, Vite, and any CLI-based dev server.
+Works with Next.js, Vite, and any CLI-based dev server. When [portless](https://www.npmjs.com/package/portless) is installed, your app gets a stable named URL like `https://myapp.localhost` instead of a port number — and that's the URL that opens.
 
 ## Install
 
@@ -85,6 +85,24 @@ open-ready next dev
 | `--noAi` | `false` | Disable opening AI on error |
 | `--noOpen` | `false` | Disable opening browser when ready |
 | `--pollDelay <ms>` | `1200` | How often to poll the log for ready/error signals |
+| `--name <app>` | inferred | App name for the portless URL (`https://<app>.localhost`) |
+| `--no-portless` | `false` | Don't route through portless even if it's installed |
+| `--portless` | `false` | Use portless even without a TTY or when `CI` is set |
+
+### Named `.localhost` URLs with portless
+
+If `portless` is installed (globally, or in any `node_modules/.bin` up from the current directory), open-ready runs your command through it by default:
+
+```sh
+npm install -g portless       # Node >= 24
+
+open-ready next dev           # -> https://<package-name>.localhost
+open-ready next dev --name shop   # -> https://shop.localhost
+```
+
+The app name comes from `--name`, else the `package.json` name (scope dropped, e.g. `@acme/web` → `web`), else the directory name. open-ready starts the portless proxy in your terminal first, so the one-time sudo/CA-trust prompt happens there, then runs `portless run --name <app> <command>` and opens the URL portless prints once the dev server is ready.
+
+Without a TTY or with `CI` set, portless is skipped unless you pass `--portless` (the proxy must already be running). If portless isn't installed, or its proxy can't start, open-ready falls back to the plain `http://localhost:<port>` behaviour.
 
 ### Disable AI on error
 
@@ -105,7 +123,7 @@ open-ready npm run dev --ai-base "https://chatgpt.com/?q="
    - **Error signal** — lines matching `error`, `failed`, `exception`, `SyntaxError`, or `⨯`
    - **Ready signal** — lines matching `ready - started server` or `Ready in Xms`
 3. On **error**: extracts up to ~1000 chars of surrounding context and opens your AI assistant with a pre-filled prompt explaining the error and asking for a fix
-4. On **ready**: waits for the port to be reachable, then opens the local URL in your default browser
+4. On **ready**: waits for the port to be reachable, then opens the portless URL (when running through portless) or the local URL in your default browser
 
 For Next.js projects, the log is written to `.next/port.log`; otherwise `open-when-ready.log` in the current directory.
 
