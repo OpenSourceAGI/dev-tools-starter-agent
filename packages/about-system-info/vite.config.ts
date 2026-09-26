@@ -15,7 +15,7 @@ export default defineConfig({
       fileName: (format, entryName) => `${entryName}.js`,
     },
     rollupOptions: {
-      external: ['os', 'fs', 'path', 'child_process', 'https', 'url'],
+      external: ['os', 'fs', 'path', 'child_process', 'http', 'https', 'url'],
       output: {
         preserveModules: false,
         exports: 'named',
