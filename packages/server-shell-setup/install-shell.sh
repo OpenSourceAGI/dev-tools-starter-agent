@@ -27,6 +27,10 @@
 #   # See exactly what would change without changing anything:
 #   bash install-shell.sh --components all --dry-run
 #
+#   # Fresh server: set root + user passwords (one value for both) unattended.
+#   # Prefer the environment variable: command-line arguments are visible in ps.
+#   SETUP_PASSWORD='...' bash install-shell.sh --components all --yes
+#
 # Notes:
 #   - This script intentionally keeps the useful aliases/functions from the
 #     original setup: `in`, `e`, `del`, `search`, `killport`, `setup`, and
@@ -35,6 +39,9 @@
 #     execution under ~/.local/state/dev-shell-setup/backups/.
 #   - Passwordless sudo, SSH password authentication, Docker rootless mode,
 #     and setting Fish as the login shell require explicit component selection.
+#   - Before installing anything, the script checks whether root has a
+#     password. If not, it prompts for one on a terminal, or in unattended runs
+#     sets it to the user password given with --user-password/--password.
 #   - No separate scripts are required; all functionality lives in this file.
 #
 # License: MIT
@@ -64,6 +71,11 @@ SET_FISH_DEFAULT_SHELL=0
 ENABLE_NOPASSWD_SUDO=0
 ENABLE_SSH_PASSWORD=0
 DOCKER_MODE="none" # none | rootless
+
+# Root and user passwords. Environment variables keep the values out of the
+# process list; the matching flags override them. SETUP_PASSWORD sets both.
+ROOT_PASSWORD="${SETUP_ROOT_PASSWORD:-${SETUP_PASSWORD:-}}"
+USER_PASSWORD="${SETUP_USER_PASSWORD:-${SETUP_PASSWORD:-}}"
 
 # Array of selected components. Bash arrays require Bash, hence the shebang.
 COMPONENTS=()
@@ -398,16 +410,137 @@ install_packages() {
   esac
 }
 
+# Whether the configured repositories offer a package at all. Debian/Ubuntu and
+# Fedora/RHEL lack some tools (nushell, helix, starship on Ubuntu 24.04), which
+# then come from the upstream release instead.
+package_available() {
+  local package=$1
+  case "$PACKAGE_MANAGER" in
+    apt) [[ -n "$(apt-cache policy "$package" 2>/dev/null | awk '/Candidate:/ && $2 != "(none)" { print $2 }')" ]] ;;
+    dnf) dnf -q info "$package" >/dev/null 2>&1 ;;
+    *) return 0 ;;
+  esac
+}
+
+# Resolve a GitHub project's latest release tag from the /releases/latest
+# redirect, which avoids the rate-limited REST API.
+github_latest_tag() {
+  local repository=$1
+  local url
+  url=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/${repository}/releases/latest")
+  printf '%s\n' "${url##*/tag/}"
+}
+
+release_arch() {
+  case "$(uname -m)" in
+    x86_64|amd64) printf 'x86_64\n' ;;
+    aarch64|arm64) printf 'aarch64\n' ;;
+    *) die "No prebuilt release is available for architecture: $(uname -m)." ;;
+  esac
+}
+
+release_libc() {
+  if [[ "$PLATFORM" == "alpine" ]]; then
+    printf 'musl\n'
+  else
+    printf 'gnu\n'
+  fi
+}
+
+# Download and unpack an archive into a new temporary directory, printed on
+# stdout. The caller installs from it and removes it.
+download_release() {
+  local url=$1
+  local workdir
+  workdir=$(mktemp -d)
+  curl -fsSL -o "$workdir/archive" "$url"
+  case "$url" in
+    *.zip) unzip -q "$workdir/archive" -d "$workdir" ;;
+    *.tar.gz|*.tgz) tar -xzf "$workdir/archive" -C "$workdir" ;;
+    *.tar.xz) tar -xJf "$workdir/archive" -C "$workdir" ;;
+    *) die "Unknown archive type: ${url}" ;;
+  esac
+  rm -f -- "$workdir/archive"
+  printf '%s\n' "$workdir"
+}
+
+install_starship_release() {
+  have starship && { log "Already installed: starship"; return 0; }
+  local target
+  target="starship-$(release_arch)-unknown-linux-musl"
+  local url="https://github.com/starship/starship/releases/latest/download/${target}.tar.gz"
+
+  if (( DRY_RUN )); then
+    printf '%b+%b download %q and install starship to /usr/local/bin\n' "$YELLOW" "$NC" "$url"
+    return 0
+  fi
+
+  local workdir
+  workdir=$(download_release "$url")
+  sudo install -m 0755 "$workdir/starship" /usr/local/bin/starship
+  rm -rf -- "${workdir:?}"
+}
+
+install_nushell_release() {
+  have nu && { log "Already installed: nu"; return 0; }
+
+  if (( DRY_RUN )); then
+    printf '%b+%b download the latest nushell release and install nu to /usr/local/bin\n' "$YELLOW" "$NC"
+    return 0
+  fi
+
+  local tag target url workdir
+  tag=$(github_latest_tag nushell/nushell)
+  target="nu-${tag}-$(release_arch)-unknown-linux-$(release_libc)"
+  url="https://github.com/nushell/nushell/releases/download/${tag}/${target}.tar.gz"
+  workdir=$(download_release "$url")
+  sudo install -m 0755 "$workdir/$target/nu" /usr/local/bin/nu
+  rm -rf -- "${workdir:?}"
+}
+
+# Helix finds its runtime/ directory next to the real executable, so the whole
+# release lives in /opt/helix and /usr/local/bin/hx is a symlink into it.
+install_helix_release() {
+  have hx && { log "Already installed: hx"; return 0; }
+
+  if (( DRY_RUN )); then
+    printf '%b+%b download the latest helix release into /opt/helix and link /usr/local/bin/hx\n' "$YELLOW" "$NC"
+    return 0
+  fi
+
+  local tag target url workdir
+  tag=$(github_latest_tag helix-editor/helix)
+  target="helix-${tag}-$(release_arch)-linux"
+  url="https://github.com/helix-editor/helix/releases/download/${tag}/${target}.tar.xz"
+  workdir=$(download_release "$url")
+  sudo rm -rf /opt/helix
+  sudo mv "$workdir/$target" /opt/helix
+  sudo ln -sf /opt/helix/hx /usr/local/bin/hx
+  rm -rf -- "${workdir:?}"
+}
+
+# Install from the distro when it has the package, else from the release.
+install_package_or_release() {
+  local package=$1
+  local release_installer=$2
+  if package_is_installed "$package" || package_available "$package"; then
+    install_packages "$package"
+  else
+    log "${package} is not in the ${PACKAGE_MANAGER} repositories; installing the upstream release."
+    "$release_installer"
+  fi
+}
+
 install_base_dependencies() {
   header "Installing base dependencies"
   update_package_index
 
   case "$PLATFORM" in
     debian)
-      install_packages git gh wget curl fzf ripgrep jq unzip python3 python3-pip util-linux lsof
+      install_packages git gh wget curl fzf ripgrep jq unzip python3 python3-pip util-linux lsof xz-utils
       ;;
     fedora)
-      install_packages git gh wget curl fzf ripgrep jq unzip python3 python3-pip util-linux lsof
+      install_packages git gh wget curl fzf ripgrep jq unzip python3 python3-pip util-linux lsof xz
       ;;
     arch)
       install_packages git github-cli wget curl fzf ripgrep jq unzip python python-pip lsof
@@ -635,11 +768,8 @@ install_nushell() {
   # Prefer the OS package manager rather than npm. The official Nu installation
   # documentation supports packages/releases and the npm route lacks plugins.
   case "$PLATFORM" in
-    debian)
-      install_packages nushell
-      ;;
-    fedora)
-      install_packages nushell
+    debian|fedora)
+      install_package_or_release nushell install_nushell_release
       ;;
     arch)
       install_packages nushell
@@ -707,8 +837,7 @@ install_helix() {
   header "Installing Helix editor"
 
   case "$PLATFORM" in
-    debian) install_packages helix ;;
-    fedora) install_packages helix ;;
+    debian|fedora) install_package_or_release helix install_helix_release ;;
     arch) install_packages helix ;;
     alpine) install_packages helix ;;
     macos) install_packages helix ;;
@@ -831,7 +960,11 @@ install_node() {
   run "$volta_bin" install pnpm yarn
 
   # Fish does not source ~/.profile, so explicitly add Volta's bin directory.
+  append_managed_block "$HOME/.bashrc" "volta-path" 'export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"'
   append_managed_block "$CONFIG_DIR/fish/config.fish" "volta-path" 'fish_add_path -g $HOME/.volta/bin'
+  append_managed_block "$CONFIG_DIR/nushell/config.nu" "volta-path" '$env.VOLTA_HOME = ($env.HOME | path join ".volta")
+$env.PATH = ($env.PATH | prepend ($env.VOLTA_HOME | path join "bin"))'
 
   success "Node.js ${NODE_VERSION}, pnpm, and yarn installed through Volta"
 }
@@ -931,8 +1064,7 @@ install_starship() {
   header "Installing Starship prompt"
 
   case "$PLATFORM" in
-    debian) install_packages starship ;;
-    fedora) install_packages starship ;;
+    debian|fedora) install_package_or_release starship install_starship_release ;;
     arch) install_packages starship ;;
     alpine) install_packages starship ;;
     macos) install_packages starship ;;
@@ -1063,6 +1195,152 @@ enable_ssh_with_password() {
 }
 
 # -----------------------------------------------------------------------------
+# Root and user passwords
+# -----------------------------------------------------------------------------
+# Run a command as root: directly when already root (fresh images often lack
+# sudo), otherwise through sudo.
+as_root() {
+  if (( EUID == 0 )); then
+    "$@"
+  else
+    have sudo || die "sudo is required to manage passwords as a non-root user."
+    sudo "$@"
+  fi
+}
+
+# True when a terminal can be prompted, even when the script itself arrived on
+# stdin through `curl ... | bash`.
+has_tty() {
+  [[ -t 0 ]] || { : </dev/tty; } 2>/dev/null
+}
+
+validate_password() {
+  local label=$1
+  local password=$2
+  [[ -n "$password" ]] || die "${label} must not be empty."
+  [[ "$password" != *$'\n'* && "$password" != *$'\r'* ]] || die "${label} must not contain a line break."
+}
+
+# Prints set, unset, or unknown. An empty field or one made only of `!`/`*`
+# means no usable password; `!` followed by a hash is a locked password that
+# still exists, so it counts as set and is never overwritten implicitly.
+# DEV_SETUP_SHADOW_FILE exists for the test suite; it is only ever read.
+root_password_status() {
+  local shadow_file=${DEV_SETUP_SHADOW_FILE:-/etc/shadow}
+  if ! as_root test -r "$shadow_file" 2>/dev/null; then
+    printf 'unknown\n'
+    return 0
+  fi
+
+  local hash
+  hash=$(as_root awk -F: '$1 == "root" { print $2; exit }' "$shadow_file")
+  if [[ -z "$hash" || "$hash" =~ ^[!*]*$ ]]; then
+    printf 'unset\n'
+  else
+    printf 'set\n'
+  fi
+}
+
+# Reads a new password twice from the terminal into PROMPTED_PASSWORD. A blank
+# first entry means skip and leaves PROMPTED_PASSWORD empty.
+PROMPTED_PASSWORD=""
+prompt_new_password() {
+  local label=$1
+  local first second
+  PROMPTED_PASSWORD=""
+
+  while true; do
+    IFS= read -r -s -p "New ${label} password (leave blank to skip): " first </dev/tty
+    printf '\n' >&2
+    [[ -n "$first" ]] || return 0
+    IFS= read -r -s -p "Retype ${label} password: " second </dev/tty
+    printf '\n' >&2
+    if [[ "$first" == "$second" ]]; then
+      PROMPTED_PASSWORD=$first
+      return 0
+    fi
+    warn "Passwords did not match; try again."
+  done
+}
+
+# The password is piped to chpasswd, never passed as an argument or logged.
+set_account_password() {
+  local account=$1
+  local password=$2
+
+  if (( DRY_RUN )); then
+    printf '%b+%b set password for %q with chpasswd (value not shown)\n' "$YELLOW" "$NC" "$account"
+    return 0
+  fi
+
+  printf '%s:%s\n' "$account" "$password" | as_root chpasswd
+  success "Password set for ${account}"
+}
+
+configure_passwords() {
+  if [[ "$PLATFORM" == "macos" || "$PLATFORM" == "termux" ]]; then
+    if [[ -n "$ROOT_PASSWORD" || -n "$USER_PASSWORD" ]]; then
+      warn "Password options are not supported on ${PLATFORM}; ignoring them."
+    fi
+    ROOT_PASSWORD=""
+    USER_PASSWORD=""
+    return 0
+  fi
+
+  if [[ -n "$ROOT_PASSWORD" ]]; then
+    validate_password "The root password" "$ROOT_PASSWORD"
+  fi
+  if [[ -n "$USER_PASSWORD" ]]; then
+    validate_password "The user password" "$USER_PASSWORD"
+  fi
+
+  # Under `sudo bash install-shell.sh` the account to configure is the invoking
+  # user, not root.
+  local target_user=${SUDO_USER:-$(id -un)}
+  if [[ "$target_user" == "root" && -z "$ROOT_PASSWORD" ]]; then
+    # Root is the only account here, so the user password is root's password.
+    ROOT_PASSWORD=$USER_PASSWORD
+  fi
+
+  header "Checking root and user passwords"
+
+  local root_status
+  root_status=$(root_password_status)
+
+  if [[ -n "$ROOT_PASSWORD" ]]; then
+    set_account_password root "$ROOT_PASSWORD"
+  elif [[ "$root_status" == "set" ]]; then
+    log "Root already has a password."
+  elif [[ "$root_status" == "unknown" ]]; then
+    warn "Could not read /etc/shadow to check the root password; skipping. Pass --root-password to set it anyway."
+  elif [[ -n "$USER_PASSWORD" ]]; then
+    log "Root has no password; setting it to the user password."
+    set_account_password root "$USER_PASSWORD"
+  elif (( ! ASSUME_YES && ! DRY_RUN )) && has_tty; then
+    warn "Root has no password set."
+    prompt_new_password root
+    if [[ -n "$PROMPTED_PASSWORD" ]]; then
+      set_account_password root "$PROMPTED_PASSWORD"
+    else
+      log "Leaving the root password unset."
+    fi
+    PROMPTED_PASSWORD=""
+  elif (( DRY_RUN )); then
+    log "Dry run: root has no password; a real run would prompt for one or use --user-password."
+  else
+    warn "Root has no password and no password was given. Re-run with --password or SETUP_PASSWORD to set it."
+  fi
+
+  if [[ -n "$USER_PASSWORD" && "$target_user" != "root" ]]; then
+    set_account_password "$target_user" "$USER_PASSWORD"
+  fi
+
+  # Drop the secrets as soon as they have been applied.
+  ROOT_PASSWORD=""
+  USER_PASSWORD=""
+}
+
+# -----------------------------------------------------------------------------
 # Component selection, menu, and argument parsing
 # -----------------------------------------------------------------------------
 print_help() {
@@ -1073,16 +1351,29 @@ Options:
   --components LIST             Comma-separated list: fish,nushell,nvim,helix,yazi,node,bun,pacstall,docker,starship,systeminfo,code,sudo,ssh,all
   --node-version VERSION        Node major/version for Volta (default: ${NODE_VERSION})
   --set-fish-default-shell      Ask to make Fish the login shell after installation
+  --root-password PASSWORD      Set the root password (env: SETUP_ROOT_PASSWORD)
+  --user-password PASSWORD      Set the current user's password; also used for root
+                                when root has none (env: SETUP_USER_PASSWORD)
+  --password PASSWORD           Use one password for both root and the user
+                                (env: SETUP_PASSWORD)
   --yes, -y                     Accept confirmation prompts
   --dry-run                     Print commands and planned configuration changes only
   --no-upgrade                  Reserved compatibility flag; package upgrades are already avoided except Arch's required synchronized update
   --help, -h                    Show this help text
+
+Passwords:
+  Before installing, the script checks whether root has a password. If it has
+  none, it prompts on a terminal, or in unattended runs (--yes, no terminal)
+  sets it to the user password. Prefer the SETUP_* environment variables:
+  command-line arguments are visible to other users through ps.
+  Passwords can be the only option given, to set them without installing.
 
 Examples:
   ${SCRIPT_NAME}
   ${SCRIPT_NAME} --components fish,node,nvim,starship --yes
   ${SCRIPT_NAME} --components docker --dry-run
   ${SCRIPT_NAME} --components fish --set-fish-default-shell
+  SETUP_PASSWORD='...' ${SCRIPT_NAME} --components all --yes
 EOF
 }
 
@@ -1175,6 +1466,22 @@ parse_args() {
       --set-fish-default-shell)
         SET_FISH_DEFAULT_SHELL=1
         shift
+        ;;
+      --root-password)
+        (($# >= 2)) || die "--root-password needs a value."
+        ROOT_PASSWORD=$2
+        shift 2
+        ;;
+      --user-password)
+        (($# >= 2)) || die "--user-password needs a value."
+        USER_PASSWORD=$2
+        shift 2
+        ;;
+      --password)
+        (($# >= 2)) || die "--password needs a value."
+        ROOT_PASSWORD=$2
+        USER_PASSWORD=$2
+        shift 2
         ;;
       --yes|-y)
         ASSUME_YES=1
@@ -1310,10 +1617,25 @@ install_components() {
 main() {
   detect_platform
 
-  if (($# == 0)); then
-    choose_interactively
-  else
+  if (($# > 0)); then
     parse_args "$@"
+  fi
+
+  local passwords_given=0
+  if [[ -n "$ROOT_PASSWORD" || -n "$USER_PASSWORD" ]]; then
+    passwords_given=1
+  fi
+
+  # Passwords come first: a fresh server without them makes sudo fail later.
+  configure_passwords
+
+  if ((${#COMPONENTS[@]} == 0)); then
+    if (($# == 0)); then
+      choose_interactively
+    elif (( passwords_given )); then
+      success "Passwords configured; no components were selected."
+      return 0
+    fi
   fi
 
   install_components
