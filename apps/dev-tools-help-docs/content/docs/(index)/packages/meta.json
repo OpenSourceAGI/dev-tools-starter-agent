@@ -14,6 +14,7 @@
     "---Libraries---",
     "code-tree-graph",
     "export-svg-icons-typescript",
+    "legal-terms-privacy-policy",
     "manage-storage",
     "react-app-store-buttons",
     "setup-git-repo",
@@ -21,6 +22,7 @@
     "---Infrastructure---",
     "cloudflare-to-claude-fix",
     "native-app-wrapper",
+    "test-google-login",
     "verify-phone-sms",
     "web2mobile-wrapper"
   ]

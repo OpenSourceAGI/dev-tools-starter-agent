@@ -7,10 +7,16 @@
  * `<br>` tags. `convertReadmeToMdx` normalises those so the pages compile, and
  * leaves the prose untouched.
  *
- * Run with `bun run docs:sync` after editing a package README.
+ * Every `packages/*` directory with a README gets a page. The curated
+ * `PACKAGES` list below sets the sidebar title, icon and category; a package
+ * missing from it is still synced, under "Other" with a default icon, so a new
+ * package never silently drops out of the docs.
+ *
+ * Run with `bun run docs:sync` after editing a package README. CI runs it on
+ * every docs publish (`.github/workflows/docs-sync.yml`).
  */
 import { existsSync } from 'node:fs'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import * as path from 'node:path'
 
 const DOCS_ROOT = path.resolve(import.meta.dirname, '..')
@@ -83,6 +89,11 @@ const PACKAGES: Entry[] = [
     icon: 'Image',
   },
   {
+    dir: 'packages/legal-terms-privacy-policy',
+    title: 'legal-terms',
+    icon: 'Scale',
+  },
+  {
     dir: 'packages/manage-storage',
     title: 'manage-storage',
     icon: 'HardDrive',
@@ -114,6 +125,11 @@ const PACKAGES: Entry[] = [
     dir: 'packages/native-app-wrapper',
     title: 'native-app-wrapper',
     icon: 'MonitorSmartphone',
+  },
+  {
+    dir: 'packages/test-google-login',
+    title: 'test-google-login',
+    icon: 'LogIn',
   },
   {
     dir: 'packages/verify-phone-sms',
@@ -149,20 +165,55 @@ const APPS: Entry[] = [
   },
 ]
 
+/** Icon for packages not yet in the curated `PACKAGES` list. */
+const DEFAULT_PACKAGE_ICON = 'Package'
+
+/**
+ * The curated list plus any `packages/*` directory it does not mention, so a
+ * package added without touching this file still gets a page.
+ */
+async function discoverPackages(): Promise<Entry[]> {
+  const known = new Set(PACKAGES.map((entry) => entry.dir))
+  const dirents = await readdir(path.join(REPO_ROOT, 'packages'), {
+    withFileTypes: true,
+  })
+  const extra: Entry[] = []
+
+  for (const dirent of dirents.sort((a, b) => a.name.localeCompare(b.name))) {
+    const dir = `packages/${dirent.name}`
+    if (!dirent.isDirectory() || known.has(dir) || !findReadme(dir)) continue
+    extra.push({
+      ...(extra.length === 0 ? { category: 'Other' } : {}),
+      dir,
+      title: (await readPackageName(dir)) ?? dirent.name,
+      icon: DEFAULT_PACKAGE_ICON,
+    })
+  }
+
+  if (extra.length) {
+    console.warn(
+      `[sync-readme-docs] not in the curated list, synced under "Other": ${extra
+        .map((entry) => entry.dir)
+        .join(', ')}`
+    )
+  }
+  return [...PACKAGES, ...extra]
+}
+
 const SECTIONS = [
   {
     slug: 'packages',
     title: 'Packages',
     icon: 'Package',
     description: 'Every published CLI, library, and service in the monorepo.',
-    entries: PACKAGES,
+    entries: discoverPackages,
   },
   {
     slug: 'apps',
     title: 'Apps',
     icon: 'AppWindow',
     description: 'Full applications shipped from this repository.',
-    entries: APPS,
+    entries: async () => APPS,
   },
 ] as const
 
@@ -256,18 +307,29 @@ function findReadme(dir: string): string | undefined {
   return undefined
 }
 
-async function readDescription(dir: string): Promise<string | undefined> {
+async function readPackageJson(
+  dir: string
+): Promise<{ name?: unknown; description?: unknown } | undefined> {
   const pkgPath = path.join(REPO_ROOT, dir, 'package.json')
   if (!existsSync(pkgPath)) return undefined
   try {
-    const pkg = JSON.parse(await readFile(pkgPath, 'utf8'))
-    const description: string | undefined = pkg.description?.trim()
-    if (!description) return undefined
-    // package.json descriptions occasionally embed markdown links.
-    return description.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    return JSON.parse(await readFile(pkgPath, 'utf8'))
   } catch {
     return undefined
   }
+}
+
+async function readPackageName(dir: string): Promise<string | undefined> {
+  const name = (await readPackageJson(dir))?.name
+  return typeof name === 'string' && name.trim() ? name.trim() : undefined
+}
+
+async function readDescription(dir: string): Promise<string | undefined> {
+  const raw = (await readPackageJson(dir))?.description
+  const description = typeof raw === 'string' ? raw.trim() : undefined
+  if (!description) return undefined
+  // package.json descriptions occasionally embed markdown links.
+  return description.replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
 }
 
 /** Replaces fenced and inline code with placeholders so transforms skip them. */
@@ -489,21 +551,38 @@ async function buildPage(entry: Entry): Promise<string | undefined> {
     '---',
   ].join('\n')
 
-  const banner = `{/* Generated from ${relative} by scripts/sync-readme-docs.ts. Edit the README, then run \`bun run docs:sync\`. */}`
+  const banner = `{/* Generated from ${relative} ${GENERATED_MARKER} Edit the README, then run \`bun run docs:sync\`. */}`
   const footer = `---\n\nSource: [\`${relative}\`](${source})`
 
   return `${frontmatter}\n\n${banner}\n\n${convertReadmeToMdx(raw, entry.dir)}\n\n${footer}\n`
 }
 
+const GENERATED_MARKER = 'by scripts/sync-readme-docs.ts.'
+
+/**
+ * Deletes pages a previous sync wrote, so a package that was removed or renamed
+ * does not leave a stale page. Hand-written pages in the same folder (no
+ * generated banner) are kept.
+ */
+async function removeGeneratedPages(outDir: string) {
+  for (const name of await readdir(outDir)) {
+    if (!name.endsWith('.mdx')) continue
+    const file = path.join(outDir, name)
+    if ((await readFile(file, 'utf8')).includes(GENERATED_MARKER)) {
+      await rm(file)
+    }
+  }
+}
+
 export async function syncReadmeDocs() {
   for (const section of SECTIONS) {
     const outDir = path.join(CONTENT_ROOT, section.slug)
-    await rm(outDir, { recursive: true, force: true })
     await mkdir(outDir, { recursive: true })
+    await removeGeneratedPages(outDir)
 
     const pages: string[] = []
     let written = 0
-    for (const entry of section.entries) {
+    for (const entry of await section.entries()) {
       const page = await buildPage(entry)
       if (!page) continue
       const slug = path.basename(entry.dir)
