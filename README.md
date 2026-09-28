@@ -184,3 +184,6 @@ bun run docs:sync       # regenerate apps/dev-tools-help-docs/content/docs/(inde
 Edit the README, run `bun run docs:sync`, and commit both. The badge catalog
 itself lives in [`packages/template-git-repo/src/badges.js`](packages/template-git-repo/src/badges.js);
 its setup notes are generated into [`docs/BADGES.md`](packages/template-git-repo/docs/BADGES.md).
+
+
+🌟 Please star this repo so it will grow and get new features!
