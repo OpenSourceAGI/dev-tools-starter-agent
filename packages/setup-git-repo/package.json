@@ -1,6 +1,6 @@
 {
   "name": "setup-git-repo",
-  "version": "1.0.64",
+  "version": "1.0.65",
   "description": "One command to set up a GitHub repo: Turborepo, CI workflows, README badges, and the docs for each",
   "type": "module",
   "bin": {
