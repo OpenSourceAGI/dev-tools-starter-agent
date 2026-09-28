@@ -42,7 +42,6 @@
     "dev": "concurrently \"next dev\" \"wait-on http://localhost:3000 && opener http://localhost:3000\"",
     "docs:check": "fumadocs check",
     "docs:generate": "fumadocs-mdx",
-    "postinstall": "fumadocs-mdx && drizzle-kit push",
     "make": "concurrently \"next build && next start \" \"wait-on http://localhost:3000 && opener http://localhost:3000\"",
     "start": "next start",
     "test": "vitest run",
