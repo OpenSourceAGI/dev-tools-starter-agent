@@ -1,6 +1,6 @@
 {
   "name": "open-ready",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Smart dev server launcher: error→AI search, success→auto-open browser. Any CLI tool.",
   "type": "module",
   "bin": {

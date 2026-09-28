@@ -3,7 +3,7 @@
   "module": "./export-svg-typescript.js",
   "author": "vtempest",
   "license": "MIT",
-  "version": "0.1.125",
+  "version": "0.1.126",
   "description": "Export SVG to TypeScript",
   "type": "module",
   "scripts": {
