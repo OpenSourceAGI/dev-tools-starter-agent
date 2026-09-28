@@ -25,8 +25,8 @@ vi.mock("https", () => ({
 
 import { commandExists, execCommand } from "./command";
 import { IS_LINUX, IS_MAC, IS_WINDOWS } from "./platform";
-import { fetchIPInfo } from "./network";
-import { DEFAULT_IPINFO_TOKEN } from "../cache/cache-config";
+import { fetchIPInfo, fetchFromIPInfo, fetchFromIPAPI } from "./network";
+import { DEFAULT_IPINFO_TOKEN, DEFAULT_NETWORK_TIMEOUT } from "../cache/cache-config";
 
 afterEach(() => {
   execSync.mockReset();
@@ -142,59 +142,34 @@ const respondWith = (body: string) =>
     res.emit("end");
   });
 
-describe("fetchIPInfo", () => {
-  it("parses the ipinfo.io payload", async () => {
-    respondWith(JSON.stringify({ ip: "1.2.3.4", city: "San Francisco" }));
+describe("fetchFromIPInfo", () => {
+  it("parses the ipinfo.io lite payload", async () => {
+    respondWith(JSON.stringify({ ip: "1.2.3.4", city: "San Francisco", org: "AS123 Test ISP" }));
 
-    await expect(fetchIPInfo()).resolves.toEqual({
+    await expect(fetchFromIPInfo()).resolves.toEqual({
       ip: "1.2.3.4",
       city: "San Francisco",
+      org: "AS123 Test ISP",
     });
   });
 
-  it("sends the default token when none is given", async () => {
+  it("sends request to ipinfo.io lite endpoint with token", async () => {
     const get = respondWith("{}");
-    await fetchIPInfo();
+    await fetchFromIPInfo();
 
     expect(get.mock.calls[0][0]).toBe(
-      `https://ipinfo.io/json?token=${DEFAULT_IPINFO_TOKEN}`,
+      `https://api.ipinfo.io/lite/8.8.8.8?token=${DEFAULT_IPINFO_TOKEN}`,
     );
-  });
-
-  it("sends a caller-supplied token", async () => {
-    const get = respondWith("{}");
-    await fetchIPInfo("my-token");
-
-    expect(get.mock.calls[0][0]).toContain("token=my-token");
-  });
-
-  it("omits the query string entirely for an empty token", async () => {
-    const get = respondWith("{}");
-    await fetchIPInfo("");
-
-    expect(get.mock.calls[0][0]).toBe("https://ipinfo.io/json");
-  });
-
-  it("reassembles a body that arrives in chunks", async () => {
-    stubHttpsGet((_req, onResponse) => {
-      const res = new EventEmitter();
-      onResponse(res);
-      res.emit("data", '{"ip":"1.2');
-      res.emit("data", '.3.4"}');
-      res.emit("end");
-    });
-
-    await expect(fetchIPInfo()).resolves.toEqual({ ip: "1.2.3.4" });
   });
 
   it("resolves empty rather than rejecting on a malformed body", async () => {
     respondWith("<html>gateway error</html>");
-    await expect(fetchIPInfo()).resolves.toEqual({});
+    await expect(fetchFromIPInfo()).resolves.toEqual({});
   });
 
   it("resolves empty rather than rejecting when the request errors", async () => {
     stubHttpsGet((req) => req.emit("error", new Error("ENOTFOUND")));
-    await expect(fetchIPInfo()).resolves.toEqual({});
+    await expect(fetchFromIPInfo()).resolves.toEqual({});
   });
 
   it("arms a timeout that abandons the request", async () => {
@@ -209,10 +184,102 @@ describe("fetchIPInfo", () => {
       return req;
     });
 
-    const pending = fetchIPInfo("t", 1234);
+    const pending = fetchFromIPInfo(DEFAULT_IPINFO_TOKEN, 1234);
     expect(armed?.ms).toBe(1234);
 
     armed?.fire();
     await expect(pending).resolves.toEqual({});
+  });
+});
+
+describe("fetchFromIPAPI", () => {
+  it("parses the ip-api.com payload", async () => {
+    respondWith(JSON.stringify({
+      status: "success",
+      query: "1.2.3.4",
+      city: "San Francisco",
+      isp: "Test ISP",
+      org: "AS123 Test Organization",
+      as: "AS123 Test AS"
+    }));
+
+    await expect(fetchFromIPAPI()).resolves.toEqual({
+      ip: "1.2.3.4",
+      city: "San Francisco",
+      org: "AS123 Test Organization",
+    });
+  });
+
+  it("sends request to ip-api.com endpoint", async () => {
+    const get = respondWith('{"status":"success"}');
+    await fetchFromIPAPI();
+
+    expect(get.mock.calls[0][0]).toBe(
+      "http://ip-api.com/json/?fields=status,message,query,city,isp,org,as"
+    );
+  });
+
+  it("returns empty object on failed status", async () => {
+    respondWith(JSON.stringify({ status: "fail", message: "private range" }));
+    await expect(fetchFromIPAPI()).resolves.toEqual({});
+  });
+
+  it("resolves empty rather than rejecting on a malformed body", async () => {
+    respondWith("<html>gateway error</html>");
+    await expect(fetchFromIPAPI()).resolves.toEqual({});
+  });
+});
+
+describe("fetchIPInfo (race)", () => {
+  it("returns ipinfo result when it responds first with data", async () => {
+    let ipinfoResolve: (value: any) => void;
+    let ipapiResolve: (value: any) => void;
+
+    const ipinfoPromise = new Promise((resolve) => { ipinfoResolve = resolve; });
+    const ipapiPromise = new Promise((resolve) => { ipapiResolve = resolve; });
+
+    vi.spyOn(await import("./network"), "fetchFromIPInfo").mockReturnValue(ipinfoPromise);
+    vi.spyOn(await import("./network"), "fetchFromIPAPI").mockReturnValue(ipapiPromise);
+
+    const resultPromise = fetchIPInfo();
+
+    // Resolve ipinfo first with data
+    ipinfoResolve!({ ip: "1.2.3.4", city: "San Francisco" });
+    ipapiResolve!({ ip: "5.6.7.8", city: "New York" });
+
+    await expect(resultPromise).resolves.toEqual({
+      ip: "1.2.3.4",
+      city: "San Francisco",
+    });
+  });
+
+  it("falls back to ip-api when ipinfo fails", async () => {
+    let ipinfoResolve: (value: any) => void;
+    let ipapiResolve: (value: any) => void;
+
+    const ipinfoPromise = new Promise((resolve) => { ipinfoResolve = resolve; });
+    const ipapiPromise = new Promise((resolve) => { ipapiResolve = resolve; });
+
+    vi.spyOn(await import("./network"), "fetchFromIPInfo").mockReturnValue(ipinfoPromise);
+    vi.spyOn(await import("./network"), "fetchFromIPAPI").mockReturnValue(ipapiPromise);
+
+    const resultPromise = fetchIPInfo();
+
+    // Resolve ipinfo with empty, ipapi with data
+    ipinfoResolve!({});
+    ipapiResolve!({ ip: "5.6.7.8", city: "New York", org: "AS456 Fallback ISP" });
+
+    await expect(resultPromise).resolves.toEqual({
+      ip: "5.6.7.8",
+      city: "New York",
+      org: "AS456 Fallback ISP",
+    });
+  });
+
+  it("returns empty when both fail", async () => {
+    vi.spyOn(await import("./network"), "fetchFromIPInfo").mockResolvedValue({});
+    vi.spyOn(await import("./network"), "fetchFromIPAPI").mockResolvedValue({});
+
+    await expect(fetchIPInfo()).resolves.toEqual({});
   });
 });

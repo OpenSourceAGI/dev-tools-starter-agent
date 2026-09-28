@@ -17,7 +17,7 @@ export const CACHE_FILE = path.join(os.tmpdir(), "systeminfo-cache.json");
  * Values are in milliseconds
  *
  * @constant
- * @property {number} ip - IP information cache (5 minutes)
+ * @property {number} ip - IP information cache (10 minutes)
  * @property {number} cpu - CPU information cache (24 hours)
  * @property {number} gpu - GPU information cache (24 hours)
  * @property {number} os - OS information cache (24 hours)
@@ -36,7 +36,7 @@ export const CACHE_FILE = path.join(os.tmpdir(), "systeminfo-cache.json");
  * @property {number} mount_points - Mount points cache (10 minutes)
  */
 export const CACHE_DURATION = {
-  ip: 5 * 60 * 1000,
+  ip: 10 * 60 * 1000,
   cpu: 24 * 60 * 60 * 1000,
   gpu: 24 * 60 * 60 * 1000,
   os: 24 * 60 * 60 * 1000,

@@ -11,7 +11,7 @@
 
 import os from "os";
 import fs from "fs";
-import https from "https";
+import { fetchIPInfo } from "./utils/network";
 import path from "path";
 import type { SystemInfo, SystemInfoOptions } from "./systeminfo-types";
 import { CACHE_FILE } from "./info/settings"; // Using CACHE_FILE from settings to ensure consistency
@@ -50,7 +50,7 @@ import { shell, packages, containers } from "./info/software";
  * Values are in milliseconds
  */
 const CACHE_DURATION = {
-  ip: 5 * 60 * 1000,
+  ip: 10 * 60 * 1000,
   cpu: 24 * 60 * 60 * 1000,
   gpu: 24 * 60 * 60 * 1000,
   bench: 24 * 60 * 60 * 1000,
@@ -80,41 +80,6 @@ const CACHE_DURATION = {
 const IS_WINDOWS = os.platform() === "win32";
 const IS_MAC = os.platform() === "darwin";
 const IS_LINUX = os.platform() === "linux";
-
-/**
- * Default IPInfo.io API token for geolocation
- */
-const DEFAULT_IPINFO_TOKEN = "da2d6cc4baa5d1";
-
-/**
- * Default network request timeout in milliseconds
- */
-const DEFAULT_NETWORK_TIMEOUT = 5000;
-
-/**
- * Represents a cached value with timestamp
- */
-interface CacheEntry {
-  value: any;
-  timestamp: number;
-}
-
-/**
- * Cache storage structure
- */
-interface Cache {
-  [key: string]: CacheEntry;
-}
-
-/**
- * IP information from ipinfo.io API
- */
-interface IPInfo {
-  ip?: string;
-  city?: string;
-  hostname?: string;
-  org?: string;
-}
 
 /**
  * Context object passed to info collection functions
@@ -151,36 +116,6 @@ function saveCache(cache: Cache): void {
   } catch (error) {
     // Silently fail if can't write cache
   }
-}
-
-/**
- * Fetches IP geolocation information from ipinfo.io API
- */
-async function fetchIPInfo(
-  token: string = DEFAULT_IPINFO_TOKEN,
-  timeout: number = DEFAULT_NETWORK_TIMEOUT
-): Promise<IPInfo> {
-  return new Promise((resolve) => {
-    const url = `https://ipinfo.io/json${token ? `?token=${token}` : ""}`;
-
-    const req = https.get(url, (res) => {
-      let data = "";
-      res.on("data", (chunk) => (data += chunk));
-      res.on("end", () => {
-        try {
-          resolve(JSON.parse(data));
-        } catch {
-          resolve({});
-        }
-      });
-    });
-
-    req.on("error", () => resolve({}));
-    req.setTimeout(timeout, () => {
-      req.destroy();
-      resolve({});
-    });
-  });
 }
 
 /**

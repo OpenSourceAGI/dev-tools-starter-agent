@@ -39,9 +39,64 @@ NEED_IPINFO=0
 for key in $DISPLAY_ORDER; do
   [[ "$key" =~ ^(ip|isp|domain|city)$ ]] && NEED_IPINFO=1
 done
-INFO=$(wget -qO- https://ipinfo.io/json?token=da2d6cc4baa5d1 2>/dev/null) || {
-  echo -e "\033[38;5;196m ❌ No internet connection"
+
+# Cache file for IP info (10 min cache)
+IPINFO_CACHE="/tmp/systeminfo-ipinfo-cache.json"
+CACHE_DURATION=600  # 10 minutes in seconds
+
+fetch_ipinfo() {
+  local cache_file="$1"
+  local duration="$2"
+  
+  # Check if cache exists and is fresh
+  if [[ -f "$cache_file" ]]; then
+    local cache_age=$(($(date +%s) - $(stat -c %Y "$cache_file" 2>/dev/null || stat -f %m "$cache_file" 2>/dev/null)))
+    if [[ $cache_age -lt $duration ]]; then
+      cat "$cache_file"
+      return 0
+    fi
+  fi
+  
+  # Race both services: ipinfo.io (primary) and ip-api.com (fallback)
+  local ipinfo_url="https://api.ipinfo.io/lite/8.8.8.8?token=e0a82f1304c04f"
+  local ipapi_url="http://ip-api.com/json/?fields=status,message,query,city,isp,org,as"
+  
+  # Try ipinfo.io first with short timeout
+  local result=$(timeout 3 wget -qO- "$ipinfo_url" 2>/dev/null)
+  if [[ -n "$result" && "$result" == *"ip"* ]]; then
+    echo "$result" > "$cache_file"
+    echo "$result"
+    return 0
+  fi
+  
+  # Fallback to ip-api.com
+  result=$(timeout 3 wget -qO- "$ipapi_url" 2>/dev/null)
+  if [[ -n "$result" && "$result" == *"query"* ]]; then
+    # Convert ip-api format to ipinfo-like format for compatibility
+    local ip=$(echo "$result" | grep -oP 'query"\s*:\s*"\K[^"]+')
+    local city=$(echo "$result" | grep -oP 'city"\s*:\s*"\K[^"]+')
+    local org=$(echo "$result" | grep -oP 'org"\s*:\s*"\K[^"]+')
+    local isp=$(echo "$result" | grep -oP 'isp"\s*:\s*"\K[^"]+')
+    local as=$(echo "$result" | grep -oP 'as"\s*:\s*"\K[^"]+')
+    
+    # Prefer org, then isp, then as
+    local org_final="${org:-${isp:-$as}}"
+    
+    result=$(printf '{"ip":"%s","city":"%s","org":"%s"}' "$ip" "$city" "$org_final")
+    echo "$result" > "$cache_file"
+    echo "$result"
+    return 0
+  fi
+  
+  return 1
 }
+
+if [[ $NEED_IPINFO -eq 1 ]]; then
+  INFO=$(fetch_ipinfo "$IPINFO_CACHE" "$CACHE_DURATION") || {
+    echo -e "\033[38;5;196m ❌ No internet connection"
+    INFO=""
+  }
+fi
 
 for key in $DISPLAY_ORDER; do
   case $key in
