@@ -306,8 +306,9 @@ export default function LegalTermsPrivacyPolicy({
                 {doc.badges.map((badge) => (
                   <span
                     key={badge}
-                    className="rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1 text-xs font-medium text-white shadow"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 transition-colors hover:border-indigo-300 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/40 dark:text-indigo-300 dark:hover:bg-indigo-900/50"
                   >
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-indigo-500 dark:bg-indigo-400" />
                     {badge}
                   </span>
                 ))}
