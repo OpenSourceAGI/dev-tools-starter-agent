@@ -973,11 +973,11 @@ install_systeminfo() {
   # network-dependent, and mutate a package cache. Define a command instead.
   # The user can run `systeminfo` when desired.
   replace_managed_block "$CONFIG_DIR/fish/functions/systeminfo.fish" "function-systeminfo" 'function systeminfo --description "Display system information through about-system"
-    npx --yes about-system@latest
+    npx --yes --silent about-system@latest
 end'
 
-  append_managed_block "$HOME/.bashrc" "systeminfo" 'systeminfo() { npx --yes about-system@latest; }'
-  append_managed_block "$CONFIG_DIR/nushell/config.nu" "systeminfo" 'def systeminfo [] { npx --yes about-system@latest }'
+  append_managed_block "$HOME/.bashrc" "systeminfo" 'systeminfo() { npx --yes  --silent about-system@latest; }'
+  append_managed_block "$CONFIG_DIR/nushell/config.nu" "systeminfo" 'def systeminfo [] { npx --yes  --silent about-system@latest }'
 
   # .hushlogin suppresses standard motd output for the current user only. It
   # does not delete /etc/motd or OS-managed update scripts.
