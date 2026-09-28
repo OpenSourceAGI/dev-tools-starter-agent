@@ -12,6 +12,30 @@ import { getCachedValue, setCachedValue } from "../cache/cache";
 import Fuse from "fuse.js";
 
 /**
+ * Formats a Geekbench score in whole thousands with its rank and how far up
+ * the table that rank sits.
+ * @param score - Raw Geekbench score
+ * @param rank - Rank in the benchmark table (1 = fastest)
+ * @param total - Number of entries in the benchmark table
+ * @returns Score, rank and top percentile
+ * @example formatBench(20512, 68, 1500) // "21k #68 top 7%"
+ */
+export function formatBench(score: number, rank: number, total: number): string {
+  return `${Math.round(score / 1000)}k #${rank} top ${topPercent(rank, total)}%`;
+}
+
+/**
+ * Percentile bucket a rank falls in, rounded up so rank 1 reads "top 1%"
+ * @param rank - Rank in the benchmark table (1 = fastest)
+ * @param total - Number of entries in the benchmark table
+ * @returns Whole percentage between 1 and 100
+ */
+export function topPercent(rank: number, total: number): number {
+  if (!total || total < 1) return 100;
+  return Math.min(100, Math.max(1, Math.ceil((rank / total) * 100)));
+}
+
+/**
  * Gets CPU model name and specifications
  * Uses platform-specific commands (wmic/lscpu/cpuinfo)
  * Automatically strips "with Radeon Graphics" and similar suffixes
@@ -222,7 +246,7 @@ export function screen_resolution(): string {
  * Uses fuzzy matching to find similar CPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "37.9k #1", "20.5k #68"
+ * @example "38k #1 top 1%", "21k #68 top 7%"
  */
 export function bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "bench");
@@ -274,9 +298,7 @@ export function bench(context: InfoContext): string {
     const results = fuse.search(cpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const score = Math.round(match.score / 100) / 10;
-      const rank = match.rank;
-      const result = `${score}k #${rank}`;
+      const result = formatBench(match.score, match.rank, scores.length);
       setCachedValue(context.cache, "bench", result);
       return result;
     }
@@ -293,7 +315,7 @@ export function bench(context: InfoContext): string {
  * Includes score, rank, and architecture type (ARM/Intel/AMD)
  * @param context - Info context with cache
  * @returns Detailed benchmark info with architecture, or empty string
- * @example "Geekbench 6: 37.9k (Rank #1) - ARM", "Geekbench 6: 20.5k (Rank #68) - Intel"
+ * @example "Geekbench 6: 38k (Rank #1, top 1%) - ARM", "Geekbench 6: 21k (Rank #68, top 7%) - Intel"
  */
 export function cpu_bench_info(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "cpu_bench_info");
@@ -349,8 +371,9 @@ export function cpu_bench_info(context: InfoContext): string {
     const results = fuse.search(cpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const score = Math.round(match.score / 100) / 10;
+      const score = Math.round(match.score / 1000);
       const rank = match.rank;
+      const top = topPercent(rank, scores.length);
 
       // Detect architecture type
       let arch = "Unknown";
@@ -364,7 +387,7 @@ export function cpu_bench_info(context: InfoContext): string {
         arch = "ARM";
       }
 
-      const result = `Geekbench 6: ${score}k (Rank #${rank}) - ${arch}`;
+      const result = `Geekbench 6: ${score}k (Rank #${rank}, top ${top}%) - ${arch}`;
       setCachedValue(context.cache, "cpu_bench_info", result);
       return result;
     }
@@ -381,7 +404,7 @@ export function cpu_bench_info(context: InfoContext): string {
  * Uses fuzzy matching to find similar GPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "37.9k #1", "20.5k #68"
+ * @example "38k #1 top 1%", "21k #68 top 7%"
  */
 export function gpu_bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "gpu_bench");
@@ -433,9 +456,7 @@ export function gpu_bench(context: InfoContext): string {
     const results = fuse.search(gpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const score = Math.round(match.score / 100) / 10;
-      const rank = match.rank;
-      const result = `${score}k #${rank}`;
+      const result = formatBench(match.score, match.rank, scores.length);
       setCachedValue(context.cache, "gpu_bench", result);
       return result;
     }
@@ -452,7 +473,7 @@ export function gpu_bench(context: InfoContext): string {
  * Includes score, rank, and vendor detection
  * @param context - Info context with cache
  * @returns Detailed benchmark info with vendor, or empty string
- * @example "Geekbench 6: 37.9k (Rank #1) - NVIDIA", "Geekbench 6: 20.5k (Rank #68) - AMD"
+ * @example "Geekbench 6: 38k (Rank #1, top 1%) - NVIDIA", "Geekbench 6: 21k (Rank #68, top 7%) - AMD"
  */
 export function gpu_bench_info(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "gpu_bench_info");
@@ -508,8 +529,9 @@ export function gpu_bench_info(context: InfoContext): string {
     const results = fuse.search(gpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const score = Math.round(match.score / 100) / 10;
+      const score = Math.round(match.score / 1000);
       const rank = match.rank;
+      const top = topPercent(rank, scores.length);
 
       // Detect vendor from GPU name
       let vendor = "Unknown";
@@ -532,7 +554,7 @@ export function gpu_bench_info(context: InfoContext): string {
         vendor = "Intel";
       }
 
-      const result = `Geekbench 6: ${score}k (Rank #${rank}) - ${vendor}`;
+      const result = `Geekbench 6: ${score}k (Rank #${rank}, top ${top}%) - ${vendor}`;
       setCachedValue(context.cache, "gpu_bench_info", result);
       return result;
     }

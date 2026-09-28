@@ -478,7 +478,7 @@ Available display blocks:
   Basic: user, hostname, uptime, shell, os, kernel, device
   Resources: disk_used, ram_used, memory_available, swap_used, top_process
   Network: ip, iplocal, city, domain, isp, network_interfaces
-  Hardware: cpu, gpu, temperature, battery, screen_resolution
+  Hardware: cpu, bench, gpu, gpu_bench, temperature, battery, screen_resolution
   System: load_average, users_logged_in, mount_points, services_running
   Tools: pacman, ports, containers
 `);
