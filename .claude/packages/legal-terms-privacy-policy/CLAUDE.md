@@ -5,7 +5,8 @@
 
 A configurable Terms of Service and Privacy Policy: a scannable plain-language
 summary alongside the full text, rendered by React components or emitted by the
-CLI (`cli.mjs`).
+CLI (`cli.mjs`). The cookie consent banner ships from here too — it makes the
+same promises in a smaller box, and linking the two is the whole point.
 
 ## Rules
 
@@ -19,11 +20,18 @@ CLI (`cli.mjs`).
   worth testing for.
 - This package is consumed by sibling repos (the ai-broker app renders its legal
   pages from it), so changing a token name or an export is a cross-repo break.
+- The consent record's shape and its `cookie-consent` storage key are a
+  compatibility surface: a visitor who has already answered must keep reading
+  as answered. Widen the record, don't re-key it.
 
 ## Layout
 
 `src/content/` (the text) · `src/react/` · `src/render/` · `src/resolve.ts`
-(token resolution) · `src/types.ts` · `cli.mjs`
+(token resolution) · `src/types.ts` · `src/cookie-consent.ts` (the consent
+record and its storage, framework-free) · `cli.mjs`
+
+The suite runs in `node`, not jsdom — the consent tests stub `localStorage` and
+server-render the banner rather than adding a DOM to the package.
 
 ```bash
 cd packages/legal-terms-privacy-policy && bun run test

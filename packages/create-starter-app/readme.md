@@ -1,6 +1,6 @@
 <!-- template-git-repo:badges:start -->
 <p align="center">
-    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/create-starter-app"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/packages/create-starter-app"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/create-starter-app"><img src="https://img.shields.io/npm/dm/create-starter-app.svg" alt="NPM Monthly Downloads" /></a>
@@ -430,7 +430,7 @@ wget -qO- tinyurl.com/shellsetup | bash
 ## Documentation
 
 - **Main Docs**: [Starter Kit docs](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/apps/dev-tools-help-docs/content/docs)
-- **Demo**: [starterdocs.vtempest.workers.dev](https://starterdocs.vtempest.workers.dev)
+- **Demo**: [1computer.online](https://1computer.online)
 - **GitHub**: [github.com/vtempest/Starter-DOCS](https://github.com/vtempest/Starter-DOCS)
 
 ## Contributing

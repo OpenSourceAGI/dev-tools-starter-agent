@@ -6,5 +6,7 @@ export { default as LegalTermsPrivacyPolicy } from './LegalTermsPrivacyPolicy';
 export { default } from './LegalTermsPrivacyPolicy';
 export type { LegalTermsPrivacyPolicyProps } from './LegalTermsPrivacyPolicy';
 export { BlockView, linkify } from './blocks';
+export { default as CookieConsent } from './CookieConsent';
+export type { CookieConsentLink, CookieConsentProps } from './CookieConsent';
 export { ACCENTS, ICONS, accentOf, resolveIcon } from './icons';
 export type { IconComponent, IconMap } from './icons';

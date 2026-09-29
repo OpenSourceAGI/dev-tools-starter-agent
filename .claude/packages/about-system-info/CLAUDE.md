@@ -18,11 +18,18 @@ ISP and installed tools as one compact emoji line. Designed to be dropped into
   `.github/workflows/about-system-desktop.yml`, with the CLI compiled inside it
   so nothing needs installing first.
 
+- **`about-system web`** serves a React + shadcn/ui dashboard (`web/`, its own
+  Vite config) plus `GET /api/info` from `src/web-server.ts`. The web build runs
+  *after* the library build because the library build empties `dist/`. React,
+  Tailwind and the shadcn deps are devDependencies — they are bundled into
+  `dist/web`, so the published CLI gains no runtime deps.
+
 ## Layout
 
 `src/about-system-cli.ts` (bin) · `src/index.ts` (library) ·
 `src/info/` (per-block collectors) · `src/cache/` · `src/bench/` ·
-`src/system-info-api.ts` · `src/types/`
+`src/system-info-api.ts` · `src/web-server.ts` · `src/types/` ·
+`web/` (dashboard: `src/App.tsx`, shadcn components in `src/components/ui`)
 
 ```bash
 cd packages/about-system-info

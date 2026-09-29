@@ -8,7 +8,7 @@ its own, has its own README, and has its own agent skill under
 
 | App | Stack | Owns |
 | --- | --- | --- |
-| `docs` | Next.js + Fumadocs, **Biome** | The documentation site (starterdocs.vtempest.workers.dev): AI chat, full-text search, auto-generated API reference from TS types and OpenAPI. Pulls package READMEs in via `docs:sync`. |
+| `docs` | Next.js + Fumadocs, **Biome** | The documentation site (1computer.online): AI chat, full-text search, auto-generated API reference from TS types and OpenAPI. Pulls package READMEs in via `docs:sync`. |
 | `Cloud-Computer-Control-Panel` | Next.js, Drizzle | Cloud infrastructure dashboard — provisions AWS EC2, installs Dokploy, manages containers and encrypted credentials |
 | `cccp-vscode-ext` | VS Code extension | The CCCP dashboard in the editor sidebar. **Imports CCCP's own React components unchanged** and routes their `/api` calls through the extension host — so a change to CCCP's components can break the extension. |
 | `vscode-cloud` | Cloudflare Workers + Containers + Durable Objects | Per-user code-server instances; Cloudflare Access for SSO, a Durable Object holding the per-user password in SQLite, a Worker routing to the right container |

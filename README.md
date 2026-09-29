@@ -174,7 +174,7 @@ is how a README ends up advertising another package's skill. The script fails if
 a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
 
 Every package and app README is then published as a docs page under
-[`/docs/packages`](https://starterdocs.vtempest.workers.dev/docs/packages), so the
+[`/docs/packages`](https://1computer.online/docs/packages), so the
 README is the single source and the docs site is a view of it:
 
 ```bash
@@ -184,3 +184,6 @@ bun run docs:sync       # regenerate apps/dev-tools-help-docs/content/docs/(inde
 Edit the README, run `bun run docs:sync`, and commit both. The badge catalog
 itself lives in [`packages/template-git-repo/src/badges.js`](packages/template-git-repo/src/badges.js);
 its setup notes are generated into [`docs/BADGES.md`](packages/template-git-repo/docs/BADGES.md).
+
+
+🌟 Please star this repo so it will grow and get new features!

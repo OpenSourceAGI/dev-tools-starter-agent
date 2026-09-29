@@ -11,7 +11,7 @@ icon: HardDrive
 </div>
 
 <div align="center">
-    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/server-shell-setup"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/packages/server-shell-setup"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <br />
@@ -30,7 +30,7 @@ icon: HardDrive
 
 > If you hold a unix shell up to your ear, can you hear the C?
 
-One-command setup for a modern dev environment: `fish`, `nvim`, `nushell`, `bun`, `node`, `helix`, `starship`, `docker`, and more. Includes fish aliases for `service_manager`, `killport`, `search`, and others.
+One-command setup for a modern dev environment: `fish`, `nvim`, `nushell`, `bun`, `node`, `helix`, `yazi`, `starship`, `docker`, and more. Includes fish aliases for `service_manager`, `killport`, `search`, and others.
 
 **Supported systems**: Arch, Ubuntu/Debian, Android (Termux), macOS, Fedora, Alpine
 
@@ -47,11 +47,28 @@ One-command setup for a modern dev environment: `fish`, `nvim`, `nushell`, `bun`
 
 ## Install
 
-On a fresh server, you may first need to set passwords:
+On a fresh server, the installer checks whether root has a password before it
+installs anything. If root has none, it prompts you to set one on a terminal;
+in an unattended run it sets root to the user password you pass in. The root
+and user password can be the same:
 ```bash
-sudo passwd        # set root password
-sudo passwd $USER  # set user password
+# One password for both root and your user (env var keeps it out of `ps`)
+SETUP_PASSWORD='...' bash install-shell.sh --components all --yes
+
+# Or separately
+bash install-shell.sh --root-password '...' --user-password '...' --components all --yes
+
+# Only set passwords, install nothing
+SETUP_PASSWORD='...' bash install-shell.sh --yes
 ```
+
+| Option | Env var | Effect |
+|--------|---------|--------|
+| `--root-password PW` | `SETUP_ROOT_PASSWORD` | Always sets root's password |
+| `--user-password PW` | `SETUP_USER_PASSWORD` | Sets your user's password, and root's when root has none |
+| `--password PW` | `SETUP_PASSWORD` | Same value for both |
+
+An existing root password is only replaced when `--root-password`/`--password` is given.
 
 **Interactive menu** — pick what to install:
 ```bash
@@ -82,7 +99,7 @@ The `-s --` is what forwards arguments through the pipe to `bash`. Dropping it s
 | `\| bash -s -- fish,node,docker` | Only the named components, unattended |
 | `\| bash -s -- sudo` | Passwordless sudo only (CLI-only, not in the menu) |
 
-Valid CLI component names: `fish`, `nushell`, `nvim`, `helix`, `node`, `bun`, `pacstall`, `docker`, `starship`, `systeminfo`, `code`, `sudo`. An unrecognized name exits with an error and lists the valid ones.
+Valid CLI component names: `fish`, `nushell`, `nvim`, `helix`, `yazi`, `node`, `bun`, `pacstall`, `docker`, `starship`, `systeminfo`, `code`, `sudo`. An unrecognized name exits with an error and lists the valid ones.
 
 Two things to know about `all`:
 - The interactive menu's "Install Everything" includes `code` (code-server); the CLI `all` argument does not. Pass `code` explicitly if you want it unattended.
@@ -100,6 +117,7 @@ When the run finishes, the script `exec`s into fish if fish is on the PATH — s
 | `nushell` | Data-oriented shell that handles structured data natively | `npm i -g nushell` (`pkg` on Termux) | `nu --version` |
 | `nvim` | Neovim with [NvChad](https://nvchad.com) config pre-installed | distro package + git clone | `nvim --version` |
 | `helix` | Modal terminal editor written in Rust, no config needed | distro package | `hx --version` |
+| `yazi` | [Yazi](https://yazi-rs.github.io) terminal file manager, plus a `y` wrapper for bash, fish, and nushell that `cd`s into the last directory on quit | distro package on Arch, Alpine, macOS, Termux; official prebuilt release to `/usr/local/bin` on Debian/Ubuntu and Fedora/RHEL | `yazi --version` |
 | `node` | Node.js via [Volta](https://volta.sh) version manager (no sudo issues); also installs pnpm, yarn, git0, vite, turbo | [get.volta.sh](https://get.volta.sh) | `node -v`, `volta -v` |
 | `bun` | Fast JavaScript runtime, bundler, and package manager | [bun.sh/install](https://bun.sh/install) | `bun --version` |
 | `docker` | Docker with rootless mode enabled | get.docker.com + rootless setuptool | `docker version` |
@@ -222,6 +240,20 @@ The script clones the [NvChad starter](https://github.com/NvChad/starter) to `~/
 | `:LspInfo` | Which language servers are attached |
 | `:checkhealth` | Diagnose a broken install |
 | `:w` / `:q` / `:wq` / `:q!` | Write / quit / write+quit / force quit |
+
+### yazi — terminal file manager
+
+Run `y` (not `yazi`) so that quitting leaves your shell in the directory you browsed to.
+
+| Key | Action |
+|-----|--------|
+| `h/j/k/l` | Parent / down / up / enter |
+| `Space` | Toggle selection |
+| `y` / `x` / `p` | Yank / cut / paste |
+| `d` / `r` / `a` | Trash / rename / create (end with `/` for a directory) |
+| `/` / `z` | Find in directory / jump with fzf |
+| `.` | Toggle hidden files |
+| `q` | Quit (and `cd` there, via `y`) |
 
 ### helix — modal editor, batteries included
 
@@ -448,11 +480,11 @@ Useful for auditing before you run it, or for undoing parts afterward.
 | Path | Written by | Contents |
 |------|-----------|----------|
 | `~/.config/fish/config.fish` | fish, starship, systeminfo, docker | Prompt init, greeting, `about-system` call, PATH additions |
-| `~/.config/fish/functions/*.fish` | fish | `in`, `e`, `del`, `setup`, `search`, `killport`, `service_manager` |
-| `~/.config/nushell/config.nu` | nushell, starship, systeminfo | Banner off, `EDITOR=nvim`, starship autoload, `about-system` call |
+| `~/.config/fish/functions/*.fish` | fish, yazi | `in`, `e`, `del`, `setup`, `search`, `killport`, `service_manager`, `y` |
+| `~/.config/nushell/config.nu` | nushell, starship, systeminfo, yazi | Banner off, `EDITOR=nvim`, starship autoload, `about-system` call |
 | `~/.config/nvim` | nvim | NvChad starter clone (existing config moved to `~/.config/nvim.bak`) |
 | `~/.config/starship.toml` | starship | Overwritten with the `ƒ` prompt character config |
-| `~/.bashrc` | node, starship, systeminfo, docker | Volta PATH, starship init, `about-system` call, `/usr/bin` on PATH |
+| `~/.bashrc` | node, starship, systeminfo, docker, yazi | Volta PATH, starship init, `about-system` call, `/usr/bin` on PATH, `y` function |
 | `~/.volta/` | node | Volta toolchain and shims |
 | `~/.hushlogin` | systeminfo | Suppresses the default login banner |
 | `/etc/motd`, `/etc/update-motd.d` | systeminfo | **Deleted** so the custom greeting is the only banner |
@@ -507,7 +539,7 @@ It finishes by syncing and dropping the kernel page cache. The Docker prune dele
 
 | Symptom | Fix |
 |---------|-----|
-| Installer aborts immediately on a fresh server | Set passwords first (`sudo passwd`, `sudo passwd $USER`); many images ship with none, which makes `sudo` fail confusingly |
+| Installer aborts immediately on a fresh server | Many images ship with no passwords, which makes `sudo` fail confusingly. Re-run with `SETUP_PASSWORD=... ` (or `--password`) so the installer sets them first |
 | Piped install shows the menu instead of running unattended | You dropped `-s --` — it's `bash -s -- all`, not `bash all` |
 | Shell is still bash after login | `chsh` may have failed silently; run `chsh -s $(which fish)` and open a new session |
 | `Invalid component: <name>` | Check the name against the valid list above; the script exits rather than guessing |

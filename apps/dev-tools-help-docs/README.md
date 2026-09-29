@@ -1,6 +1,6 @@
 <!-- template-git-repo:badges:start -->
 <p align="center">
-    <a href="https://starterdocs.vtempest.workers.dev/docs/apps/dev-tools-help-docs"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/apps/dev-tools-help-docs"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <br />
@@ -18,7 +18,7 @@
 # dev-tools-help-docs
 
 The documentation site for the whole catalog —
-[starterdocs.vtempest.workers.dev](https://starterdocs.vtempest.workers.dev/).
+[1computer.online](https://1computer.online/).
 Next.js + [Fumadocs](https://fumadocs.dev), with an AI chat assistant,
 full-text search, and an API reference generated from TypeScript types and
 OpenAPI specs.
@@ -79,7 +79,7 @@ Put values in a `.env` in this directory, or in `.env` at the repo root — the
 | --- | --- | --- |
 | `GROQ_API_KEY` | The docs chat assistant at `/api/chat`. Without it the route returns a `MissingApiKeyError`; the rest of the site is unaffected. Model: `llama-3.3-70b-versatile`. | [console.groq.com/keys](https://console.groq.com/keys) |
 | `OPENAI_API_KEY` | Embeddings for the assistant's retrieval step (`text-embedding-3-small`). Needed alongside `GROQ_API_KEY`. | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
-| `NEXT_PUBLIC_BASE_URL` | The absolute base for canonical links, Open Graph images and the sitemap. Falls back to a relative base in development. | Your own deployed origin, e.g. `https://starterdocs.vtempest.workers.dev`. |
+| `NEXT_PUBLIC_BASE_URL` | The absolute base for canonical links, Open Graph images and the sitemap. Falls back to a relative base in development. | Your own deployed origin, e.g. `https://1computer.online`. |
 | `SOURCE_MAPS` | `"true"` emits production browser source maps. Off by default. | — |
 
 ## Scripts
@@ -113,7 +113,7 @@ bun run start            # serve the production build locally
 
 No host configuration is committed in this directory — there is no
 `wrangler.jsonc` or `vercel.json` here, so the deployment at
-`starterdocs.vtempest.workers.dev` is configured on the host side, from a
+`1computer.online` is configured on the host side, from a
 Git connection. To point a new host at it:
 
 | Setting | Value |

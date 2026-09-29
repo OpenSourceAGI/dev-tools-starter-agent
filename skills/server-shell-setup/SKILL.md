@@ -1,6 +1,6 @@
 ---
 name: server-shell-setup
-description: Guide to server-shell-setup (packages/server-shell-setup), the one-command dev-environment bootstrap for fish, nushell, nvim, helix, node via Volta, bun, docker, starship, code-server and more — interactive vs unattended installs, selecting individual components, the fish aliases it adds, and the supported distros. Use when working with server-shell-setup or troubleshooting it — the installer aborting on a fresh server, sudo or password prompts, a shell that doesn't become the default, docker rootless issues, or components that silently skip on an unsupported distro.
+description: Guide to server-shell-setup (packages/server-shell-setup), the one-command dev-environment bootstrap for fish, nushell, nvim, helix, yazi, node via Volta, bun, docker, starship, code-server and more — interactive vs unattended installs, selecting individual components, the fish aliases it adds, and the supported distros. Use when working with server-shell-setup or troubleshooting it — the installer aborting on a fresh server, sudo or password prompts, a shell that doesn't become the default, docker rootless issues, or components that silently skip on an unsupported distro.
 ---
 
 # Working With server-shell-setup
@@ -11,12 +11,14 @@ The shell scripts in `packages/server-shell-setup` (`install-shell.sh`, plus `ge
 
 ## Setup
 
-On a brand-new server, set passwords first (many providers ship with none, which makes `sudo` fail in confusing ways):
+On a brand-new server many providers ship with no passwords, which makes `sudo` fail in confusing ways. `install-shell.sh` checks root first: with no root password it prompts on a terminal, or in unattended runs (`--yes` / no TTY) sets root to the user password. Pass passwords as flags or, better (kept out of `ps`), env vars — root and user can share one:
 
 ```bash
-sudo passwd        # root
-sudo passwd $USER  # your user
+SETUP_PASSWORD='...' bash install-shell.sh --components all --yes          # both accounts
+bash install-shell.sh --root-password '...' --user-password '...' --yes    # separately
 ```
+
+`--root-password`/`SETUP_ROOT_PASSWORD` always sets root; `--user-password`/`SETUP_USER_PASSWORD` sets the invoking user (`$SUDO_USER` under sudo) and fills root only when root has none; `--password`/`SETUP_PASSWORD` sets both. Password flags alone, with no components, just set passwords and exit.
 
 Then pick an install mode:
 
@@ -36,6 +38,7 @@ The `-s --` is what forwards arguments through the pipe to bash — dropping it 
 | `nushell` | Structured-data shell |
 | `nvim` | Neovim preconfigured with NvChad |
 | `helix` | Modal editor, no config needed |
+| `yazi` | Yazi file manager + a `y` wrapper (bash/fish/nu) that `cd`s to the last directory on quit. Distro package on Arch/Alpine/macOS/Termux; prebuilt GitHub release into `/usr/local/bin` on Debian/Ubuntu and Fedora/RHEL (x86_64/aarch64 only) |
 | `node` | Node via Volta (no sudo/permission problems), plus pnpm, yarn, git0, vite, turbo |
 | `bun` | Bun runtime + package manager |
 | `docker` | Docker with rootless mode |
@@ -63,7 +66,7 @@ The `-s --` is what forwards arguments through the pipe to bash — dropping it 
 | --- | --- |
 | Arguments ignored, menu appears anyway | You piped without `-s --`. Use `bash -s -- all`. |
 | Menu appears but you're in CI | The interactive path needs a TTY. Always pass an explicit component list or `all` in automation. |
-| `sudo: no password` / repeated prompts | Set the passwords first (above). The `sudo` component enables passwordless sudo, but it can't run before you can `sudo` at all. |
+| `sudo: no password` / repeated prompts | Pass `SETUP_PASSWORD` / `--password` so the installer sets them first (above). The `sudo` component enables passwordless sudo, but it can't run before you can `sudo` at all. |
 | Fish installed but the shell didn't change | The default shell change needs `chsh -s $(which fish)` and a new login session; in containers there's often no login shell at all — invoke `fish` from your entrypoint. |
 | Docker installed but `docker ps` fails | Rootless Docker needs its user daemon running and the socket env var set — log out and back in, then check `systemctl --user status docker`. In containers without systemd, rootless mode won't come up. |
 | A component silently didn't install | It isn't available for the detected OS. Re-run just that component to see the output rather than scrolling the full log. |

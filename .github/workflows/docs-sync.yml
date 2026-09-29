@@ -1,0 +1,67 @@
+name: Sync package READMEs into docs
+
+# Copies every packages/*/README.md (and the app READMEs) into
+# apps/dev-tools-help-docs/content/docs/(index)/{packages,apps}/ as MDX pages
+# with title / description / icon frontmatter, then commits the result so the
+# docs host publishes the up-to-date pages.
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'packages/*/README.md'
+      - 'packages/*/readme.md'
+      - 'packages/*/package.json'
+      - 'apps/*/README.md'
+      - 'apps/*/readme.md'
+      - 'apps/dev-tools-help-docs/scripts/sync-readme-docs.ts'
+      - '.github/workflows/docs-sync.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: docs-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      # The sync script only uses node: builtins, so no install is needed.
+      - name: Sync READMEs into the docs content tree
+        run: bun run docs:sync
+
+      - name: Commit synced docs
+        run: |
+          git add -A -- 'apps/dev-tools-help-docs/content/docs/(index)/packages' 'apps/dev-tools-help-docs/content/docs/(index)/apps'
+
+          if git diff --staged --quiet; then
+            echo "Docs already up to date"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "📝 docs: sync package READMEs into docs site"
+
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+
+            echo "Push rejected (attempt $attempt); rebasing onto the current master"
+            git pull --rebase origin master || break
+          done
+
+          echo "::error::Could not push the synced docs."
+          exit 1

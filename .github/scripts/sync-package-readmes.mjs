@@ -48,7 +48,7 @@ import {
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..')
 
 /** Where the synced README pages are published. */
-const DOCS_SITE = 'https://starterdocs.vtempest.workers.dev'
+const DOCS_SITE = 'https://1computer.online'
 
 /**
  * Directories scanned, the docs section each lands in, and whether npm-publish.yml

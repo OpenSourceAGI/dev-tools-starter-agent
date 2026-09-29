@@ -1,6 +1,6 @@
 ---
 name: legal-terms-privacy-policy
-description: Guide to packages/legal-terms-privacy-policy — the configurable Terms of Service + Privacy Policy page with two presentations of the same policy (a scannable card summary and the full legal text) and a switch between them. Covers the token substitutions, turning named parts on and off (AI clauses, CCPA, COPPA, cookies), adding/removing/reordering/rewriting sections, the block types, the React props, the Markdown/HTML/text renderers, the CLI, and wiring it into a Next.js app. Use when adding or editing a terms or privacy page, replacing a hand-written legal page, changing which clauses a product publishes, or troubleshooting one — a `{{token}}` showing through, a section that won't disappear, cards rendering as plain text, or a Next build that can't parse the package.
+description: Guide to packages/legal-terms-privacy-policy — the configurable Terms of Service + Privacy Policy page with two presentations of the same policy (a scannable card summary and the full legal text) and a switch between them, plus the cookie consent banner that links to it. Covers the token substitutions, turning named parts on and off (AI clauses, CCPA, COPPA, cookies), adding/removing/reordering/rewriting sections, the block types, the React props, the consent banner and its stored record, the Markdown/HTML/text renderers, the CLI, and wiring it into a Next.js app. Use when adding or editing a terms or privacy page, adding or changing a cookie consent banner, gating analytics on consent, replacing a hand-written legal page, changing which clauses a product publishes, or troubleshooting one — a `{{token}}` showing through, a section that won't disappear, a banner that keeps coming back, cards rendering as plain text, or a Next build that can't parse the package.
 ---
 
 # Working With legal-terms-privacy-policy
@@ -142,6 +142,46 @@ List items are strings, or `{ text, items }` for one nested level (the `a. b. c.
 
 Caller text is interpolated too, so `{{appName}}` works in your own sections. Anchors: `after`, `before`, or `at` (an index); with none of them the section is appended.
 
+## Cookie consent banner
+
+The banner makes the same promises the policy makes, in a smaller box, so it ships from the same package — one place to change when the promise changes.
+
+```tsx
+import { CookieConsent } from 'legal-terms-privacy-policy/react';
+
+<CookieConsent
+  appName="QwkSearch"
+  links={[{ url: '/legal/privacy', text: 'Privacy' }, { url: '/ethics', text: 'Ethics' }]}
+  heightVar="--app-bottom-right-inset"
+/>;
+```
+
+It shows only when no decision is on record, and that check runs in an effect — so it renders to nothing on the server, and a cached page never shows it to someone who already answered.
+
+| Prop | Does |
+| --- | --- |
+| `appName` | Named in the default copy |
+| `links` | The row under the copy. Point one at the page above — consent without the policy in reach is not informed consent |
+| `title` / `message` | Replace the default heading and body |
+| `acceptLabel` / `rejectLabel` | Default to "Accept All" and "Reject" |
+| `storageKey` | `localStorage` key. Defaults to `cookie-consent` |
+| `dismissible` | The × that hides it without recording a decision. Defaults to `true` |
+| `heightVar` | A CSS custom property on `<html>` to publish the banner's measured height into while it is up, so other bottom-right chrome can sit above it |
+| `onDecision` | Called with the stored record when the visitor answers |
+
+The decision is readable without React, from the package root:
+
+```ts
+import { readCookieConsent, writeCookieConsent, clearCookieConsent }
+  from 'legal-terms-privacy-policy';
+
+if (readCookieConsent()?.analytics) loadAnalytics();
+clearCookieConsent();          // a "change my choices" link — the banner asks again
+writeCookieConsent('essential'); // 'all' | 'essential'
+```
+
+The record is `{ analytics, marketing, functional, timestamp }`. **"Reject" records essential cookies only, not nothing** — `functional` stays true, because rejecting it would be rejecting the login — and the timestamp is what proves when consent was given. A malformed or half-written record reads as *no decision*, so the banner asks again rather than a bad value wedging the page.
+
 ## Rendering without React
 
 ```ts
@@ -193,6 +233,9 @@ When a product's policy genuinely differs from the boilerplate (a broker's discl
 | `useState`/`useEffect` error in a Server Component | The page is interactive | The component already carries `'use client'`; make sure your route isn't re-exporting it through a server-only boundary |
 | Clipboard button does nothing | Clipboard API blocked in an iframe or insecure origin | Expected; the email is still selectable. `features={{ copyButtons: false }}` to hide it |
 | Dates disagree between apps | Each app passes its own `lastRevisedDate` | Update the prop where the page lives, not the package |
+| Consent banner returns on every page load | Storage blocked, or the app reads a different `storageKey` | Expected in a browser with site data blocked — the choice holds for that page view only; otherwise match the key |
+| Banner covers other bottom-right chrome | Nothing published its height | Pass `heightVar` and have that chrome offset by the property |
+| Analytics load for someone who rejected | Nothing read the record | Gate on `readCookieConsent()?.analytics`, not on the banner being gone |
 
 ## Where it's wired
 

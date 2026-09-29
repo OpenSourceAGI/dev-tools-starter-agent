@@ -33,7 +33,7 @@ Exact CLI flags, block names, settings keys, and cache TTLs.
 | Block | Output |
 | --- | --- |
 | `user`, `hostname`, `device`, `kernel`, `os` | `👤 user`, `🏠 host`, `💻 MacBook Pro`, `🔧 5.15.0`, `⚡ Ubuntu 22.04` |
-| `cpu`, `gpu`, `bench`, `cpu_bench_info`, `gpu_bench`, `gpu_bench_info` | Model strings plus Geekbench lookups from the bundled `bench/*.json` |
+| `cpu`, `gpu`, `bench`, `cpu_bench_info`, `gpu_bench`, `gpu_bench_info` | Model strings plus Geekbench lookups from the bundled `bench/*.json`. `bench`/`gpu_bench` print the score in whole thousands, the rank and its top percentile (`💪 21k #68 top 7%`); the `_info` variants spell it out (`Geekbench 6: 21k (Rank #68, top 7%) - Intel`). The default line shows `cpu bench gpu gpu_bench` in that order. |
 | `disk_used`, `ram_used`, `memory_available`, `swap_used`, `mount_points` | `📁 75%`, `💾 8/16GB`, and related storage/memory readouts |
 | `top_process`, `load_average`, `uptime`, `users_logged_in` | `🔝 15% chrome`, load, `⏱️ 2d 5h 30m` |
 | `ip`, `iplocal`, `city`, `domain`, `isp`, `network_interfaces` | Public/local IP, geo-IP city, reverse DNS, ISP |
