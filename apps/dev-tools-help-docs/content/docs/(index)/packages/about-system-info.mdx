@@ -392,10 +392,12 @@ about-system --set display.line_wrap_length 100
 
 The script implements intelligent caching to improve performance:
 
-- **IP Info**: 5 minutes (network requests are expensive)
+- **IP Info**: 10 minutes, fetched with a 3-second deadline in parallel with local checks
 - **System Info**: 24 hours (rarely changes)
 - **Process Info**: 5 seconds (changes frequently)
 - **Disk/RAM**: 1 minute (moderate change frequency)
+
+Press **Esc** at any point while it runs to stop and print only what has been collected so far.
 
 ### Shell Integration
 
