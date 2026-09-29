@@ -17,6 +17,8 @@ Exact CLI flags, block names, settings keys, and cache TTLs.
 | `--settings-init` | Write a fresh settings file. |
 | `--help` | Usage. |
 
+Press **Esc** while it runs (interactive terminal only) to stop collecting and print just the blocks gathered so far.
+
 ## Entry points
 
 | Import | Exports |
@@ -61,13 +63,17 @@ Note the two internal renames: `os` maps to `os_info`, `pacman` maps to `package
 
 File: `systeminfo-cache.json` in the OS temp dir (`os.tmpdir()`).
 
+The public IP lookup queries ipinfo.io and ip-api.com in parallel under one hard 3 s deadline, runs alongside the local blocks, and happens at most once per 10 minutes. A failed lookup keeps the last good value and is not retried until the 10 minutes are up.
+
+`getSystemInfo({ keys, signal })`: `keys` limits collection to those blocks (the CLI passes `display_order`, so hidden blocks cost nothing); aborting `signal` returns the blocks gathered so far.
+
 | Block group | TTL |
 | --- | --- |
 | `top_process` | 5 s |
 | `ram_used` | 10 s |
 | `temperature` | 30 s |
 | `disk_used`, `battery` | 1 min |
-| `ip`, `ports`, `containers`, `services_running`, `network_interfaces` | 5 min |
-| `pacman`, `mount_points` | 10 min |
+| `ports`, `containers`, `services_running`, `network_interfaces` | 5 min |
+| `ip`, `city`, `domain`, `isp` (one shared lookup), `pacman`, `mount_points` | 10 min |
 | `kernel` | 1 h |
 | `cpu`, `gpu`, `os`, `device` | 24 h |

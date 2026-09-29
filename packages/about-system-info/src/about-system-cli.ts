@@ -146,14 +146,51 @@ function wrapAnsiText(text: string, maxLength: number): string[] {
   return lines;
 }
 
+/**
+ * Collects system info, stopping early when Esc is pressed. On Esc the blocks
+ * gathered so far are returned and the rest are skipped. Only listens when
+ * stdin is an interactive terminal; raw mode swallows Ctrl+C, so that is
+ * handled here too.
+ */
+async function collectSystemInfo(keys?: string[]): Promise<SystemInfo> {
+  const controller = new AbortController();
+  const stdin = process.stdin;
+  const listen = stdin.isTTY && typeof stdin.setRawMode === "function";
+
+  const stopListening = () => {
+    stdin.off("data", onKey);
+    stdin.setRawMode(false);
+    stdin.pause();
+  };
+  const onKey = (data: Buffer) => {
+    // A lone ESC byte; arrow keys etc. arrive as longer ESC sequences.
+    if (data.length === 1 && data[0] === 0x1b) controller.abort();
+    else if (data.includes(0x03)) {
+      stopListening();
+      process.exit(130);
+    }
+  };
+
+  if (listen) {
+    stdin.setRawMode(true);
+    stdin.on("data", onKey);
+    stdin.resume();
+  }
+  try {
+    return await getSystemInfo({ keys, signal: controller.signal });
+  } finally {
+    if (listen) stopListening();
+  }
+}
+
 async function displaySystemInfo(
   customDisplayOrder: string[][] | null = null
 ): Promise<void> {
   const settings = loadSettings();
   const displayOrder = customDisplayOrder || settings.display_order;
 
-  // Get system info
-  const info = await getSystemInfo();
+  // Get only the blocks that will be shown
+  const info = await collectSystemInfo(displayOrder.flat());
 
   // Single line mode
   if (settings.display.single_line) {
@@ -446,6 +483,8 @@ Options:
   --set <key> <value>  Set a configuration value (use dot notation)
   --json               Output as JSON
 
+Press Esc while it runs to stop and print only what was collected so far.
+
 Examples:
   about-system                      # Show all info (default)
   about-system cpu,os               # Show only CPU and OS info
@@ -507,7 +546,7 @@ async function main(): Promise<void> {
   }
 
   if (args.includes("--json")) {
-    const info = await getSystemInfo();
+    const info = await collectSystemInfo();
     console.log(JSON.stringify(info, null, 2));
     return;
   }

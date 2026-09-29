@@ -17,7 +17,7 @@ export const CACHE_FILE = path.join(os.tmpdir(), "systeminfo-cache.json");
  * Values are in milliseconds
  *
  * @constant
- * @property {number} ip - IP information cache (10 minutes)
+ * @property {number} ipInfo - Public IP / city / ISP lookup (10 minutes)
  * @property {number} cpu - CPU information cache (24 hours)
  * @property {number} gpu - GPU information cache (24 hours)
  * @property {number} os - OS information cache (24 hours)
@@ -36,7 +36,7 @@ export const CACHE_FILE = path.join(os.tmpdir(), "systeminfo-cache.json");
  * @property {number} mount_points - Mount points cache (10 minutes)
  */
 export const CACHE_DURATION = {
-  ip: 10 * 60 * 1000,
+  ipInfo: 10 * 60 * 1000,
   cpu: 24 * 60 * 60 * 1000,
   gpu: 24 * 60 * 60 * 1000,
   os: 24 * 60 * 60 * 1000,
@@ -65,4 +65,4 @@ export const DEFAULT_IPINFO_TOKEN = "da2d6cc4baa5d1";
  * Default network request timeout in milliseconds
  * @constant
  */
-export const DEFAULT_NETWORK_TIMEOUT = 5000;
+export const DEFAULT_NETWORK_TIMEOUT = 3000;

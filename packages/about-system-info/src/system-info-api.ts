@@ -12,8 +12,11 @@
 import os from "os";
 import fs from "fs";
 import { fetchIPInfo } from "./utils/network";
+import type { IPInfo } from "./utils/network";
 import path from "path";
 import type { SystemInfo, SystemInfoOptions } from "./systeminfo-types";
+import type { Cache } from "./cache/cache";
+import { isCacheValid } from "./cache/cache";
 import { CACHE_FILE } from "./info/settings"; // Using CACHE_FILE from settings to ensure consistency
 
 // Import info functions from modules
@@ -159,34 +162,78 @@ export const infoFunctions = {
   screen_resolution,
 };
 
+/** Blocks derived from the public IP lookup. */
+const IP_BLOCKS = new Set(["ip", "city", "domain", "isp"]);
+
+/** Lets pending I/O callbacks (keypresses, HTTP responses) run between blocks. */
+const yieldToEventLoop = () => new Promise<void>((resolve) => setImmediate(resolve));
+
 /**
- * Get all system information as a clean JSON object
+ * Returns the cached public IP lookup, or fetches it when the cache entry is
+ * older than 10 minutes. A failed fetch keeps the previous value and is still
+ * timestamped, so an offline machine is not re-queried on every launch. An
+ * aborted fetch leaves the cache untouched.
+ */
+async function getIPInfo(cache: Cache, signal?: AbortSignal): Promise<IPInfo> {
+  const entry = cache["ipInfo"];
+  if (entry && isCacheValid(entry, "ipInfo")) return entry.value || {};
+
+  const fresh = await fetchIPInfo(undefined, undefined, signal);
+  const value = fresh.ip ? fresh : entry?.value || {};
+  if (!signal?.aborted) {
+    cache["ipInfo"] = { value, timestamp: Date.now() };
+  }
+  return value;
+}
+
+/**
+ * Get system information as a clean JSON object.
+ *
+ * `options.keys` limits collection to those blocks (all by default).
+ * `options.signal` stops collection early: whatever was gathered before the
+ * abort is returned, and the remaining blocks are left out.
  */
 export async function getSystemInfo(
   options: SystemInfoOptions = {}
 ): Promise<SystemInfo> {
+  const { keys, signal } = options;
   const cache = loadCache();
   const context: InfoContext = { cache };
 
-  // Check if we need IP info
-  // Some functions need IP info, so we fetch it once if needed by any function
-  // For now we always try to fetch it if not cached, as ip/city/etc depend on it
-  // Optimization: check if we actually need to run those functions based on options if provided
-  // But current implementation fetches it always if missing from cache
+  const wanted = Object.keys(infoFunctions).filter(
+    (key) => !keys || keys.includes(key)
+  );
 
-  const cachedIPInfo = cache["ipInfo"]?.value;
-  if (cachedIPInfo) {
-    context.ipInfo = cachedIPInfo;
-  } else {
-    context.ipInfo = await fetchIPInfo();
-    // Cache IP info itself
-    cache["ipInfo"] = {
-      value: context.ipInfo,
-      timestamp: Date.now(),
-    };
+  // Start the IP lookup first so it overlaps with the local blocks.
+  const ipInfoPromise = wanted.some((key) => IP_BLOCKS.has(key))
+    ? getIPInfo(cache, signal)
+    : undefined;
+
+  const collected: Record<string, unknown> = {};
+  const run = async (key: string) => {
+    try {
+      collected[key] = await infoFunctions[key as keyof typeof infoFunctions](context);
+    } catch {
+      collected[key] = "";
+    }
+  };
+
+  for (const key of wanted) {
+    if (IP_BLOCKS.has(key)) continue;
+    await yieldToEventLoop();
+    if (signal?.aborted) break;
+    await run(key);
   }
 
-  // Collect all system information
+  // On abort the lookup resolves at once with whatever was cached.
+  if (ipInfoPromise) {
+    context.ipInfo = await ipInfoPromise;
+    for (const key of wanted) {
+      if (IP_BLOCKS.has(key)) await run(key);
+    }
+  }
+
+  // Keep the infoFunctions key order regardless of collection order.
   const info: Partial<SystemInfo> = {
     timestamp: new Date().toISOString(),
     platform: IS_WINDOWS
@@ -197,16 +244,8 @@ export async function getSystemInfo(
       ? "linux"
       : "unknown",
   };
-
-  // Call all info functions
-  for (const [key, fn] of Object.entries(infoFunctions)) {
-    try {
-      // most functions are sync but some are async (ip related)
-      const value = await fn(context);
-      info[key as keyof SystemInfo] = value as any;
-    } catch (error) {
-      info[key as keyof SystemInfo] = "" as any;
-    }
+  for (const key of wanted) {
+    if (key in collected) info[key as keyof SystemInfo] = collected[key] as any;
   }
 
   saveCache(cache);

@@ -10,22 +10,14 @@ import { execCommand } from "../utils/command";
 import { getCachedValue, setCachedValue } from "../cache/cache";
 
 /**
- * Gets public IP address from ipinfo.io
- * @param context - Info context with cache and IP info
- * @returns Public IPv4 address or empty string
+ * Gets public IP address. The ip, city, domain and isp blocks all read the one
+ * shared lookup in `context.ipInfo`, which `getSystemInfo` caches for 10 minutes.
+ * @param context - Info context with IP info
+ * @returns Public IP address or empty string
  * @example "203.0.113.42"
  */
-export async function ip(context: InfoContext): Promise<string> {
-  const cached = getCachedValue(context.cache, "ip");
-  if (cached) return cached;
-
-  if (!context.ipInfo) {
-    setCachedValue(context.cache, "ip", "");
-    return "";
-  }
-  const ip = context.ipInfo.ip || "";
-  setCachedValue(context.cache, "ip", ip);
-  return ip;
+export function ip(context: InfoContext): string {
+  return context.ipInfo?.ip || "";
 }
 
 /**
@@ -81,17 +73,8 @@ export function iplocal(): string {
  * @returns City name or empty string
  * @example "San Francisco", "New York", "London"
  */
-export async function city(context: InfoContext): Promise<string> {
-  const cached = getCachedValue(context.cache, "city");
-  if (cached !== null) return cached;
-
-  if (!context.ipInfo || !context.ipInfo.city) {
-    setCachedValue(context.cache, "city", "");
-    return "";
-  }
-  const city = context.ipInfo.city;
-  setCachedValue(context.cache, "city", city);
-  return city;
+export function city(context: InfoContext): string {
+  return context.ipInfo?.city || "";
 }
 
 /**
@@ -100,17 +83,9 @@ export async function city(context: InfoContext): Promise<string> {
  * @returns Domain with http:// prefix or empty string
  * @example "http://example.com", "http://host-203-0-113-42.example.net"
  */
-export async function domain(context: InfoContext): Promise<string> {
-  const cached = getCachedValue(context.cache, "domain");
-  if (cached !== null) return cached;
-
-  if (!context.ipInfo || !context.ipInfo.hostname) {
-    setCachedValue(context.cache, "domain", "");
-    return "";
-  }
-  const domain = `http://${context.ipInfo.hostname}`;
-  setCachedValue(context.cache, "domain", domain);
-  return domain;
+export function domain(context: InfoContext): string {
+  const hostname = context.ipInfo?.hostname;
+  return hostname ? `http://${hostname}` : "";
 }
 
 /**
@@ -120,17 +95,9 @@ export async function domain(context: InfoContext): Promise<string> {
  * @returns ISP name or empty string
  * @example "Comcast Cable", "Verizon Business", "Cloudflare Inc"
  */
-export async function isp(context: InfoContext): Promise<string> {
-  const cached = getCachedValue(context.cache, "isp");
-  if (cached !== null) return cached;
-
-  if (!context.ipInfo || !context.ipInfo.org) {
-    setCachedValue(context.cache, "isp", "");
-    return "";
-  }
-  const isp = context.ipInfo.org.split(" ").slice(1).join(" ");
-  setCachedValue(context.cache, "isp", isp);
-  return isp;
+export function isp(context: InfoContext): string {
+  const org = context.ipInfo?.org;
+  return org ? org.split(" ").slice(1).join(" ") : "";
 }
 
 /**

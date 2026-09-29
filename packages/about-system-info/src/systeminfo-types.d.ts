@@ -475,6 +475,12 @@ export interface SystemInfoOptions {
   
   /** Return data object instead of printing to console (module usage) */
   returnData?: boolean;
+
+  /** Only collect these blocks (e.g. ["cpu", "ip"]); all blocks when omitted */
+  keys?: string[];
+
+  /** Abort to stop collecting early and return only the blocks gathered so far */
+  signal?: AbortSignal;
 }
 
 /**

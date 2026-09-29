@@ -30,6 +30,7 @@ The package is **ESM-only** (`"type": "module"`) and ships four entry points: `.
 | Run on every terminal launch | `about-system --install` |
 | Change a color/emoji/label | `about-system --set colors.user blue` |
 | Force fresh values | `about-system --refresh` |
+| Stop a slow run early | Press **Esc** — prints only the blocks gathered so far |
 
 ## Recipes
 
@@ -62,9 +63,9 @@ const uptime = infoFunctions.uptime();
 | Web UI unreachable from another machine | It binds `127.0.0.1` by default. Use `--host 0.0.0.0` (exposes system details to anyone who can reach the port) or an SSH tunnel. |
 | `infoFunctions is not exported` / undefined import | The root entry exports only `getSystemInfo`, `loadCache`, `saveCache` and types. `infoFunctions` lives in the `about-system/api` subpath — the README's root import is wrong. |
 | `--cache-clear` does nothing / unknown flag | That flag in the README doesn't exist. The real one is `--refresh`. |
-| Values are stale (IP, disk, uptime) | Cached by design, per-block TTL (IP 5 min, CPU/OS/device 24 h, top process 5 s). Run `--refresh`, or delete `systeminfo-cache.json` in the OS temp dir. |
+| Values are stale (IP, disk, uptime) | Cached by design, per-block TTL (IP lookup 10 min, CPU/OS/device 24 h, top process 5 s). Run `--refresh`, or delete `systeminfo-cache.json` in the OS temp dir. |
 | A block prints empty | The underlying tool isn't on that platform/PATH (`docker` for `containers`, `nvidia-smi`/`system_profiler` for `gpu`, `ss`/`netstat` for `ports`). Empty is the intended fallback, not a crash — drop the block from `display_order` if you don't want the gap. |
-| Network blocks (`ip`, `city`, `isp`, `domain`) all blank | No outbound network, or the lookup timed out. They share one cached IP-info fetch; everything else still renders. |
+| Network blocks (`ip`, `city`, `isp`, `domain`) all blank | No outbound network, or the lookup hit its 3 s deadline. They share one IP-info fetch cached for 10 minutes — a failure isn't retried until then, so run `--refresh` after reconnecting. Everything else still renders. |
 | Greeting didn't appear after `--install` | The line is appended to the config of the shell that was detected (`~/.bashrc`, `~/.zshrc`, `~/.config/fish/config.fish`, `~/.config/nushell/config.nu`). Open a new shell, or if you use PowerShell add the printed line to `$PROFILE` yourself. |
 | `--set` seems ignored | You set a key the renderer doesn't read (typo in the path) or the block isn't in `display_order`. Check with `--settings-show`; reset with `--settings-reset` if the file got malformed. |
 | `ERR_REQUIRE_ESM` when importing | ESM-only package. Use `import`, or `await import("about-system")` from CJS. |
