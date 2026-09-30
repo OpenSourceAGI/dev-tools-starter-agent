@@ -13,7 +13,9 @@
   ],
   "scripts": {
     "build": "next build",
+    "predev:vinext": "node scripts/ensure-worker-entry.mjs",
     "dev:vinext": "vinext dev",
+    "prebuild:vinext": "node scripts/ensure-worker-entry.mjs",
     "build:vinext": "vinext build",
     "deploy:vinext": "vinext deploy",
     "db:create": "npm create cloud-db",

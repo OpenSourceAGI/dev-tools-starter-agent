@@ -57,3 +57,11 @@ The directory `starter-templates/template-git-repo/` is a scaffold. The
 and README catalog that `.github/scripts/sync-package-readmes.mjs` and
 `packages/setup-git-repo` both build on. Same name, different things — check
 which one you are in.
+
+## Generated Worker entries are not committed
+
+`template-vinext-betterauth-shadcn-themes-teams-stripe/worker/index.ts` is the
+stock entry `vinext deploy` writes when it is missing, so the template ignores
+`/worker/` and regenerates it (`scripts/ensure-worker-entry.mjs`, run before
+`dev:vinext` and `build:vinext`). Commit a `worker/` only once it is
+hand-customized, and drop the ignore line when you do.
