@@ -113,7 +113,7 @@
 **[template-nextjs-betterauth-shadcn-drizzle](starter-templates/template-nextjs-betterauth-shadcn-drizzle/)** - Next.js SaaS boilerplate with PostgreSQL, Better Auth, Stripe subscriptions, and shadcn/ui components.
 `bun create starter-app` · `npx create-starter-app`
 
-**[template-vinext-betterauth-shadcn-themes-teams-stripe](starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe/)** - Full Next.js dashboard template with Better Auth (social + SIWE), Stripe subscriptions and billing portal, teams, 50 shadcn color themes, and built-in Fumadocs documentation.
+**[template-nextjs-harness-cloudflare](starter-templates/template-nextjs-harness-cloudflare/)** - Full Next.js dashboard template with Better Auth (social + SIWE), Stripe subscriptions and billing portal, teams, 50 shadcn color themes, and built-in Fumadocs documentation.
 `bun create starter-app` · `npx create-starter-app`
 
 **[template-fumadocs](starter-templates/template-fumadocs/)** - Documentation site with Fumadocs, Orama search, OpenAPI/Swagger docs, MDX support, and collapsible sidebar.

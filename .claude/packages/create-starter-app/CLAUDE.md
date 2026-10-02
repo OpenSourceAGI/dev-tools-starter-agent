@@ -14,7 +14,7 @@ Full detail in [`../../architecture/templates.md`](../../architecture/templates.
    `template-nextjs-betterauth-shadcn-prisma` (doesn't exist) and
    `template-svelte-betterauth-drizzle-shadcn` (the directory is
    `…-shadcn-drizzle`), and omits `template-git-repo` and
-   `template-vinext-betterauth-shadcn-themes-teams-stripe`, which do exist.
+   `template-nextjs-harness-cloudflare`, which do exist.
 2. **The published package cannot reach the templates.**
    `STARTERS_DIR = join(__dirname, "../../../starter-templates")` resolves to the
    repo root — fine in the monorepo, outside the tarball once installed.
