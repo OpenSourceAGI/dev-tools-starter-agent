@@ -92,7 +92,7 @@ export function analyzeFile(filePath: string, providedContent?: string): FileAna
       }
     }
     const fullText = sourceFile.getFullText();
-    const nodeStart = node.getFullStart();
+    const nodeStart = node.getStart(sourceFile);
     const textBefore = fullText.substring(0, nodeStart);
     const lines = textBefore.split("\n");
     for (let i = lines.length - 1; i >= 0; i--) {

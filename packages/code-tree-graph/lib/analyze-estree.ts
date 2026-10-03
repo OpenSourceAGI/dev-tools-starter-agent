@@ -67,11 +67,11 @@ export function analyzeFileEstree(filePath: string, providedContent?: string): F
     }
 
     if (closestComment && node.loc.start.line - closestComment.loc.end.line <= 2) {
-       const lines = closestComment.value.split('\\n');
+       const lines = closestComment.value.split('\n');
        for (const line of lines) {
          if (line.includes('@description')) return line.split('@description')[1].trim();
        }
-       return lines.map((l: string) => l.replace(/^\\s*\\*\\s?/, '').trim()).filter((l: string) => l && !l.startsWith('@')).join('\\n').trim() || undefined;
+       return lines.map((l: string) => l.replace(/^\s*\*\s?/, '').trim()).filter((l: string) => l && !l.startsWith('@')).join('\n').trim() || undefined;
     }
     return undefined;
   }
@@ -83,11 +83,11 @@ export function analyzeFileEstree(filePath: string, providedContent?: string): F
       if (!node.range) return undefined;
       if (node.type === 'FunctionDeclaration' || node.type === 'TSDeclareFunction') {
          const headEnd = node.body ? node.body.range[0] : node.range[1];
-         return content.slice(node.range[0], headEnd).replace(/^export\\s+|default\\s+|async\\s+/g, '').trim();
+         return content.slice(node.range[0], headEnd).replace(/^export\s+|default\s+|async\s+/g, '').trim();
       }
       if (node.type === 'VariableDeclarator') {
          if (node.init && (node.init.type === 'ArrowFunctionExpression' || node.init.type === 'FunctionExpression')) {
-            const headEnd = node.init.body.type === 'BlockStatement' ? node.init.body.range[0] : node.init.range[0];
+            const headEnd = node.init.body.range[0];
             return content.slice(node.init.range[0], headEnd).trim();
          }
          return node.id.typeAnnotation ? content.slice(node.id.typeAnnotation.range[0], node.id.typeAnnotation.range[1]) : undefined;
