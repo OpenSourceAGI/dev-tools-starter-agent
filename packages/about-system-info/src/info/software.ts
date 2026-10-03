@@ -185,7 +185,7 @@ export function containers(context: InfoContext): string {
           if (portMatches) {
             const uniquePorts = [
               ...new Set(
-                portMatches.map((p) => p.replace(/->\d+(-\d+)?\//, ""))
+                portMatches.map((p) => p.replace(/^->(\d+(-\d+)?)\/$/, "$1"))
               ),
             ];
             containerInfo.push(...uniquePorts);

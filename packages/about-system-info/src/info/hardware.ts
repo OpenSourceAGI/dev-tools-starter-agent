@@ -105,7 +105,7 @@ export function cpu(context: InfoContext): string {
     return "";
   }
 
-  cpuName = cpuName.trim().replace(/with .*/, "");
+  cpuName = cpuName.trim().replace(/with .*/, "").trim();
 
   setCachedValue(context.cache, "cpu", cpuName);
   return cpuName;
