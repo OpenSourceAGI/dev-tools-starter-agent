@@ -55,6 +55,30 @@ flag_management:
     - name: test-google-login
       paths:
         - packages/test-google-login/
+    - name: cloudflare-to-claude-fix
+      paths:
+        - packages/cloudflare-to-claude-fix/
+    - name: code-tree-graph
+      paths:
+        - packages/code-tree-graph/
+    - name: create-cloud-db
+      paths:
+        - packages/create-cloud-db/
+    - name: create-starter-app
+      paths:
+        - packages/create-starter-app/
+    - name: export-svg-icons-typescript
+      paths:
+        - packages/export-svg-icons-typescript/
+    - name: native-app-wrapper
+      paths:
+        - packages/native-app-wrapper/
+    - name: open-when-ready
+      paths:
+        - packages/open-when-ready/
+    - name: react-app-store-buttons
+      paths:
+        - packages/react-app-store-buttons/
 
 comment:
   layout: "header, diff, flags, files"
