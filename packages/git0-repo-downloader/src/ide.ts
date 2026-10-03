@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { execSync, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { shell } from './utils.js';
 import type { IdeInfo } from './types.js';
 
 /**
@@ -39,7 +39,7 @@ export function getInstalledIde(): IdeInfo | null {
 
   for (const ide of SUPPORTED_IDES) {
     try {
-      execSync(probe(ide.cmd), { stdio: 'ignore' });
+      shell.execSync(probe(ide.cmd), { stdio: 'ignore' });
       return ide;
     } catch {
       continue;
@@ -96,7 +96,7 @@ function findEntryDocument(dir = '.'): string | null {
  * @internal
  */
 function spawnDetached(ide: IdeInfo, args: string[]): void {
-  spawn(ide.cmd, args, {
+  shell.spawn(ide.cmd, args, {
     detached: true,
     stdio: 'ignore',
     shell: process.platform === 'win32',
