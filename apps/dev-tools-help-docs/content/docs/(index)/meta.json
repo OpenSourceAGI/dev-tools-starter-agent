@@ -1,10 +1,7 @@
 {
-  "pages": [
-    "index",
-    "guides",
-    "packages",
-    "apps",
-    "(api)",
-    "..."
-  ]
+  "title": "Docs",
+  "description": "Packages, apps and comparisons.",
+  "icon": "BookOpen",
+  "root": true,
+  "pages": ["index", "guides", "packages", "apps", "..."]
 }

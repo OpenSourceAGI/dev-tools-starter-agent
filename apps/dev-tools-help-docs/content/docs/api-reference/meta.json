@@ -1,0 +1,7 @@
+{
+  "title": "API Reference",
+  "description": "HTTP APIs served by packages in this repo.",
+  "icon": "Webhook",
+  "root": true,
+  "pages": ["index", "---verify-phone-sms---", "verify-phone-sms"]
+}

@@ -48,7 +48,7 @@ const PACKAGES: Entry[] = [
   {
     dir: 'packages/api2ai-mcp-generator',
     title: 'api2ai',
-    icon: 'Wand2',
+    icon: 'WandSparkles',
   },
   {
     dir: 'packages/create-cloud-db',
@@ -106,7 +106,7 @@ const PACKAGES: Entry[] = [
   {
     dir: 'packages/setup-git-repo',
     title: 'setup-git-repo',
-    icon: 'Github',
+    icon: 'GitBranch',
   },
   {
     dir: 'packages/template-git-repo',

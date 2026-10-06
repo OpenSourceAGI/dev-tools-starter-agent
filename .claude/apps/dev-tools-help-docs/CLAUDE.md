@@ -50,3 +50,19 @@ re-run `bun install` or `bunx fumadocs-mdx` rather than hand-writing the type.
 The dependency graphs, file trees and type tables on this site come from
 `packages/code-tree-graph`. A change to that package's props breaks the docs
 build, not its own tests.
+
+## Sections and search
+
+`content/docs/meta.json` lists three root folders, each a separate tab with its
+own sidebar: `(index)` (Docs), `api-reference` and `changelog`. A new top-level
+section needs `"root": true` in its `meta.json` and an entry in the root
+`meta.json`. Search results are tagged by that first path segment, so update
+`src/lib/constants/tags.ts` and `category.ts` too.
+
+API Reference pages render `<APIPage document="…" />`; the schema IDs are
+registered in `src/lib/openapi/index.ts` (currently `verify-phone-sms`, read
+straight from the package's `openapi.json`).
+
+The search bar lives in the sidebar, not the navbar, using
+`src/components/fumadocs/layout/sidebar-search.tsx` — a copy of the same file
+in `starter-templates/template-fumadocs`. Keep the two in sync.
