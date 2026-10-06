@@ -27,6 +27,7 @@ the package.
 | Skill | Package | Covers |
 | --- | --- | --- |
 | [about-system](./about-system/SKILL.md) | `about-system-info` | The system-info CLI and library: blocks, settings file, cache, shell greeting |
+| [ask-ai-button](./ask-ai-button/SKILL.md) | `ask-ai-button` | Ask AI dropdown/FAB for docs pages, link vs content prompts, custom and API providers, theming |
 | [api2ai](./api2ai/SKILL.md) | `api2ai-mcp-generator` | Generating MCP servers from OpenAPI, tool filtering, the three-layer security model |
 | [app-store-buttons](./app-store-buttons/SKILL.md) | `react-app-store-buttons` | Download badges, `appId` vs `href`, native deep links, OS highlighting |
 | [cloudflare-to-claude-fix](./cloudflare-to-claude-fix/SKILL.md) | `cloudflare-to-claude-fix` | Queue consumer, routine `/fire` API, secrets, retries and the DLQ |

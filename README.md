@@ -56,6 +56,9 @@
 [![npm downloads](https://img.shields.io/npm/dm/code-tree-graph.svg)](https://www.npmjs.com/package/code-tree-graph) **[code-tree-graph](packages/code-tree-graph/)** - Interactive code dependency graph and file tree components for Fumadocs + Next.js. `DependencyGraph` renders a pan/zoom Mermaid flowchart from full AST analysis, `FileTreeView` a searchable table with export/JSDoc metadata and GitHub deep links, and `TypeTable` collapsible property tables — all from a local TypeScript/JS parser, no external service.
 `npm install code-tree-graph` · `bun add code-tree-graph`
 
+[![npm downloads](https://img.shields.io/npm/dm/ask-ai-button.svg)](https://www.npmjs.com/package/ask-ai-button) **[ask-ai-button](packages/ask-ai-button/)** - "Ask AI about this page" for docs sites, as a dropdown, a floating action button or an inline panel. The visitor types a question and picks Claude, ChatGPT, Gemini, Perplexity, Grok, Copilot, Le Chat, T3 Chat, Brave, QwkSearch or Cursor; a new tab opens with the page (as a link or as pasted Markdown) and the question pre-filled. Also copies the prompt or the page Markdown, takes custom URL or API providers, and picks up Fumadocs theme colors with no CSS import.
+`npm install ask-ai-button` · `bun add ask-ai-button`
+
 [![npm downloads](https://img.shields.io/npm/dm/create-cloud-db.svg)](https://www.npmjs.com/package/create-cloud-db) **[create-cloud-db](packages/create-cloud-db/)** - Interactive CLI that creates a Turso edge database and writes `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` directly into your `.env` file. Handles Turso login, database creation, token generation, and env-file patching in one command.
 `npx create-cloud-db [db-name]` · `npm install -g create-cloud-db`
 

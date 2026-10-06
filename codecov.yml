@@ -79,6 +79,9 @@ flag_management:
     - name: react-app-store-buttons
       paths:
         - packages/react-app-store-buttons/
+    - name: ask-ai-button
+      paths:
+        - packages/ask-ai-button/
 
 comment:
   layout: "header, diff, flags, files"

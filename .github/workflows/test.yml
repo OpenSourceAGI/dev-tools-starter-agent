@@ -21,6 +21,7 @@ jobs:
         include:
           - package: about-system-info
           - package: api2ai-mcp-generator
+          - package: ask-ai-button
           - package: cloudflare-to-claude-fix
           - package: code-tree-graph
           - package: create-cloud-db

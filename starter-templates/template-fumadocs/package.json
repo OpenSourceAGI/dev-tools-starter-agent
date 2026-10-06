@@ -20,6 +20,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@typescript-eslint/typescript-estree": "^8.56.1",
+    "ask-ai-button": "^0.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "fumadocs-core": "^16.11.5",
