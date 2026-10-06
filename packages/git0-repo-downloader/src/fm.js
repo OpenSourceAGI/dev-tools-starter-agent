@@ -234,6 +234,9 @@ export class FileManager {
         default:
           result = a.name.localeCompare(b.name, undefined, { numeric: true });
       }
+      // Ties (e.g. a symlink and its target share size/mtime) fall back to name,
+      // so order never depends on the filesystem's readdir order
+      if (result === 0) result = a.name.localeCompare(b.name, undefined, { numeric: true });
       
       return this.sortOrder === 'desc' ? -result : result;
     });
