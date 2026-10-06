@@ -4,7 +4,8 @@ import React = require("react")
 
 const { useState, useMemo } = React
 type ElementType = React.ElementType
-import { categories } from "./packages-data"
+import { categories, type Package as PackageData, REPO_URL } from "./packages-data"
+import { PackageShowcase } from "./package-showcase"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -105,7 +106,7 @@ function PackageCard({
   index,
   isTemplate = false,
 }: {
-  pkg: { name: string; description: string; commands: string[]; path: string; icon: string }
+  pkg: PackageData
   color: string
   index: number
   isTemplate?: boolean
@@ -135,6 +136,18 @@ function PackageCard({
       {/* Gradient border overlay */}
       <div className={`absolute inset-0 -z-10 rounded-xl p-px bg-gradient-to-br ${gradientBorder[color] ?? gradientBorder.brand} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
+      {/* Cover image */}
+      <a href={pkg.href} className="relative block h-36 overflow-hidden border-b border-border" tabIndex={-1} aria-hidden="true">
+        <img
+          src={pkg.image}
+          alt=""
+          width={960}
+          height={768}
+          loading="lazy"
+          className="h-full w-full object-cover object-top-left transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      </a>
+
       <div className="relative p-5">
         <div className="flex items-start gap-3">
           <PackageIcon iconName={pkg.icon} color={color} />
@@ -142,7 +155,7 @@ function PackageCard({
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-semibold text-foreground truncate text-sm">{pkg.name}</h3>
               <a
-                href={`https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/main/${pkg.path}`}
+                href={`${REPO_URL}/tree/master/${pkg.path}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-secondary shrink-0"
@@ -154,6 +167,12 @@ function PackageCard({
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-2">
               {pkg.description}
             </p>
+            <details className="mt-2 text-xs text-muted-foreground">
+              <summary className="cursor-pointer select-none text-foreground/70 hover:text-foreground">
+                More
+              </summary>
+              <p className="mt-1.5 leading-relaxed">{pkg.longDescription}</p>
+            </details>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -186,7 +205,8 @@ function CategorySection({
     return category.packages.filter(
       (pkg) =>
         pkg.name.toLowerCase().includes(query) ||
-        pkg.description.toLowerCase().includes(query)
+        pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
     )
   }, [category.packages, searchQuery])
 
@@ -249,7 +269,8 @@ function StarterTemplatesSection({ searchQuery }: { searchQuery: string }) {
     return templateCategory.packages.filter(
       (pkg) =>
         pkg.name.toLowerCase().includes(query) ||
-        pkg.description.toLowerCase().includes(query)
+        pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
     )
   }, [templateCategory.packages, searchQuery])
 
@@ -399,7 +420,8 @@ export default function DocsHomepage() {
         cat.packages.filter(
           (pkg) =>
             pkg.name.toLowerCase().includes(query) ||
-            pkg.description.toLowerCase().includes(query)
+            pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
         ).length
       )
     }, 0)
@@ -560,6 +582,9 @@ export default function DocsHomepage() {
           </div>
         </KineticGrid>
       </section>
+
+      {/* Scroll-driven parallax tour of every package */}
+      <PackageShowcase />
 
       {/* Search + Category Filter */}
       <section className="sticky top-14 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
