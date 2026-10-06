@@ -242,6 +242,10 @@ Powered by [Orama](https://orama.com/) for fast client-side full-text search acr
 - Static search index generated at build time
 - Integrated into the fumadocs search dialog
 - Keyboard shortcut accessible (Ctrl+K)
+- The search bar sits at the top of the docs sidebar, not the navbar
+  (`components/fumadocs/layout/sidebar-search.tsx`, wired up in
+  `app/docs/layout.tsx`). On mobile the navbar keeps a compact search icon,
+  since the sidebar is a drawer there.
 
 ---
 
@@ -327,7 +331,7 @@ docs/
 │   ├── api/               # OpenAPI page components
 │   ├── file-tree/         # FileTreeView, FileTreeTable, badges, tooltips
 │   ├── graph/             # DependencyGraph, Mermaid renderer
-│   ├── layout/            # Search dialog, theme toggle
+│   ├── layout/            # Search dialog, sidebar search bar, theme toggle
 │   └── typography/        # Markdown renderer with highlighting
 ├── content/docs/          # MDX documentation files
 ├── lib/fumadocs/

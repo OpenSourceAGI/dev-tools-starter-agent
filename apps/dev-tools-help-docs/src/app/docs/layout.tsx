@@ -1,5 +1,9 @@
 import { DocsLayout } from 'fumadocs-ui/layouts/notebook'
-import { AISearchTrigger } from '@/components/fumadocs/ai/search'
+import {
+  NoNavbarSearch,
+  SearchTrigger,
+  SidebarSearch,
+} from '@/components/fumadocs/layout/sidebar-search'
 import { baseOptions, linkItems, logo } from '@/lib/layout.shared'
 import { source } from '@/lib/source'
 import 'katex/dist/katex.min.css'
@@ -14,8 +18,11 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
       {...base}
       links={linkItems.filter((item) => item.type === 'icon')}
       tree={source.pageTree}
+      // Search sits in the sidebar, as in starter-templates/template-fumadocs.
+      slots={{ searchTrigger: { sm: SearchTrigger, full: NoNavbarSearch } }}
       sidebar={{
         collapsible: false,
+        banner: <SidebarSearch />,
         tabs: {
           transform(option, node) {
             const meta = source.getNodeMeta(node)
@@ -44,14 +51,15 @@ export default function Layout({ children }: LayoutProps<'/docs'>) {
         },
       }}
       tabMode='navbar'
-    
       nav={{
         ...base.nav,
         mode: 'top',
         title: (
           <>
             {logo}
-            <span className='font-medium max-md:hidden'>Template Starter Docs</span>
+            <span className='font-medium max-md:hidden'>
+              Template Starter Docs
+            </span>
           </>
         ),
       }}
