@@ -66,3 +66,12 @@ straight from the package's `openapi.json`).
 The search bar lives in the sidebar, not the navbar, using
 `src/components/fumadocs/layout/sidebar-search.tsx` — a copy of the same file
 in `starter-templates/template-fumadocs`. Keep the two in sync.
+
+## Homepage package catalog
+
+The homepage (`src/app/(home)/`) is driven by `packages-data.ts`: each entry
+has a short `description` (cards, search), a `longDescription` (hover text in
+the `HeroParallax` showcase), an `href` and an `image`. The images in
+`public/packages/*.svg` are **generated** — after changing a package's name,
+description, icon or commands, run `bun ./scripts/generate-package-covers.tsx`
+and commit the output.

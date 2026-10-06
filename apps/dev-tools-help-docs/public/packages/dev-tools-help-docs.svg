@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="768" viewBox="0 0 960 768" role="img" aria-label="dev-tools-help-docs">
+  <title>dev-tools-help-docs</title>
+  <defs>
+    <radialGradient id="glow" cx="0.12" cy="0.05" r="0.9">
+      <stop offset="0" stop-color="#7c3aed" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#7c3aed" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#09090b" stop-opacity="0"/>
+      <stop offset="1" stop-color="#09090b" stop-opacity="0.9"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#ffffff" stroke-opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="960" height="768" fill="#09090b"/>
+  <rect width="960" height="768" fill="url(#grid)"/>
+  <rect width="960" height="768" fill="url(#glow)"/>
+  <g transform="translate(580 40)" opacity="0.07"><svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></g>
+  <rect width="960" height="768" fill="url(#fade)"/>
+
+  <g transform="translate(64 64)">
+    <rect width="104" height="104" rx="24" fill="#a78bfa" fill-opacity="0.12" stroke="#a78bfa" stroke-opacity="0.35" stroke-width="2"/>
+    <g transform="translate(24 24)"><svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-text" aria-hidden="true"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg></g>
+  </g>
+  <text x="196" y="108" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" letter-spacing="3" fill="#a78bfa">APPS</text>
+  <text x="196" y="144" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace" font-size="20" fill="#a1a1aa">apps/dev-tools-help-docs</text>
+
+  <text x="64" y="250" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="52" font-weight="800" letter-spacing="-1" fill="#fafafa">dev-tools-help-docs</text>
+  <text x="64" y="327.2" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="26" fill="#d4d4d8">Documentation site built with Next.js featuring AI chat,</text>
+  <text x="64" y="363.2" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="26" fill="#d4d4d8">full-text search, and auto-generated API reference from</text>
+  <text x="64" y="399.2" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="26" fill="#d4d4d8">TypeScript types and OpenAPI specs.</text>
+
+  <g transform="translate(64 480)">
+    <rect width="832" height="232" rx="18" fill="#18181b" stroke="#ffffff" stroke-opacity="0.1" stroke-width="2"/>
+    <circle cx="32" cy="30" r="7" fill="#f87171"/>
+    <circle cx="56" cy="30" r="7" fill="#fbbf24"/>
+    <circle cx="80" cy="30" r="7" fill="#4ade80"/>
+    <line x1="0" y1="58" x2="832" y2="58" stroke="#ffffff" stroke-opacity="0.08" stroke-width="2"/>
+    <text x="32" y="108" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace" font-size="26"><tspan fill="#a78bfa">$ </tspan><tspan fill="#e4e4e7">bun dev</tspan></text>
+    <text x="32" y="158" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace" font-size="26"><tspan fill="#a78bfa">$ </tspan><tspan fill="#e4e4e7">bun run docs:sync</tspan></text>
+    <text x="32" y="208" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace" font-size="26" fill="#a78bfa">$</text>
+    <rect x="62" y="186" width="14" height="28" fill="#a78bfa" fill-opacity="0.8"/>
+  </g>
+</svg>
