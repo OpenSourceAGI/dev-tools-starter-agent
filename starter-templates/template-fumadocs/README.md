@@ -169,25 +169,29 @@ const tree = generateFileTree("/path/to/src", {}, new Set(["test"]), true);
 
 ### 5. AI Integration Components
 
-#### LLM Copy Button
+Both come from the [`ask-ai-button`](https://www.npmjs.com/package/ask-ai-button) package
+([source](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/ask-ai-button)).
 
-Fetches and copies raw MDX content to clipboard for pasting into LLMs.
+#### Copy Page Button
+
+Fetches and copies the page's raw MDX to the clipboard for pasting into an LLM.
 
 ```mdx
-import { LLMCopyButton } from '@/components/fumadocs/ai/llm-copy-button';
+import { CopyPageButton } from 'ask-ai-button';
 
-<LLMCopyButton markdownUrl="/docs/getting-started.mdx" />
+<CopyPageButton markdownUrl="/docs/getting-started.mdx" />
 ```
 
-#### Ask AI Dropdown
+#### Ask AI Button
 
-Dropdown with links to query AI providers (GitHub Copilot, Claude, ChatGPT, QwkSearch) with page content as context.
+A dropdown with a message box: type a question, choose whether to send a link to the page or paste its text, then pick Claude, ChatGPT, Gemini, Perplexity, Grok, Copilot and more — a new tab opens with the prompt pre-filled. It can also copy the prompt. Use `variant="fab"` for a floating button instead, or `AskAIPanel` with `inline` to embed the panel in a page.
 
 ```mdx
-import { AskAIDropdown } from '@/components/fumadocs/ai/ask-ai-dropdown';
+import { AskAIButton } from 'ask-ai-button';
 
-<AskAIDropdown
+<AskAIButton
   markdownUrl="/docs/getting-started.mdx"
+  title="Getting started"
   githubUrl="https://github.com/user/repo/tree/master/docs/content/docs/getting-started.mdx"
 />
 ```

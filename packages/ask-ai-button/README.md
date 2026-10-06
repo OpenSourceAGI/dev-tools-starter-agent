@@ -1,0 +1,176 @@
+<p align="center">
+    <img src="https://i.imgur.com/5lsiepL.png" width="300" >
+    <br />
+<b>💍One Code to rule them all — and in the cloud compile them. </b>
+</p>
+
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://1computer.online/docs/packages/ask-ai-button"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/dm/ask-ai-button.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/v/ask-ai-button.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/dt/ask-ai-button.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/types/ask-ai-button" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=ask-ai-button"><img src="https://packagephobia.com/badge?p=ask-ai-button" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=ask-ai-button&label=ask-ai-button%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/ask-ai-button"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</p>
+<!-- template-git-repo:badges:end -->
+
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill ask-ai-button` ([what it covers](../../skills/ask-ai-button/SKILL.md))
+<!-- skills:install:end -->
+
+
+# ask-ai-button
+
+An **Ask AI** button for docs sites. The visitor types a question, picks a
+model, and a new tab opens in Claude, ChatGPT, Gemini, Perplexity, Grok,
+Copilot, Le Chat, T3 Chat, Brave, QwkSearch or Cursor with the prompt already
+filled in: the current page (as a link or as pasted Markdown) plus their
+question. They can also just copy the prompt, or copy the page as Markdown.
+
+Ships as a **dropdown** for a page header, a **floating action button**, or an
+**inline panel**. Self-styled — no Tailwind or CSS import needed — and it picks
+up Fumadocs' theme colors automatically.
+
+Spun out of the Ask AI dropdown and copy button in
+[`starter-templates/template-fumadocs`](../../starter-templates/template-fumadocs/).
+
+## Install
+
+```bash
+bun add ask-ai-button      # or: npm install ask-ai-button
+```
+
+`react` and `react-dom` 18+ are peers.
+
+## Usage
+
+```tsx
+import { AskAIButton, CopyPageButton } from "ask-ai-button";
+
+// Dropdown, e.g. under a Fumadocs page title
+<div className="flex gap-2">
+  <CopyPageButton markdownUrl={`${page.url}.mdx`} />
+  <AskAIButton
+    markdownUrl={`${page.url}.mdx`}
+    title={page.data.title}
+    githubUrl={`https://github.com/me/repo/blob/main/content/docs/${page.path}`}
+  />
+</div>
+
+// Floating action button, once in your layout
+<AskAIButton variant="fab" position="bottom-right" />
+
+// Inline panel, anywhere in the page
+<AskAIPanel markdownUrl="/docs/intro.mdx" inline />
+```
+
+The components are client components (the bundle starts with `"use client"`),
+so they can be rendered straight from a Next.js server component.
+
+### What gets sent
+
+The panel has a **Link to page / Include page text** toggle:
+
+| Mode | Prompt |
+| --- | --- |
+| `link` *(default with `markdownUrl`)* | `Read https://site/docs/intro.mdx, <question>` — the model fetches the page |
+| `content` | The page's Markdown pasted between `<page>` tags, then the question |
+
+In `content` mode the text comes from `markdownUrl`, or from `getContent()` if
+you pass one, or from the page's `<article>`/`<main>` text when neither is set.
+If a pasted page would make the URL longer than `maxUrlLength` (default 8000),
+the tab opens with the `link` prompt and the full prompt is put on the
+clipboard so the visitor can paste it.
+
+`Ctrl/⌘ + Enter` in the message box sends to the first provider.
+
+### Choosing providers
+
+```tsx
+<AskAIButton providers={["claude", "chatgpt", "perplexity"]} />
+```
+
+Built-in IDs: `claude`, `chatgpt`, `gemini`, `perplexity`, `grok`, `copilot`,
+`mistral`, `t3chat`, `brave`, `qwksearch`, `cursor`. Mix them with your own:
+
+```tsx
+<AskAIButton
+  providers={[
+    "claude",
+    // Any chat UI that takes a prompt in its URL
+    { id: "phind", title: "Phind", getHref: (p) => `https://www.phind.com/search?q=${encodeURIComponent(p)}` },
+    // Or your own API / in-page chat — no tab is opened
+    { id: "api", title: "Our assistant", onSelect: (prompt, page) => fetch("/api/ask", { method: "POST", body: prompt }) },
+  ]}
+/>
+```
+
+A provider without an `icon` shows its site's favicon.
+
+## Props
+
+`AskAIButton` takes every `AskAIPanel` prop plus the trigger props.
+
+| Prop | Default | |
+| --- | --- | --- |
+| `markdownUrl` | — | Raw Markdown/MDX of the page. Relative URLs resolve against the current page. |
+| `pageUrl` | `location.href` | The page being asked about. |
+| `title` | — | Named in the prompt and shown in the panel header. |
+| `githubUrl` | — | Adds a GitHub link. |
+| `providers` | all built-ins | IDs and/or `AIProvider` objects, in order. |
+| `defaultMode` | `link` if `markdownUrl`, else `content` | Starting mode. |
+| `showModeToggle` | `true` | Show the link/content toggle. |
+| `getContent` | — | Supply the page text yourself. |
+| `promptTemplate` | `buildPrompt` | `(input) => string` to change the wording. |
+| `maxUrlLength` | `8000` | URL length before falling back to the link prompt. |
+| `placeholder`, `heading` | — | Text in the panel. `heading={null}` hides the header. |
+| `onSend` | — | `({ provider, prompt, href })` after each send — for analytics. |
+| `injectStyles` | `true` | Set `false` if you ship `askAIButtonCss` yourself. |
+| `variant` | `dropdown` | `dropdown` or `fab`. |
+| `label`, `icon` | `"Ask AI"`, sparkle | Trigger content. `label={null}` gives an icon-only FAB. |
+| `align` | `start` | Dropdown: panel aligns to the trigger's `start` or `end` edge. |
+| `position` | `bottom-right` | FAB: `bottom-right` or `bottom-left`. |
+| `open`, `defaultOpen`, `onOpenChange` | — | Controlled or uncontrolled open state. |
+
+Helpers exported for building your own UI: `buildPrompt`,
+`resolveProviderTarget`, `resolveProviders`, `AI_PROVIDERS`, `fetchMarkdown`,
+`copyText`, `copyPendingText`, and the brand icons.
+
+## Theming
+
+Every class is prefixed `aai-`. Colors come from CSS variables that default to
+Fumadocs' `--color-fd-*` tokens and fall back to a neutral palette, with a dark
+palette under `.dark` or `[data-theme="dark"]`:
+
+```css
+.aai-root {
+  --aai-primary: #7c3aed;
+  --aai-radius: 1rem;
+}
+```
+
+The stylesheet is injected once as `<style id="ask-ai-button-styles">`. To ship
+it yourself (for a strict CSP), pass `injectStyles={false}` and render
+`askAIButtonCss` where you want it.
+
+## Develop
+
+```bash
+cd packages/ask-ai-button
+bun run dev        # demo page at demo/
+bun run test
+bun run build
+```

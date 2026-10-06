@@ -99,6 +99,11 @@ const PACKAGES: Entry[] = [
     icon: 'HardDrive',
   },
   {
+    dir: 'packages/ask-ai-button',
+    title: 'ask-ai-button',
+    icon: 'Sparkles',
+  },
+  {
     dir: 'packages/react-app-store-buttons',
     title: 'react-app-store-buttons',
     icon: 'Smartphone',

@@ -102,6 +102,7 @@ one tree rather than beside the source.
 | `apps/dev-tools-help-docs` | [.claude/apps/dev-tools-help-docs/CLAUDE.md](.claude/apps/dev-tools-help-docs/CLAUDE.md) |
 | `apps/vscode-cloud` | [.claude/apps/vscode-cloud/CLAUDE.md](.claude/apps/vscode-cloud/CLAUDE.md) |
 | `packages/about-system-info` | [.claude/packages/about-system-info/CLAUDE.md](.claude/packages/about-system-info/CLAUDE.md) |
+| `packages/ask-ai-button` | [.claude/packages/ask-ai-button/CLAUDE.md](.claude/packages/ask-ai-button/CLAUDE.md) |
 | `packages/api2ai-mcp-generator` | [.claude/packages/api2ai-mcp-generator/CLAUDE.md](.claude/packages/api2ai-mcp-generator/CLAUDE.md) |
 | `packages/cloudflare-to-claude-fix` | [.claude/packages/cloudflare-to-claude-fix/CLAUDE.md](.claude/packages/cloudflare-to-claude-fix/CLAUDE.md) |
 | `packages/code-tree-graph` | [.claude/packages/code-tree-graph/CLAUDE.md](.claude/packages/code-tree-graph/CLAUDE.md) |
