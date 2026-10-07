@@ -16,6 +16,9 @@ import { AskAIButton, CopyPageButton } from 'ask-ai-button';
 import { Breadcrumb } from '@/components/fumadocs/layout/breadcrumb';
 import { docsConfig } from '@/lib/fumadocs/customize-docs';
 import { getGithubLastEdit } from 'fumadocs-core/content/github';
+import { EditPageButton } from '@/components/doc-edits/edit-page-button';
+import { getDocEditStore } from '@/lib/doc-edits/store';
+import { renderOverride } from '@/lib/doc-edits/render';
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -28,7 +31,11 @@ export default async function Page(props: {
   }
 
   const data = page.data as any;
-  const MDX = data.body;
+  // An admin-published edit replaces the page body until it is reverted.
+  const override = await getDocEditStore().getOverride(page.slugs.join('/'));
+  const rendered = override ? await renderOverride(override) : null;
+  const MDX = rendered?.body ?? data.body;
+  const toc = rendered?.toc ?? data.toc;
 
   const lastUpdate = await getGithubLastEdit({
     owner: 'vtempest',
@@ -37,7 +44,7 @@ export default async function Page(props: {
   });
 
   return (
-    <DocsPage toc={data.toc} full={data.full} lastUpdate={lastUpdate ?? undefined}>
+    <DocsPage toc={toc} full={data.full} lastUpdate={lastUpdate ?? undefined}>
       <Breadcrumb tree={source.pageTree} />
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription>{page.data.description}</DocsDescription>
@@ -49,6 +56,7 @@ export default async function Page(props: {
             title={page.data.title}
             githubUrl={docsConfig.githubDocs ? `${docsConfig.githubDocs}/${page.path}` : undefined}
           />
+          <EditPageButton slug={page.slugs} title={page.data.title} />
         </div>
 
         <MDX components={getMDXComponents()} />

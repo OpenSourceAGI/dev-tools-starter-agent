@@ -313,6 +313,32 @@ Uses `fumadocs-ui/layouts/notebook` for the docs section, providing a clean read
 - Table of contents per page
 - Full-width page support via `full: true` frontmatter
 
+### 13. In-Page Editing & Suggested Changes
+
+Every docs page has an **Edit page** button next to *Copy page* and *Ask AI*. It opens a full-screen overlay holding the [react-reason-editor](https://www.npmjs.com/package/react-reason-editor) rich text editor, loaded with the page's Markdown.
+
+- **Lazy-loaded.** The editor is code-split: only the button ships with the page. Its chunk is prefetched on hover or focus and mounted on click.
+- **Admins publish directly.** Signed-in admins save straight to the page as an *override* that replaces the MDX body until it is reverted. Use **Admin sign-in** in the overlay header, or go to `/docs-admin`.
+- **Everyone else suggests.** Visitors submit their edit with an optional name and note. It joins the moderation queue.
+- **Moderation panel: `/docs-admin`.** It shows a line diff of each pending suggestion, which an admin can approve, reject, or edit before approving. It warns when the page changed after a suggestion was made, and lists published overrides with a **Revert to source** button.
+
+Configure it with environment variables (see `.env.example`):
+
+| Variable | Purpose |
+|----------|---------|
+| `DOC_EDITS_ADMIN_EMAILS` | Comma-separated admin emails |
+| `DOC_EDITS_ADMIN_PASSWORD` | Password for the admin sign-in form |
+| `DOC_EDITS_SECRET` | 32+ random characters; signs the admin session cookie |
+| `DOC_EDITS_DATA_FILE` | Where overrides and suggestions live (default `.data/doc-edits.json`) |
+
+If the three admin variables are missing, nobody can sign in, but visitors can still submit suggestions.
+
+**Things to know**
+
+- Overrides render as **plain Markdown** (`format: 'md'`), not MDX. That keeps an approved anonymous suggestion from running code: no imports, JSX or `{expressions}` run, and raw HTML is dropped. As a result, a page that uses MDX components loses them once it is overridden. Change those pages in `content/docs/` instead.
+- The default store is a JSON file, which suits `next start` on one server. On Cloudflare Workers or serverless hosts, implement the `DocEditStore` interface in `lib/doc-edits/store.ts` over your database or KV namespace, and return it from `getDocEditStore()`. Overrides also compile MDX at request time, which Workers do not allow, so pre-render or self-host if you need overrides there.
+- `next.config.ts` aliases `@moonshine-ai/moonshine-js` to a stub, and `package.json` overrides `@ricky0123/vad-web`. Both work around a broken upstream publish of the editor's voice-dictation dependency. Dictation is unavailable in the docs editor.
+
 ---
 
 ## Project Structure
@@ -325,11 +351,14 @@ docs/
 │   │   ├── [[...slug]]/page.tsx        # Doc page renderer
 │   │   ├── layout.tsx                  # Notebook layout (sidebar + TOC)
 │   │   ├── api/docs-search/route.ts    # Orama search index route
+│   │   ├── api/doc-edits/              # Edit-page API: source, submit, session, review, revert
 │   │   ├── llms-full.txt/route.ts      # LLM full-text route
 │   │   └── llms.mdx/docs/[[...slug]]/route.ts  # LLM per-page MDX route
+│   ├── docs-admin/        # Moderation panel for suggested edits
 │   ├── actions.ts         # Server actions (remote repo analysis)
 │   ├── layout.config.tsx  # Shared layout options
 │   └── provider.tsx       # Root provider (search, theme)
+├── components/doc-edits/  # Edit page button, lazy editor overlay, admin panel
 ├── components/fumadocs/
 │   ├── ai/                # LLM copy button, Ask AI dropdown
 │   ├── api/               # OpenAPI page components
@@ -338,6 +367,7 @@ docs/
 │   ├── layout/            # Search dialog, sidebar search bar, theme toggle
 │   └── typography/        # Markdown renderer with highlighting
 ├── content/docs/          # MDX documentation files
+├── lib/doc-edits/         # Edit store, admin auth, override rendering
 ├── lib/fumadocs/
 │   ├── customize-docs.ts  # Site configuration
 │   ├── generate-filetree.ts    # AST analysis engine
@@ -434,6 +464,8 @@ After merging, `/docs`, `/docs/<page>`, `/docs/<page>.mdx`, `/docs/llms-full.txt
 | `@typescript-eslint/typescript-estree` | AST parsing for code analysis |
 | `next-themes` | Dark/light mode |
 | `lucide-react` | Icons |
+| `react-reason-editor` | Rich text editor behind *Edit page* (lazy-loaded) |
+| `turndown` | Editor HTML → Markdown |
 
 ## Scripts
 

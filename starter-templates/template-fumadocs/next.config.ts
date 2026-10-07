@@ -12,6 +12,10 @@ export const config = {
   serverExternalPackages: [],
   turbopack: {
     root: resolve(import.meta.dirname, '.'),
+    resolveAlias: {
+      // react-reason-editor's voice dictation dependency can't be bundled; see the stub.
+      '@moonshine-ai/moonshine-js': './lib/doc-edits/moonshine-stub.ts',
+    },
   },
   async rewrites() {
     return [
