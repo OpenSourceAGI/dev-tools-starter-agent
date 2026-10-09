@@ -11,7 +11,7 @@ starter-templates/
   template-git-repo/
   template-nextjs-betterauth-shadcn-drizzle/
   template-svelte-betterauth-shadcn-drizzle/
-  template-vinext-betterauth-shadcn-themes-teams-stripe/
+  template-nextjs-harness-cloudflare/
 ```
 
 ## How a template is selected
@@ -37,7 +37,7 @@ your change broke something when it did not.
    `template-svelte-betterauth-drizzle-shadcn` (the directory is
    `template-svelte-betterauth-shadcn-drizzle` — different word order). It does
    *not* offer `template-git-repo` or
-   `template-vinext-betterauth-shadcn-themes-teams-stripe`, which do exist.
+   `template-nextjs-harness-cloudflare`, which do exist.
    Picking a drifted entry fails at the copy step.
 2. **The published package cannot reach the templates.** `package.json` declares
    `files: ["bin", "starters"]` — there is no `starters/` directory in the
@@ -57,3 +57,11 @@ The directory `starter-templates/template-git-repo/` is a scaffold. The
 and README catalog that `.github/scripts/sync-package-readmes.mjs` and
 `packages/setup-git-repo` both build on. Same name, different things — check
 which one you are in.
+
+## Generated Worker entries are not committed
+
+`template-nextjs-harness-cloudflare/worker/index.ts` is the
+stock entry `vinext deploy` writes when it is missing, so the template ignores
+`/worker/` and regenerates it (`scripts/ensure-worker-entry.mjs`, run before
+`dev:vinext` and `build:vinext`). Commit a `worker/` only once it is
+hand-customized, and drop the ignore line when you do.

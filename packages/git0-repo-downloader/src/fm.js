@@ -4,9 +4,10 @@ import path from 'path';
 import readline from 'readline';
 import { execSync } from 'child_process';
 import os from 'os';
+import { fileURLToPath } from 'url';
 
 
-class FileManager {
+export class FileManager {
   constructor() {
     this.currentPath = process.cwd();
     this.selectedIndex = 0;
@@ -233,6 +234,9 @@ class FileManager {
         default:
           result = a.name.localeCompare(b.name, undefined, { numeric: true });
       }
+      // Ties (e.g. a symlink and its target share size/mtime) fall back to name,
+      // so order never depends on the filesystem's readdir order
+      if (result === 0) result = a.name.localeCompare(b.name, undefined, { numeric: true });
       
       return this.sortOrder === 'desc' ? -result : result;
     });
@@ -765,8 +769,8 @@ class FileManager {
     const selected = this.items[this.selectedIndex];
     
     if (selected.isDirectory) {
-      this.addToHistory(this.currentPath);
       this.currentPath = selected.fullPath;
+      this.addToHistory(this.currentPath);
       this.selectedIndex = 0;
       this.selectedItems.clear();
       await this.loadDirectory();
@@ -786,14 +790,15 @@ class FileManager {
   async goUp() {
     const parentPath = path.dirname(this.currentPath);
     if (parentPath !== this.currentPath) {
-      this.addToHistory(this.currentPath);
       this.currentPath = parentPath;
+      this.addToHistory(this.currentPath);
       this.selectedIndex = 0;
       this.selectedItems.clear();
       await this.loadDirectory();
     }
   }
 
+  // Records the directory just navigated *to*, so back/forward can return to it.
   addToHistory(path) {
     // Remove forward history when adding new path
     this.history = this.history.slice(0, this.historyIndex + 1);
@@ -990,8 +995,8 @@ class FileManager {
       const bookmarkPath = this.bookmarks[bookmarkName];
       
       if (fs.existsSync(bookmarkPath)) {
-        this.addToHistory(this.currentPath);
         this.currentPath = bookmarkPath;
+        this.addToHistory(this.currentPath);
         this.selectedIndex = 0;
         this.selectedItems.clear();
         await this.loadDirectory();
@@ -1126,5 +1131,19 @@ class FileManager {
   }
 }
 
-var fm = new FileManager()
-fm.run()
+/**
+ * True when this file is the program being run (the `fm` bin), as opposed to
+ * being imported — so importing the class for tests doesn't take over the
+ * terminal. `realpath` on both sides because npm links bins through symlinks.
+ */
+function isMainModule() {
+  try {
+    return fs.realpathSync(process.argv[1]) === fs.realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return false;
+  }
+}
+
+if (isMainModule()) {
+  new FileManager().run();
+}

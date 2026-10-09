@@ -49,7 +49,7 @@ CCCP (Cloud Computer Control Panel) lets you manage your own personal cloud and 
 
 ## Tech Stack
 
-This app is built on the [`template-vinext-betterauth-shadcn-themes-teams-stripe`](../../starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe)
+This app is built on the [`template-nextjs-harness-cloudflare`](../../starter-templates/template-nextjs-harness-cloudflare)
 starter template, which supplies the auth, database and theming layers.
 
 - **Frontend**: Next.js 16, React 19, TypeScript

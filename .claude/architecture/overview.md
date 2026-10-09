@@ -21,6 +21,7 @@ name is what turbo filters and `--skill` flags use.
 | Directory | npm name | What it owns |
 | --- | --- | --- |
 | `about-system-info` | `about-system` | Cross-platform CLI printing CPU/memory/disk/uptime/IP/ISP as one emoji line; also a desktop app under `native/` |
+| `ask-ai-button` | `ask-ai-button` | Ask AI dropdown / floating button / inline panel for docs pages: sends the page (link or pasted Markdown) plus a question to Claude, ChatGPT, Gemini, Perplexity and more, or copies it. Spun out of `template-fumadocs` |
 | `api2ai-mcp-generator` | `api2ai` | Generates MCP servers from any OpenAPI spec (mcp-use); HTTP/SSE/Streamable transports, inspector UI, Zod validation |
 | `cloudflare-to-claude-fix` | `cloudflare-to-claude-fix` | Workers Queue consumer that fires a Claude Code routine when a Workers build fails |
 | `code-tree-graph` | `code-tree-graph` | Fumadocs/Next components: `DependencyGraph` (Mermaid from AST), `FileTreeView`, `TypeTable` — all from a local parser, no external service |

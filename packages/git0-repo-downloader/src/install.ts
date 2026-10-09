@@ -1,6 +1,5 @@
-import { execSync } from 'child_process';
 import fs from 'fs';
-import { exec } from './utils.js';
+import { exec, shell } from './utils.js';
 
 /**
  * A detector checks whether a specific project type is present in the current
@@ -28,7 +27,7 @@ type Installer = () => void;
  */
 function bunAvailable(): boolean {
   try {
-    execSync(
+    shell.execSync(
       process.platform === 'win32' ? 'where bun' : 'command -v bun',
       { stdio: 'ignore' }
     );

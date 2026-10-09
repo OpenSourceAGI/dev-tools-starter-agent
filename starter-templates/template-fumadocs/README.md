@@ -169,25 +169,29 @@ const tree = generateFileTree("/path/to/src", {}, new Set(["test"]), true);
 
 ### 5. AI Integration Components
 
-#### LLM Copy Button
+Both come from the [`ask-ai-button`](https://www.npmjs.com/package/ask-ai-button) package
+([source](https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/ask-ai-button)).
 
-Fetches and copies raw MDX content to clipboard for pasting into LLMs.
+#### Copy Page Button
+
+Fetches and copies the page's raw MDX to the clipboard for pasting into an LLM.
 
 ```mdx
-import { LLMCopyButton } from '@/components/fumadocs/ai/llm-copy-button';
+import { CopyPageButton } from 'ask-ai-button';
 
-<LLMCopyButton markdownUrl="/docs/getting-started.mdx" />
+<CopyPageButton markdownUrl="/docs/getting-started.mdx" />
 ```
 
-#### Ask AI Dropdown
+#### Ask AI Button
 
-Dropdown with links to query AI providers (GitHub Copilot, Claude, ChatGPT, QwkSearch) with page content as context.
+A dropdown with a message box: type a question, choose whether to send a link to the page or paste its text, then pick Claude, ChatGPT, Gemini, Perplexity, Grok, Copilot and more — a new tab opens with the prompt pre-filled. It can also copy the prompt. Use `variant="fab"` for a floating button instead, or `AskAIPanel` with `inline` to embed the panel in a page.
 
 ```mdx
-import { AskAIDropdown } from '@/components/fumadocs/ai/ask-ai-dropdown';
+import { AskAIButton } from 'ask-ai-button';
 
-<AskAIDropdown
+<AskAIButton
   markdownUrl="/docs/getting-started.mdx"
+  title="Getting started"
   githubUrl="https://github.com/user/repo/tree/master/docs/content/docs/getting-started.mdx"
 />
 ```
@@ -242,6 +246,10 @@ Powered by [Orama](https://orama.com/) for fast client-side full-text search acr
 - Static search index generated at build time
 - Integrated into the fumadocs search dialog
 - Keyboard shortcut accessible (Ctrl+K)
+- The search bar sits at the top of the docs sidebar, not the navbar
+  (`components/fumadocs/layout/sidebar-search.tsx`, wired up in
+  `app/docs/layout.tsx`). On mobile the navbar keeps a compact search icon,
+  since the sidebar is a drawer there.
 
 ---
 
@@ -305,6 +313,32 @@ Uses `fumadocs-ui/layouts/notebook` for the docs section, providing a clean read
 - Table of contents per page
 - Full-width page support via `full: true` frontmatter
 
+### 13. In-Page Editing & Suggested Changes
+
+Every docs page has an **Edit page** button next to *Copy page* and *Ask AI*. It opens a full-screen overlay holding the [react-reason-editor](https://www.npmjs.com/package/react-reason-editor) rich text editor, loaded with the page's Markdown.
+
+- **Lazy-loaded.** The editor is code-split: only the button ships with the page. Its chunk is prefetched on hover or focus and mounted on click.
+- **Admins publish directly.** Signed-in admins save straight to the page as an *override* that replaces the MDX body until it is reverted. Use **Admin sign-in** in the overlay header, or go to `/docs-admin`.
+- **Everyone else suggests.** Visitors submit their edit with an optional name and note. It joins the moderation queue.
+- **Moderation panel: `/docs-admin`.** It shows a line diff of each pending suggestion, which an admin can approve, reject, or edit before approving. It warns when the page changed after a suggestion was made, and lists published overrides with a **Revert to source** button.
+
+Configure it with environment variables (see `.env.example`):
+
+| Variable | Purpose |
+|----------|---------|
+| `DOC_EDITS_ADMIN_EMAILS` | Comma-separated admin emails |
+| `DOC_EDITS_ADMIN_PASSWORD` | Password for the admin sign-in form |
+| `DOC_EDITS_SECRET` | 32+ random characters; signs the admin session cookie |
+| `DOC_EDITS_DATA_FILE` | Where overrides and suggestions live (default `.data/doc-edits.json`) |
+
+If the three admin variables are missing, nobody can sign in, but visitors can still submit suggestions.
+
+**Things to know**
+
+- Overrides render as **plain Markdown** (`format: 'md'`), not MDX. That keeps an approved anonymous suggestion from running code: no imports, JSX or `{expressions}` run, and raw HTML is dropped. As a result, a page that uses MDX components loses them once it is overridden. Change those pages in `content/docs/` instead.
+- The default store is a JSON file, which suits `next start` on one server. On Cloudflare Workers or serverless hosts, implement the `DocEditStore` interface in `lib/doc-edits/store.ts` over your database or KV namespace, and return it from `getDocEditStore()`. Overrides also compile MDX at request time, which Workers do not allow, so pre-render or self-host if you need overrides there.
+- `next.config.ts` aliases `@moonshine-ai/moonshine-js` to a stub, and `package.json` overrides `@ricky0123/vad-web`. Both work around a broken upstream publish of the editor's voice-dictation dependency. Dictation is unavailable in the docs editor.
+
 ---
 
 ## Project Structure
@@ -317,19 +351,23 @@ docs/
 │   │   ├── [[...slug]]/page.tsx        # Doc page renderer
 │   │   ├── layout.tsx                  # Notebook layout (sidebar + TOC)
 │   │   ├── api/docs-search/route.ts    # Orama search index route
+│   │   ├── api/doc-edits/              # Edit-page API: source, submit, session, review, revert
 │   │   ├── llms-full.txt/route.ts      # LLM full-text route
 │   │   └── llms.mdx/docs/[[...slug]]/route.ts  # LLM per-page MDX route
+│   ├── docs-admin/        # Moderation panel for suggested edits
 │   ├── actions.ts         # Server actions (remote repo analysis)
 │   ├── layout.config.tsx  # Shared layout options
 │   └── provider.tsx       # Root provider (search, theme)
+├── components/doc-edits/  # Edit page button, lazy editor overlay, admin panel
 ├── components/fumadocs/
 │   ├── ai/                # LLM copy button, Ask AI dropdown
 │   ├── api/               # OpenAPI page components
 │   ├── file-tree/         # FileTreeView, FileTreeTable, badges, tooltips
 │   ├── graph/             # DependencyGraph, Mermaid renderer
-│   ├── layout/            # Search dialog, theme toggle
+│   ├── layout/            # Search dialog, sidebar search bar, theme toggle
 │   └── typography/        # Markdown renderer with highlighting
 ├── content/docs/          # MDX documentation files
+├── lib/doc-edits/         # Edit store, admin auth, override rendering
 ├── lib/fumadocs/
 │   ├── customize-docs.ts  # Site configuration
 │   ├── generate-filetree.ts    # AST analysis engine
@@ -426,6 +464,8 @@ After merging, `/docs`, `/docs/<page>`, `/docs/<page>.mdx`, `/docs/llms-full.txt
 | `@typescript-eslint/typescript-estree` | AST parsing for code analysis |
 | `next-themes` | Dark/light mode |
 | `lucide-react` | Icons |
+| `react-reason-editor` | Rich text editor behind *Edit page* (lazy-loaded) |
+| `turndown` | Editor HTML → Markdown |
 
 ## Scripts
 

@@ -12,27 +12,30 @@ import { getCachedValue, setCachedValue } from "../cache/cache";
 import Fuse from "fuse.js";
 
 /**
- * Formats a Geekbench score in whole thousands with its rank and how far up
- * the table that rank sits.
+ * Formats a Geekbench score in whole thousands with its rank and the share of
+ * the table scoring above it.
  * @param score - Raw Geekbench score
  * @param rank - Rank in the benchmark table (1 = fastest)
- * @param total - Number of entries in the benchmark table
+ * @param scores - Every score in the benchmark table
  * @returns Score, rank and top percentile
- * @example formatBench(20512, 68, 1500) // "21k #68 top 7%"
+ * @example formatBench(20512, 68, scores) // "21k #68 Top 7%"
  */
-export function formatBench(score: number, rank: number, total: number): string {
-  return `${Math.round(score / 1000)}k #${rank} top ${topPercent(rank, total)}%`;
+export function formatBench(score: number, rank: number, scores: number[]): string {
+  return `${Math.round(score / 1000)}k #${rank} Top ${topPercent(score, scores)}%`;
 }
 
 /**
- * Percentile bucket a rank falls in, rounded up so rank 1 reads "top 1%"
- * @param rank - Rank in the benchmark table (1 = fastest)
- * @param total - Number of entries in the benchmark table
+ * Score-based top percentile with ties: the share of entries scoring strictly
+ * higher, rounded up, so every entry with the same score shares one bucket and
+ * the fastest scores all read "Top 1%".
+ * @param score - Raw Geekbench score
+ * @param scores - Every score in the benchmark table
  * @returns Whole percentage between 1 and 100
  */
-export function topPercent(rank: number, total: number): number {
-  if (!total || total < 1) return 100;
-  return Math.min(100, Math.max(1, Math.ceil((rank / total) * 100)));
+export function topPercent(score: number, scores: number[]): number {
+  if (!scores.length) return 100;
+  const above = scores.filter((s) => s > score).length;
+  return Math.min(100, Math.max(1, Math.ceil((above / scores.length) * 100)));
 }
 
 /**
@@ -102,7 +105,7 @@ export function cpu(context: InfoContext): string {
     return "";
   }
 
-  cpuName = cpuName.trim().replace(/with .*/, "");
+  cpuName = cpuName.trim().replace(/with .*/, "").trim();
 
   setCachedValue(context.cache, "cpu", cpuName);
   return cpuName;
@@ -246,7 +249,7 @@ export function screen_resolution(): string {
  * Uses fuzzy matching to find similar CPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "38k #1 top 1%", "21k #68 top 7%"
+ * @example "38k #1 Top 1%", "21k #68 Top 7%"
  */
 export function bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "bench");
@@ -298,7 +301,7 @@ export function bench(context: InfoContext): string {
     const results = fuse.search(cpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const result = formatBench(match.score, match.rank, scores.length);
+      const result = formatBench(match.score, match.rank, scores.map((item) => item[1]));
       setCachedValue(context.cache, "bench", result);
       return result;
     }
@@ -315,7 +318,7 @@ export function bench(context: InfoContext): string {
  * Includes score, rank, and architecture type (ARM/Intel/AMD)
  * @param context - Info context with cache
  * @returns Detailed benchmark info with architecture, or empty string
- * @example "Geekbench 6: 38k (Rank #1, top 1%) - ARM", "Geekbench 6: 21k (Rank #68, top 7%) - Intel"
+ * @example "Geekbench 6: 38k (Rank #1, Top 1%) - ARM", "Geekbench 6: 21k (Rank #68, Top 7%) - Intel"
  */
 export function cpu_bench_info(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "cpu_bench_info");
@@ -373,7 +376,7 @@ export function cpu_bench_info(context: InfoContext): string {
       const match = results[0].item;
       const score = Math.round(match.score / 1000);
       const rank = match.rank;
-      const top = topPercent(rank, scores.length);
+      const top = topPercent(match.score, scores.map((item) => item[1]));
 
       // Detect architecture type
       let arch = "Unknown";
@@ -387,7 +390,7 @@ export function cpu_bench_info(context: InfoContext): string {
         arch = "ARM";
       }
 
-      const result = `Geekbench 6: ${score}k (Rank #${rank}, top ${top}%) - ${arch}`;
+      const result = `Geekbench 6: ${score}k (Rank #${rank}, Top ${top}%) - ${arch}`;
       setCachedValue(context.cache, "cpu_bench_info", result);
       return result;
     }
@@ -404,7 +407,7 @@ export function cpu_bench_info(context: InfoContext): string {
  * Uses fuzzy matching to find similar GPU models
  * @param context - Info context with cache
  * @returns Benchmark info with score and rank, or empty string
- * @example "38k #1 top 1%", "21k #68 top 7%"
+ * @example "38k #1 Top 1%", "21k #68 Top 7%"
  */
 export function gpu_bench(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "gpu_bench");
@@ -456,7 +459,7 @@ export function gpu_bench(context: InfoContext): string {
     const results = fuse.search(gpuName);
     if (results.length > 0) {
       const match = results[0].item;
-      const result = formatBench(match.score, match.rank, scores.length);
+      const result = formatBench(match.score, match.rank, scores.map((item) => item[1]));
       setCachedValue(context.cache, "gpu_bench", result);
       return result;
     }
@@ -473,7 +476,7 @@ export function gpu_bench(context: InfoContext): string {
  * Includes score, rank, and vendor detection
  * @param context - Info context with cache
  * @returns Detailed benchmark info with vendor, or empty string
- * @example "Geekbench 6: 38k (Rank #1, top 1%) - NVIDIA", "Geekbench 6: 21k (Rank #68, top 7%) - AMD"
+ * @example "Geekbench 6: 38k (Rank #1, Top 1%) - NVIDIA", "Geekbench 6: 21k (Rank #68, Top 7%) - AMD"
  */
 export function gpu_bench_info(context: InfoContext): string {
   const cached = getCachedValue(context.cache, "gpu_bench_info");
@@ -531,7 +534,7 @@ export function gpu_bench_info(context: InfoContext): string {
       const match = results[0].item;
       const score = Math.round(match.score / 1000);
       const rank = match.rank;
-      const top = topPercent(rank, scores.length);
+      const top = topPercent(match.score, scores.map((item) => item[1]));
 
       // Detect vendor from GPU name
       let vendor = "Unknown";
@@ -554,7 +557,7 @@ export function gpu_bench_info(context: InfoContext): string {
         vendor = "Intel";
       }
 
-      const result = `Geekbench 6: ${score}k (Rank #${rank}, top ${top}%) - ${vendor}`;
+      const result = `Geekbench 6: ${score}k (Rank #${rank}, Top ${top}%) - ${vendor}`;
       setCachedValue(context.cache, "gpu_bench_info", result);
       return result;
     }

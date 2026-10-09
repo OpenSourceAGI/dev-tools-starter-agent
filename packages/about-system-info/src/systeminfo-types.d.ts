@@ -125,12 +125,12 @@ export interface SystemInfo {
   /**
    * CPU benchmark score from Geekbench 6 multi-core
    * Shows performance score (in thousands) and ranking position
-   * Uses fuzzy matching to find similar CPU models from top 1000 list
+   * Uses fuzzy matching to find similar CPU models from Top 1000 list
    * Empty string if CPU not found or benchmark data unavailable
    *
    * @example
-   * - "38k #1 top 1%" (top performing CPU)
-   * - "21k #68 top 7%" (mid-range CPU)
+   * - "38k #1 Top 1%" (top performing CPU)
+   * - "21k #68 Top 7%" (mid-range CPU)
    * - "" (CPU not in benchmark database)
    */
   bench: string;
@@ -142,9 +142,9 @@ export interface SystemInfo {
    * Empty string if CPU not found or benchmark data unavailable
    *
    * @example
-   * - "Geekbench 6: 38k (Rank #1, top 1%) - ARM" (Apple M4 Ultra)
-   * - "Geekbench 6: 21k (Rank #68, top 7%) - Intel" (Intel Core i9)
-   * - "Geekbench 6: 19k (Rank #91, top 10%) - AMD" (AMD Ryzen 9 7950X)
+   * - "Geekbench 6: 38k (Rank #1, Top 1%) - ARM" (Apple M4 Ultra)
+   * - "Geekbench 6: 21k (Rank #68, Top 7%) - Intel" (Intel Core i9)
+   * - "Geekbench 6: 19k (Rank #91, Top 10%) - AMD" (AMD Ryzen 9 7950X)
    * - "" (CPU not in benchmark database)
    */
   cpu_bench_info: string;
@@ -156,8 +156,8 @@ export interface SystemInfo {
    * Empty string if GPU not found or benchmark data unavailable
    *
    * @example
-   * - "38k #1 top 1%" (top performing GPU)
-   * - "21k #68 top 7%" (mid-range GPU)
+   * - "38k #1 Top 1%" (top performing GPU)
+   * - "21k #68 Top 7%" (mid-range GPU)
    * - "" (GPU not in benchmark database)
    */
   gpu_bench: string;
@@ -169,8 +169,8 @@ export interface SystemInfo {
    * Empty string if GPU not found or benchmark data unavailable
    *
    * @example
-   * - "Geekbench 6: 38k (Rank #1, top 1%) - NVIDIA" (NVIDIA GPU)
-   * - "Geekbench 6: 21k (Rank #68, top 7%) - AMD" (AMD GPU)
+   * - "Geekbench 6: 38k (Rank #1, Top 1%) - NVIDIA" (NVIDIA GPU)
+   * - "Geekbench 6: 21k (Rank #68, Top 7%) - AMD" (AMD GPU)
    * - "" (GPU not in benchmark database)
    */
   gpu_bench_info: string;

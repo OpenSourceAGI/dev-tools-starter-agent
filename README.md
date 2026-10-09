@@ -14,6 +14,7 @@
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml"><img src="https://github.com/OpenSourceAGI/dev-tools-starter-agent/actions/workflows/tests.yml/badge.svg?branch=master" alt="CI status" /></a>
     <img src="https://img.shields.io/badge/%EB%AA%A8%20lines-8k-yellow" />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/graphs/contributors"><img src="https://img.shields.io/github/contributors/OpenSourceAGI/dev-tools-starter-agent" alt="Contributors" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/branches"><img src="https://img.shields.io/github/branches/OpenSourceAGI/dev-tools-starter-agent.svg" alt="Branches" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/forks"><img src="https://img.shields.io/github/forks/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Forks" /></a>    <a href="https://packagephobia.com/result?p=create-starter-app"><img src="https://packagephobia.com/badge?p=create-starter-app" alt="Install size" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
      <br />
@@ -54,6 +55,9 @@
 
 [![npm downloads](https://img.shields.io/npm/dm/code-tree-graph.svg)](https://www.npmjs.com/package/code-tree-graph) **[code-tree-graph](packages/code-tree-graph/)** - Interactive code dependency graph and file tree components for Fumadocs + Next.js. `DependencyGraph` renders a pan/zoom Mermaid flowchart from full AST analysis, `FileTreeView` a searchable table with export/JSDoc metadata and GitHub deep links, and `TypeTable` collapsible property tables — all from a local TypeScript/JS parser, no external service.
 `npm install code-tree-graph` · `bun add code-tree-graph`
+
+[![npm downloads](https://img.shields.io/npm/dm/ask-ai-button.svg)](https://www.npmjs.com/package/ask-ai-button) **[ask-ai-button](packages/ask-ai-button/)** - "Ask AI about this page" for docs sites, as a dropdown, a floating action button or an inline panel. The visitor types a question and picks Claude, ChatGPT, Gemini, Perplexity, Grok, Copilot, Le Chat, T3 Chat, Brave, QwkSearch or Cursor; a new tab opens with the page (as a link or as pasted Markdown) and the question pre-filled. Also copies the prompt or the page Markdown, takes custom URL or API providers, and picks up Fumadocs theme colors with no CSS import.
+`npm install ask-ai-button` · `bun add ask-ai-button`
 
 [![npm downloads](https://img.shields.io/npm/dm/create-cloud-db.svg)](https://www.npmjs.com/package/create-cloud-db) **[create-cloud-db](packages/create-cloud-db/)** - Interactive CLI that creates a Turso edge database and writes `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` directly into your `.env` file. Handles Turso login, database creation, token generation, and env-file patching in one command.
 `npx create-cloud-db [db-name]` · `npm install -g create-cloud-db`
@@ -112,7 +116,7 @@
 **[template-nextjs-betterauth-shadcn-drizzle](starter-templates/template-nextjs-betterauth-shadcn-drizzle/)** - Next.js SaaS boilerplate with PostgreSQL, Better Auth, Stripe subscriptions, and shadcn/ui components.
 `bun create starter-app` · `npx create-starter-app`
 
-**[template-vinext-betterauth-shadcn-themes-teams-stripe](starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe/)** - Full Next.js dashboard template with Better Auth (social + SIWE), Stripe subscriptions and billing portal, teams, 50 shadcn color themes, and built-in Fumadocs documentation.
+**[template-nextjs-harness-cloudflare](starter-templates/template-nextjs-harness-cloudflare/)** - Full Next.js dashboard template with Better Auth (social + SIWE), Stripe subscriptions and billing portal, teams, 50 shadcn color themes, and built-in Fumadocs documentation.
 `bun create starter-app` · `npx create-starter-app`
 
 **[template-fumadocs](starter-templates/template-fumadocs/)** - Documentation site with Fumadocs, Orama search, OpenAPI/Swagger docs, MDX support, and collapsible sidebar.

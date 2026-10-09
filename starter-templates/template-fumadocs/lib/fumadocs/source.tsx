@@ -11,6 +11,7 @@ import {
 } from 'fumadocs-core/source'
 import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons'
 import { openapiPlugin } from 'fumadocs-openapi/server'
+import { getDocEditStore } from '@/lib/doc-edits/store'
 
 export const source = loader({
   baseUrl: '/docs',
@@ -39,7 +40,9 @@ function pageTreeCodeTitles(): LoaderPlugin {
 
 
 export async function getLLMText(page: InferPageType<typeof source>) {
-  const processed = await page.data.getText('processed');
+  // A published in-page edit replaces the file's body, so LLMs see what readers see.
+  const override = await getDocEditStore().getOverride(page.slugs.join('/'));
+  const processed = override?.markdown ?? (await page.data.getText('processed'));
 
   return `# ${page.data.title} (${page.url})
 

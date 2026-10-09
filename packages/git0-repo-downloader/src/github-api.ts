@@ -104,6 +104,20 @@ export function parseTarget(query: string): RepoTarget | false {
  * const repos  = await github.searchRepositories('nodejs template');
  * const dir    = await github.downloadRepo('facebook/react');
  */
+/**
+ * Coerces a `/releases` response to a plain array.
+ *
+ * `grab-api.js` hands a JSON array back as an array-like object
+ * (`{ 0: …, 1: …, data: […] }`), which has no `length`, so every
+ * `releases.length` check downstream would read as "no releases". Older
+ * versions return the bare array; accept both.
+ */
+function toReleaseList(response: any): any[] {
+  if (Array.isArray(response)) return response;
+  if (Array.isArray(response?.data)) return response.data;
+  return [];
+}
+
 class GithubAPI {
   /** Default number of repository search results returned per query. */
   static DEFAULT_RESULTS_PER_PAGE = 10;
@@ -216,8 +230,8 @@ class GithubAPI {
 
       return Promise.all(
         response.items.map(async (repo: SearchResult) => {
-          const releases = await this.callGithub(
-            `/repos/${repo.owner.login}/${repo.name}/releases`
+          const releases = toReleaseList(
+            await this.callGithub(`/repos/${repo.owner.login}/${repo.name}/releases`)
           );
           const platform = getCurrentPlatform();
 
@@ -321,7 +335,7 @@ class GithubAPI {
    * const releases = await github.getReleases('microsoft', 'vscode');
    */
   async getReleases(owner: string, repo: string): Promise<CategorizedRelease[]> {
-    const releases = await this.callGithub(`/repos/${owner}/${repo}/releases`);
+    const releases = toReleaseList(await this.callGithub(`/repos/${owner}/${repo}/releases`));
     return categorizeReleasesByPlatform(releases);
   }
 
@@ -335,7 +349,7 @@ class GithubAPI {
    *   current platform (including `universal` assets).
    */
   async getCompatibleReleases(owner: string, repo: string): Promise<CategorizedRelease[]> {
-    const releases = await this.callGithub(`/repos/${owner}/${repo}/releases`);
+    const releases = toReleaseList(await this.callGithub(`/repos/${owner}/${repo}/releases`));
     return filterReleasesByPlatform(releases, getCurrentPlatform());
   }
 }

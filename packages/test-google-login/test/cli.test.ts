@@ -2,19 +2,24 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { parseArgs, runCli } from "../src/cli.js";
 import { writeStorageState } from "../src/storage-state.js";
-import { NOW_SECONDS, sampleState } from "./fixtures.js";
+import { NOW_MS, NOW_SECONDS, sampleState } from "./fixtures.js";
 
 let cwd: string;
 
 beforeEach(() => {
   cwd = fs.mkdtempSync(path.join(os.tmpdir(), "tgl-cli-"));
+  // The CLI reads the real clock, and the fixtures expire relative to NOW_MS — pin
+  // the clock so these tests don't start failing once the calendar passes it.
+  vi.useFakeTimers({ toFake: ["Date"] });
+  vi.setSystemTime(NOW_MS);
 });
 
 afterEach(() => {
+  vi.useRealTimers();
   fs.rmSync(cwd, { recursive: true, force: true });
 });
 

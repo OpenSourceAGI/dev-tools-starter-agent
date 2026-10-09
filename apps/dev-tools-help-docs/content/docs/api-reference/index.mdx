@@ -1,0 +1,12 @@
+---
+title: API Reference
+description: HTTP APIs served by packages in this repository.
+index: true
+---
+
+Each page here is rendered from a package's OpenAPI spec, with a request
+playground. Requests from the playground go through the docs site's
+`/api/proxy` route to avoid CORS errors.
+
+To add an API, register its spec in `src/lib/openapi/index.ts` and add a page
+that renders `<APIPage document="<schema-id>" />`.

@@ -39,7 +39,7 @@ The five entries in `TEMPLATES` do not all match directory names under `starter-
 | `template-nextjs-betterauth-shadcn-prisma` | **no** — no such directory |
 | `template-svelte-betterauth-drizzle-shadcn` | **no** — the directory is `template-svelte-betterauth-shadcn-drizzle` (word order differs) |
 
-`starter-templates/template-vinext-betterauth-shadcn-themes-teams-stripe` exists but is **not** in the menu. Picking one of the two mismatched entries throws `ENOENT` from `cpSync`. Fixing it means editing the `id` fields in `TEMPLATES` (or renaming the directories) — the menu labels are decorative, only `id` is used for the path.
+`starter-templates/template-nextjs-harness-cloudflare` exists but is **not** in the menu. Picking one of the two mismatched entries throws `ENOENT` from `cpSync`. Fixing it means editing the `id` fields in `TEMPLATES` (or renaming the directories) — the menu labels are decorative, only `id` is used for the path.
 
 ## Recipes
 

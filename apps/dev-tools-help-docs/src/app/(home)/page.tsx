@@ -4,7 +4,8 @@ import React = require("react")
 
 const { useState, useMemo } = React
 type ElementType = React.ElementType
-import { categories } from "./packages-data"
+import { categories, type Package as PackageData, REPO_URL } from "./packages-data"
+import { PackageShowcase } from "./package-showcase"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
@@ -20,7 +21,6 @@ import {
   Copy,
   Check,
   AppWindow,
-  Github,
   BookOpen,
   ArrowRight,
   FileText,
@@ -106,7 +106,7 @@ function PackageCard({
   index,
   isTemplate = false,
 }: {
-  pkg: { name: string; description: string; commands: string[]; path: string; icon: string }
+  pkg: PackageData
   color: string
   index: number
   isTemplate?: boolean
@@ -136,6 +136,18 @@ function PackageCard({
       {/* Gradient border overlay */}
       <div className={`absolute inset-0 -z-10 rounded-xl p-px bg-gradient-to-br ${gradientBorder[color] ?? gradientBorder.brand} opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none`} />
 
+      {/* Cover image */}
+      <a href={pkg.href} className="relative block h-36 overflow-hidden border-b border-border" tabIndex={-1} aria-hidden="true">
+        <img
+          src={pkg.image}
+          alt=""
+          width={960}
+          height={768}
+          loading="lazy"
+          className="h-full w-full object-cover object-top-left transition-transform duration-500 group-hover:scale-[1.03]"
+        />
+      </a>
+
       <div className="relative p-5">
         <div className="flex items-start gap-3">
           <PackageIcon iconName={pkg.icon} color={color} />
@@ -143,7 +155,7 @@ function PackageCard({
             <div className="flex items-center justify-between gap-2">
               <h3 className="font-semibold text-foreground truncate text-sm">{pkg.name}</h3>
               <a
-                href={`https://github.com/OpenSourceAGI/starter-app-dev-tools/tree/main/${pkg.path}`}
+                href={`${REPO_URL}/tree/master/${pkg.path}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded hover:bg-secondary shrink-0"
@@ -155,6 +167,12 @@ function PackageCard({
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed line-clamp-2">
               {pkg.description}
             </p>
+            <details className="mt-2 text-xs text-muted-foreground">
+              <summary className="cursor-pointer select-none text-foreground/70 hover:text-foreground">
+                More
+              </summary>
+              <p className="mt-1.5 leading-relaxed">{pkg.longDescription}</p>
+            </details>
           </div>
         </div>
         <div className="mt-3 flex flex-wrap gap-1.5">
@@ -187,7 +205,8 @@ function CategorySection({
     return category.packages.filter(
       (pkg) =>
         pkg.name.toLowerCase().includes(query) ||
-        pkg.description.toLowerCase().includes(query)
+        pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
     )
   }, [category.packages, searchQuery])
 
@@ -250,7 +269,8 @@ function StarterTemplatesSection({ searchQuery }: { searchQuery: string }) {
     return templateCategory.packages.filter(
       (pkg) =>
         pkg.name.toLowerCase().includes(query) ||
-        pkg.description.toLowerCase().includes(query)
+        pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
     )
   }, [templateCategory.packages, searchQuery])
 
@@ -400,7 +420,8 @@ export default function DocsHomepage() {
         cat.packages.filter(
           (pkg) =>
             pkg.name.toLowerCase().includes(query) ||
-            pkg.description.toLowerCase().includes(query)
+            pkg.description.toLowerCase().includes(query) ||
+        pkg.longDescription.toLowerCase().includes(query)
         ).length
       )
     }, 0)
@@ -445,7 +466,7 @@ export default function DocsHomepage() {
               rel="noopener noreferrer"
               className="flex items-center gap-2 rounded-lg border border-border px-3 py-1.5 text-sm font-medium text-foreground hover:bg-secondary transition-colors"
             >
-              <Github className="size-4" />
+              <GithubIcon className="size-4" />
               <span className="hidden sm:inline">GitHub</span>
             </a>
           </nav>
@@ -561,6 +582,9 @@ export default function DocsHomepage() {
           </div>
         </KineticGrid>
       </section>
+
+      {/* Scroll-driven parallax tour of every package */}
+      <PackageShowcase />
 
       {/* Search + Category Filter */}
       <section className="sticky top-14 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
@@ -702,5 +726,14 @@ export default function DocsHomepage() {
         </div>
       </footer>
     </div>
+  )
+}
+
+// lucide-react 1.x dropped brand icons, so the GitHub mark is inlined.
+function GithubIcon({ className }: { className?: string }) {
+  return (
+    <svg role="img" viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12" />
+    </svg>
   )
 }

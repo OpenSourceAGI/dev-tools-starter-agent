@@ -1,7 +1,17 @@
 import chalk from 'chalk';
-import { execSync } from 'child_process';
+import { execSync, spawn } from 'child_process';
 
 /** Set once the logo has been printed, so repeat calls are no-ops. */
+/**
+ * The process-spawning primitives the rest of the CLI shells out through.
+ *
+ * Routed through one object so tests can replace them: `bun test` (what CI runs
+ * for this package) supports neither `vi.mock` nor a runtime `PATH` change for
+ * `child_process`, so a seam like this is the only way to observe — rather than
+ * perform — an install or an IDE launch.
+ */
+export const shell = { execSync, spawn };
+
 let logoPrinted = false;
 
 /**
@@ -62,7 +72,7 @@ export function resetLogo(): void {
  */
 export function exec(cmd: string, showError = false): void {
   try {
-    execSync(cmd, { stdio: 'inherit' });
+    shell.execSync(cmd, { stdio: 'inherit' });
   } catch {
     if (showError) console.error(chalk.red(`❌ Failed: ${cmd}`));
   }

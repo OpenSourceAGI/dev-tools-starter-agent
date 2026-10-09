@@ -26,7 +26,7 @@ export function top_process(context: InfoContext): string {
       const lines = ps.split("\n");
       if (lines.length > 0) {
         const topProcess = lines[0].trim().replace(/\s+/, " ").split(" ");
-        const cpu = topProcess[0].replace(/\.\d+/, "%");
+        const cpu = topProcess[0].replace(/\.\d+/, "");
         const process = topProcess[1].split("/").pop();
         const result = `${cpu}% ${process}`;
         setCachedValue(context.cache, "top_process", result);

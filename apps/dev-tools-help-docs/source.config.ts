@@ -73,7 +73,9 @@ export default defineConfig({
             '--pretty=%ai',
             relativePath,
           ])
-          return new Date(stdout.trim())
+          // Files with no commits yet (e.g. new pages in dev) have no date.
+          const date = stdout.trim()
+          return date ? new Date(date) : undefined
         } catch {
           return undefined
         }

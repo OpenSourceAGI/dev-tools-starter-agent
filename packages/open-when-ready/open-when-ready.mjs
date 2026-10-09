@@ -310,6 +310,8 @@ export {
   extractPortlessUrl,
   extractUrl,
   getErrorContext,
+  resolvePortless,
+  run,
 };
 
 function isMain() {

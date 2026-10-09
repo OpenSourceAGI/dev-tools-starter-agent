@@ -1,0 +1,17 @@
+---
+title: SMS Verification API
+description: Send and check SMS verification codes. Generated from packages/verify-phone-sms/openapi.json.
+---
+
+Every endpoint except `/health` needs an API key. See the
+[verify-phone-sms package](/docs/packages/verify-phone-sms) for setup and
+deployment.
+
+<APIPage
+  document="verify-phone-sms"
+  operations={[
+    { path: '/health', method: 'get' },
+    { path: '/api/send-verification', method: 'post' },
+    { path: '/api/verify-code', method: 'post' },
+  ]}
+/>
