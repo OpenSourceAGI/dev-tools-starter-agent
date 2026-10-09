@@ -25,6 +25,8 @@
     "native-app-wrapper",
     "test-google-login",
     "verify-phone-sms",
-    "web2mobile-wrapper"
+    "web2mobile-wrapper",
+    "---Other---",
+    "shadcn-theme-menu"
   ]
 }
