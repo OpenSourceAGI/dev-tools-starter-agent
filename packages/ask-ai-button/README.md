@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://i.imgur.com/CbolNVa"  >
+    <img src="https://i.imgur.com/CbolNVa.png"  >
     <br />
     <a href="https://1computer.online/docs/packages/ask-ai-button"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
