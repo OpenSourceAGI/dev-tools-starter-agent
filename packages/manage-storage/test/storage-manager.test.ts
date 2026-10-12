@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  GOOGLE_STORAGE_ENDPOINT,
   StorageManager,
   detectProvider,
   manageStorage,
@@ -48,6 +49,12 @@ const PROVIDER_VARS = Object.keys(CLOUDFLARE_ENV).concat(
   "AMAZON_SECRET_ACCESS_KEY",
   "AMAZON_BUCKET_URL",
   "AMAZON_REGION",
+  "GOOGLE_BUCKET_NAME",
+  "GOOGLE_ACCESS_KEY_ID",
+  "GOOGLE_SECRET_ACCESS_KEY",
+  "GOOGLE_BUCKET_URL",
+  "GOOGLE_HMAC_ACCESS_ID",
+  "GOOGLE_HMAC_SECRET",
 );
 
 const saved: Record<string, string | undefined> = {};
@@ -88,6 +95,17 @@ describe("detectProvider", () => {
 
     expect(detectProvider()).toBe("cloudflare");
   });
+
+  it("detects Google Cloud Storage without a bucket URL", () => {
+    // GCS's S3 endpoint is the same for every bucket, so it is not required.
+    Object.assign(process.env, {
+      GOOGLE_BUCKET_NAME: "gcs-bucket",
+      GOOGLE_ACCESS_KEY_ID: "GOOG1E-id",
+      GOOGLE_SECRET_ACCESS_KEY: "gcs-secret",
+    });
+
+    expect(detectProvider()).toBe("google");
+  });
 });
 
 describe("resolveConfig", () => {
@@ -119,9 +137,48 @@ describe("resolveConfig", () => {
 
   it("only gives S3 a real region", () => {
     expect(resolveConfig({ provider: "cloudflare" }).region).toBe("auto");
+    expect(resolveConfig({ provider: "google" }).region).toBe("auto");
     expect(resolveConfig({ provider: "amazon" }).region).toBe("us-east-1");
     expect(resolveConfig({ provider: "amazon", region: "eu-west-2" }).region).toBe(
       "eu-west-2",
+    );
+  });
+});
+
+describe("resolveConfig for Google Cloud Storage", () => {
+  it("defaults the endpoint to the GCS XML API", () => {
+    expect(resolveConfig({ provider: "google" }).endpoint).toBe(
+      GOOGLE_STORAGE_ENDPOINT,
+    );
+    expect(
+      resolveConfig({ provider: "google", endpoint: "https://gcs.example" })
+        .endpoint,
+    ).toBe("https://gcs.example");
+  });
+
+  it("reads GCS's HMAC access-id spelling of the credentials", () => {
+    process.env.GOOGLE_HMAC_ACCESS_ID = "GOOG1E-hmac";
+    process.env.GOOGLE_HMAC_SECRET = "hmac-secret";
+    const config = resolveConfig({ provider: "google" });
+
+    expect(config.accessKeyId).toBe("GOOG1E-hmac");
+    expect(config.secretAccessKey).toBe("hmac-secret");
+  });
+
+  it("builds a client that only sends checksums when required", async () => {
+    const storage = new StorageManager({
+      provider: "google",
+      bucket: "gcs-bucket",
+      accessKeyId: "GOOG1E-id",
+      secretAccessKey: "gcs-secret",
+    });
+    const client = (storage as any).client;
+
+    expect(await client.config.requestChecksumCalculation()).toBe(
+      "WHEN_REQUIRED",
+    );
+    expect(await client.config.responseChecksumValidation()).toBe(
+      "WHEN_REQUIRED",
     );
   });
 });
@@ -273,6 +330,29 @@ describe("StorageManager", () => {
     expect(sent[1].input.Delete.Objects).toHaveLength(1000);
     expect(sent[2].input.Delete.Objects).toHaveLength(1);
     expect(result).toEqual({ success: true, count: 1001 });
+  });
+
+  it("deletes one key at a time on GCS, which has no batch delete", async () => {
+    const keys = Array.from({ length: 12 }, (_, index) => `file-${index}`);
+    const { client, sent } = fakeClient([
+      { Contents: keys.map((Key) => ({ Key })), IsTruncated: false },
+    ]);
+    const storage = new StorageManager({
+      provider: "google",
+      bucket: "gcs-bucket",
+      accessKeyId: "GOOG1E-id",
+      secretAccessKey: "gcs-secret",
+      client,
+    });
+
+    const result = await storage.deleteAll();
+
+    expect(names(sent)).toEqual([
+      "ListObjectsV2Command",
+      ...keys.map(() => "DeleteObjectCommand"),
+    ]);
+    expect(sent.slice(1).map((command) => command.input.Key)).toEqual(keys);
+    expect(result).toEqual({ success: true, count: 12 });
   });
 
   it("sends no delete for an empty bucket", async () => {

@@ -6,12 +6,12 @@
 
 | Option | Type | Falls back to |
 | --- | --- | --- |
-| `provider` | `"amazon" \| "cloudflare" \| "backblaze"` | Auto-detected: the first prefix with all four vars set, checked Cloudflare → Backblaze → Amazon. |
+| `provider` | `"amazon" \| "cloudflare" \| "backblaze" \| "google"` | Auto-detected: the first prefix with all four vars set, checked Cloudflare → Backblaze → Amazon → Google (Google needs no `BUCKET_URL`). |
 | `bucket` | `string` | `<PROVIDER>_BUCKET_NAME` |
-| `accessKeyId` | `string` | `<PROVIDER>_ACCESS_KEY_ID`, then `<PROVIDER>_APPLICATION_KEY_ID` |
-| `secretAccessKey` | `string` | `<PROVIDER>_SECRET_ACCESS_KEY`, then `<PROVIDER>_APPLICATION_KEY` |
-| `endpoint` | `string` | `<PROVIDER>_BUCKET_URL` (the S3 endpoint) |
-| `region` | `string` | `AMAZON_REGION`, else `us-east-1`. R2 and B2 are always `auto` |
+| `accessKeyId` | `string` | `<PROVIDER>_ACCESS_KEY_ID`, then `<PROVIDER>_APPLICATION_KEY_ID`, then `<PROVIDER>_HMAC_ACCESS_ID` |
+| `secretAccessKey` | `string` | `<PROVIDER>_SECRET_ACCESS_KEY`, then `<PROVIDER>_APPLICATION_KEY`, then `<PROVIDER>_HMAC_SECRET` |
+| `endpoint` | `string` | `<PROVIDER>_BUCKET_URL` (the S3 endpoint); for Google, `GOOGLE_STORAGE_ENDPOINT` (`https://storage.googleapis.com`) |
+| `region` | `string` | `AMAZON_REGION`, else `us-east-1`. R2, B2 and GCS are always `auto` |
 | `client` | `S3Client` | A client built from the above. Pass one for tests, or for retry / credential-provider options this class does not expose |
 
 Credentials are resolved here and checked on the first operation, so constructing
@@ -53,6 +53,7 @@ with the SDK's error kept as `cause`. Missing credentials throw
 
 `detectProvider()` — the provider the environment configures.
 `resolveConfig(config?)` — the merged `ResolvedConfig` without building a client.
+`GOOGLE_STORAGE_ENDPOINT` — GCS's S3-compatible endpoint, the Google default.
 
 Types: `Provider`, `StorageBody`, `StorageConfig`, `ResolvedConfig`,
 `UploadResult`, `DeleteResult`, `DeleteAllResult`, `CopyResult`, `RenameResult`.
@@ -64,6 +65,7 @@ Types: `Provider`, `StorageBody`, `StorageConfig`, `ResolvedConfig`,
 | Cloudflare R2 | `CLOUDFLARE_BUCKET_NAME`, `CLOUDFLARE_ACCESS_KEY_ID`, `CLOUDFLARE_SECRET_ACCESS_KEY`, `CLOUDFLARE_BUCKET_URL` |
 | Backblaze B2 | `BACKBLAZE_BUCKET_NAME`, `BACKBLAZE_ACCESS_KEY_ID`, `BACKBLAZE_SECRET_ACCESS_KEY`, `BACKBLAZE_BUCKET_URL` |
 | Amazon S3 | `AMAZON_BUCKET_NAME`, `AMAZON_ACCESS_KEY_ID`, `AMAZON_SECRET_ACCESS_KEY`, `AMAZON_BUCKET_URL`, `AMAZON_REGION` |
+| Google Cloud Storage | `GOOGLE_BUCKET_NAME`, `GOOGLE_ACCESS_KEY_ID`, `GOOGLE_SECRET_ACCESS_KEY`, optional `GOOGLE_BUCKET_URL` |
 
 ## Deprecated: `manageStorage(action, options?)`
 
@@ -90,4 +92,5 @@ instead of on every call.
 
 - **R2** — zero egress fees; endpoint is `https://<account_id>.r2.cloudflarestorage.com`; region is effectively `auto`.
 - **B2** — cheapest storage; endpoint is region-numbered (`s3.us-west-004.backblazeb2.com`); use the *application key*, not the master key.
+- **GCS** — reached through the XML API's S3 interoperability with an HMAC key; endpoint is fixed; the SDK's default CRC32 checksum headers are turned off for it (`WHEN_REQUIRED`); no multi-object delete, so `deleteAll()` deletes keys one at a time, ten in parallel.
 - **S3** — `region` must match the bucket's region or requests get a `PermanentRedirect`.
