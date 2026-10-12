@@ -20,6 +20,9 @@
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
     "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview --config vite.demo.config.ts",
+    "deploy:vercel": "npx vercel deploy --prod",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

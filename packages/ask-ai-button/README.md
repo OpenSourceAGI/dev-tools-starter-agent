@@ -169,3 +169,11 @@ bun run dev        # demo page at demo/
 bun run test
 bun run build
 ```
+
+### Deploy the demo to Vercel
+
+`bun run build:demo` builds `demo/` as a static site into `dist-demo/`
+(`bun run preview` serves it). `vercel.json` points Vercel at that build, so a
+Vercel project with **Root Directory** set to `packages/ask-ai-button` deploys
+the demo with no other settings. From this directory, `bun run deploy:vercel`
+deploys with the Vercel CLI.
