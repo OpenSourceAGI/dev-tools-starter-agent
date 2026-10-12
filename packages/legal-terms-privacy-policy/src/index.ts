@@ -1,6 +1,6 @@
 /**
- * legal-terms-privacy-policy — one configurable Terms of Service + Privacy
- * Policy document, in two presentations.
+ * legal-terms-privacy-policy — a configurable Terms of Service, Privacy Policy
+ * and Security Policy, rendered together or separately, in two presentations.
  *
  * This entry point is framework-free: content, config, the Markdown / HTML /
  * plain-text renderers, and the cookie consent record the banner writes.
@@ -12,6 +12,8 @@ export type {
   Block,
   Card,
   CardsBlock,
+  DocumentId,
+  DocumentSelection,
   IconName,
   LegalDoc,
   LegalDocOptions,
@@ -32,13 +34,18 @@ export {
   DEFAULT_BADGES,
   DEFAULT_FEATURES,
   DEFAULT_TOKENS,
+  DOCUMENT_TITLES,
+  SECURITY_BADGE,
+  SECURITY_VARIANTS,
   VARIANTS,
   interpolate,
+  normalizeDocuments,
   resolveLegalDoc,
 } from './resolve';
 
 export { FULL_SECTIONS } from './content/full';
 export { SUMMARY_SECTIONS } from './content/summary';
+export { SECURITY_FULL_SECTIONS, SECURITY_SUMMARY_SECTIONS } from './content/security';
 
 export {
   COOKIE_CONSENT_CHOICES,

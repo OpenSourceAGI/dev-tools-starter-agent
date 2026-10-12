@@ -1,6 +1,6 @@
 ---
 name: legal-terms-privacy-policy
-description: Guide to packages/legal-terms-privacy-policy — the configurable Terms of Service + Privacy Policy page with two presentations of the same policy (a scannable card summary and the full legal text) and a switch between them, plus the cookie consent banner that links to it. Covers the token substitutions, turning named parts on and off (AI clauses, CCPA, COPPA, cookies), adding/removing/reordering/rewriting sections, the block types, the React props, the consent banner and its stored record, the Markdown/HTML/text renderers, the CLI, and wiring it into a Next.js app. Use when adding or editing a terms or privacy page, adding or changing a cookie consent banner, gating analytics on consent, replacing a hand-written legal page, changing which clauses a product publishes, or troubleshooting one — a `{{token}}` showing through, a section that won't disappear, a banner that keeps coming back, cards rendering as plain text, or a Next build that can't parse the package.
+description: Guide to packages/legal-terms-privacy-policy — the configurable Terms of Service, Privacy Policy and Security Policy (combined on one page or split into separate pages via `document` / TermsOfService, PrivacyPolicy, SecurityPolicy) with two presentations of the same policy (a scannable card summary and the full legal text) and a switch between them, plus the cookie consent banner that links to it. Covers the token substitutions, turning named parts on and off (AI clauses, CCPA, COPPA, cookies), adding/removing/reordering/rewriting sections, the block types, the React props, the consent banner and its stored record, the Markdown/HTML/text renderers, the CLI, and wiring it into a Next.js app. Use when adding or editing a terms, privacy or security page or a SECURITY.md, adding or changing a cookie consent banner, gating analytics on consent, replacing a hand-written legal page, changing which clauses a product publishes, or troubleshooting one — a `{{token}}` showing through, a section that won't disappear, a banner that keeps coming back, cards rendering as plain text, or a Next build that can't parse the package.
 ---
 
 # Working With legal-terms-privacy-policy
@@ -13,6 +13,15 @@ One legal document, two presentations, everything configurable. `packages/legal-
 - `full` — the long-form legal text from the QwkSearch and Debate AI pages. 18 sections with numbered subsections, the CCPA notice, the AI Ethical Use Policy.
 
 Default is `full` in the renderers and `summary` in the React component (the switch is right there, so readers who want the binding text are one click away).
+
+**Which policy is on the page is a separate axis — `document`:**
+
+- `'combined'` (default) — Terms of Service + Privacy Policy, the original single page.
+- `'terms'` / `'privacy'` — one half. Every top-level section carries `documents: ['terms' | 'privacy', …]`; shared ones (introduction, changes, third-party, contact) list both and appear in each.
+- `'security'` — a Security Policy modeled on a `SECURITY.md` (`src/content/security.ts`): supported versions, reporting a vulnerability to `securityEmail` (falls back to `contactEmail`), coordinated disclosure, scope, safe harbor. Not in the combined default. Its ids are prefixed `security-policy-`, and its sections are `part: 'core'` — `parts.security` is the Privacy Policy's data-security section, not this.
+- An array (`['terms', 'security']`) puts several on one page, in terms → privacy → security order.
+
+The default title and badges follow the selection (`"{appName} Privacy Policy"`; GDPR/CCPA pills only with privacy, `Coordinated Disclosure` with security, none for terms alone). React shorthands: `<TermsOfService>`, `<PrivacyPolicy>`, `<SecurityPolicy>` from `/react`.
 
 ## Setup
 
@@ -47,6 +56,8 @@ Two things that bite on first install:
 
 | You want | Use |
 | --- | --- |
+| Terms and privacy on separate pages | `document="terms"` / `document="privacy"`, or `<TermsOfService>` / `<PrivacyPolicy>` |
+| A security / vulnerability disclosure page or SECURITY.md | `document="security"` or `<SecurityPolicy>`; CLI `--document security` |
 | The product's name, email, dates in the text | Token props: `appName`, `contactEmail`, `lastRevisedDate`, … |
 | No AI clauses at all (product has no model) | `parts={{ ai: false }}` |
 | No California / COPPA / cookie notice | `parts={{ california: false, children: false, cookies: false }}` |
@@ -75,6 +86,10 @@ The legal text carries `{{token}}` placeholders, filled by props of the same nam
 | `minimumAge` | `18` | Acceptance of Terms (summary) |
 | `childrenAge` | `13` | Children's Privacy |
 | `dataDeletionDays` | `30` | Data Security and Retention |
+| `securityEmail` | falls back to `contactEmail` | Security Policy: reporting, contact |
+| `supportedVersions` | `"The latest release"` | Security Policy: supported versions |
+| `securityResponseDays` | `3` | Security Policy: acknowledgement (business days) |
+| `disclosureDays` | `90` | Security Policy: time to fix before disclosure |
 
 Custom placeholders for your own sections go in `tokens={{ brokerName: 'Alpaca' }}`.
 
@@ -202,6 +217,12 @@ The HTML renderer escapes interpolated values and links bare emails and URLs. `L
 # Generate a repo's TERMS.md
 npx legal-terms-privacy-policy --app-name Acme --variant full > TERMS.md
 
+# Separate files per policy
+npx legal-terms-privacy-policy --app-name Acme --document terms > TERMS.md
+npx legal-terms-privacy-policy --app-name Acme --document privacy > PRIVACY.md
+npx legal-terms-privacy-policy --app-name Acme --security-email security@acme.com \
+  --supported-versions "2.x" --document security > SECURITY.md
+
 # A static page with the AI and California clauses dropped
 npx legal-terms-privacy-policy --app-name Acme --contact-email legal@acme.com \
   --format html --standalone --no-part ai --no-part california > terms.html
@@ -210,13 +231,13 @@ npx legal-terms-privacy-policy --app-name Acme --contact-email legal@acme.com \
 npx legal-terms-privacy-policy --app-name Acme --format json | jq '.sections[].id'
 ```
 
-`--format` takes `markdown`, `html`, `text`, `json`. `--no-part`/`--part`, `--include`, `--exclude` are repeatable. `--help` lists everything.
+`--format` takes `markdown`, `html`, `text`, `json`. `--document` takes `combined`, `terms`, `privacy`, `security` or a comma list. `--no-part`/`--part`, `--include`, `--exclude` are repeatable. `--help` lists everything.
 
 The bin runs under plain `node` (22.6+) — `cli.mjs` registers `ts-loader.mjs`, a resolve hook that retries extensionless relative imports as `.ts`, and Node strips the types itself.
 
 ## Keeping the two variants honest
 
-The summary restates; the full text binds. **Edit one, edit the other** — `src/content/summary.ts` and `src/content/full.ts`. A summary claiming something the full text does not support is the specific failure this package is shaped to avoid, which is why `variantSwitch` defaults on and both variants ship together.
+The summary restates; the full text binds. **Edit one, edit the other** — `src/content/summary.ts` and `src/content/full.ts` (and both exports of `src/content/security.ts`). A new top-level section needs a `documents` tag, or it lands in both terms and privacy. A summary claiming something the full text does not support is the specific failure this package is shaped to avoid, which is why `variantSwitch` defaults on and both variants ship together.
 
 When a product's policy genuinely differs from the boilerplate (a broker's disclosures, a data processor's subprocessor list), put it in `add`/`replace` in that app rather than editing the shared content — the shared files are what every other app renders.
 

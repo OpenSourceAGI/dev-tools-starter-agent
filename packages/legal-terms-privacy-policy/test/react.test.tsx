@@ -2,6 +2,7 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import LegalTermsPrivacyPolicy from '../src/react/LegalTermsPrivacyPolicy';
+import { PrivacyPolicy, SecurityPolicy, TermsOfService } from '../src/react/index';
 
 /**
  * Server-renders the page the way a Next.js route does. Catches what the data
@@ -77,5 +78,33 @@ describe('<LegalTermsPrivacyPolicy />', () => {
     const html = render({ appName: 'Acme', variant: 'full', parts: { ai: false } });
     expect(html).not.toContain('id="ai-ethics"');
     expect(html).toContain('id="introduction"');
+  });
+
+  it('renders a single policy through the document prop', () => {
+    const html = render({ appName: 'Acme', document: 'terms', variant: 'full' });
+    expect(html).toContain('Acme Terms of Service</h1>');
+    expect(html).not.toContain('id="privacy-policy"');
+  });
+});
+
+describe('single-policy components', () => {
+  it('renders the Terms of Service, Privacy Policy and Security Policy separately', () => {
+    const terms = renderToStaticMarkup(<TermsOfService appName="Acme" defaultVariant="full" />);
+    expect(terms).toContain('id="liability"');
+    expect(terms).not.toContain('id="privacy-policy"');
+
+    const privacy = renderToStaticMarkup(<PrivacyPolicy appName="Acme" defaultVariant="full" />);
+    expect(privacy).toContain('id="privacy-policy"');
+    expect(privacy).not.toContain('id="liability"');
+
+    for (const variant of ['summary', 'full'] as const) {
+      const security = renderToStaticMarkup(
+        <SecurityPolicy appName="Acme" contactEmail="legal@acme.com" defaultVariant={variant} />,
+      );
+      expect(security).toContain('Acme Security Policy');
+      expect(security).toContain('id="security-policy-reporting"');
+      expect(security).toContain('legal@acme.com');
+      expect(security).toContain('<svg');
+    }
   });
 });
