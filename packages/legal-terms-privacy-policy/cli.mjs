@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Print a configured Terms of Service + Privacy Policy as Markdown, HTML or
+ * Print a configured Terms of Service, Privacy Policy and/or Security Policy
+ * as Markdown, HTML or
  * plain text — for a repo's `TERMS.md`, a static page, or a diff of what a
  * config change does to the policy text.
  *
@@ -9,6 +10,7 @@
  * npx legal-terms-privacy-policy --app-name Acme --variant full > TERMS.md
  * npx legal-terms-privacy-policy --app-name Acme --format html --standalone \
  *   --no-part california --exclude social-features > terms.html
+ * npx legal-terms-privacy-policy --app-name Acme --document security > SECURITY.md
  * ```
  */
 import { register } from 'node:module';
@@ -20,12 +22,16 @@ const { renderMarkdown, renderHtml, renderText, resolveLegalDoc } = await import
 );
 
 const USAGE = `
-legal-terms-privacy-policy — print a configurable Terms of Service + Privacy Policy
+legal-terms-privacy-policy — print a configurable Terms of Service, Privacy Policy
+or Security Policy
 
 Usage:
   legal-terms-privacy-policy [options]
 
 Document:
+  --document <id[,id...]>     Which policy to print: combined, terms, privacy,
+                              security, or a comma list (default: combined —
+                              Terms of Service + Privacy Policy)
   --variant <summary|full>    Which presentation to print (default: full)
   --format <markdown|html|text|json>
                               Output format (default: markdown)
@@ -42,6 +48,10 @@ Values substituted into the text:
   --minimum-age <n>           Minimum age to hold an account
   --children-age <n>          COPPA age threshold
   --deletion-days <n>         Days to purge data after account deletion
+  --security-email <email>    Vulnerability reports (default: --contact-email)
+  --supported-versions <text> Versions receiving security fixes
+  --response-days <n>         Business days to acknowledge a report
+  --disclosure-days <n>       Days to allow for a fix before disclosure
 
 Choosing what appears:
   --no-part <id>              Drop a named part; repeatable. One of:
@@ -57,6 +67,8 @@ Choosing what appears:
   --list-sections             Print the section ids of the chosen variant
   -h, --help                  Show this help
 `.trim();
+
+const DOCUMENT_IDS = new Set(['combined', 'terms', 'privacy', 'security']);
 
 const PART_IDS = new Set([
   'ai',
@@ -87,6 +99,10 @@ function parseArgs(argv) {
     '--minimum-age': 'minimumAge',
     '--children-age': 'childrenAge',
     '--deletion-days': 'dataDeletionDays',
+    '--security-email': 'securityEmail',
+    '--supported-versions': 'supportedVersions',
+    '--response-days': 'securityResponseDays',
+    '--disclosure-days': 'disclosureDays',
     '--title': 'title',
   };
 
@@ -101,6 +117,18 @@ function parseArgs(argv) {
       standalone = true;
     } else if (arg === '--no-numbers') {
       options.features = { ...options.features, numbered: false };
+    } else if (arg === '--document') {
+      const ids = (argv[++i] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+      const unknown = ids.find((id) => !DOCUMENT_IDS.has(id));
+      if (unknown || !ids.length) {
+        console.error(
+          `Unknown document "${unknown ?? ''}". Expected one of: ${[...DOCUMENT_IDS].join(', ')}`,
+        );
+        process.exit(1);
+      }
+      options.document = ids.includes('combined')
+        ? [...new Set([...ids.filter((id) => id !== 'combined'), 'terms', 'privacy'])]
+        : ids;
     } else if (arg === '--format') {
       format = argv[++i];
     } else if (arg === '--no-part' || arg === '--part') {

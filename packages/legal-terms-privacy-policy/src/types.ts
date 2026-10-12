@@ -102,6 +102,13 @@ export interface Section {
    * {@link LegalDocOptions.parts} without listing every section id.
    */
   part?: PartId;
+  /**
+   * Which policy documents this top-level section belongs to, for
+   * {@link LegalDocOptions.document}. A section in both the Terms of Service
+   * and the Privacy Policy (the introduction, the contact details) lists
+   * both. Untagged sections count as `['terms', 'privacy']`.
+   */
+  documents?: DocumentId[];
 }
 
 /**
@@ -128,6 +135,23 @@ export type PartId =
   | 'children'
   | 'security'
   | 'thirdParty';
+
+/**
+ * The separate policies this package can render.
+ *
+ * - `terms` — the Terms of Service.
+ * - `privacy` — the Privacy Policy.
+ * - `security` — a Security Policy in the shape of a `SECURITY.md`: supported
+ *   versions, how to report a vulnerability, and the disclosure process.
+ */
+export type DocumentId = 'terms' | 'privacy' | 'security';
+
+/**
+ * What {@link LegalDocOptions.document} accepts: one policy, several in one
+ * page, or `'combined'` — the Terms of Service and Privacy Policy together,
+ * which is the default.
+ */
+export type DocumentSelection = 'combined' | DocumentId | DocumentId[];
 
 /** The two presentations of the same policy. */
 export type Variant = 'summary' | 'full';
@@ -159,6 +183,14 @@ export interface BaseTokens {
   childrenAge: number | string;
   /** Days after account deletion within which personal data is purged. */
   dataDeletionDays: number | string;
+  /** Address for vulnerability reports. Defaults to `contactEmail`. */
+  securityEmail: string;
+  /** Versions receiving security fixes, named in the Security Policy. */
+  supportedVersions: string;
+  /** Business days within which a vulnerability report is acknowledged. */
+  securityResponseDays: number | string;
+  /** Days a reporter is asked to wait for a fix before public disclosure. */
+  disclosureDays: number | string;
 }
 
 /**
@@ -212,6 +244,11 @@ export interface LegalDocOptions extends Partial<BaseTokens> {
   tokens?: Record<string, string | number>;
   /** Which presentation to render. Defaults to `'full'`. */
   variant?: Variant;
+  /**
+   * Which policy to render: `'terms'`, `'privacy'`, `'security'`, a list of
+   * them, or `'combined'` (Terms of Service + Privacy Policy, the default).
+   */
+  document?: DocumentSelection;
   /** Turn named parts of the document on or off. */
   parts?: Partial<Record<PartId, boolean>>;
   /** Keep only these section ids (applied before `exclude`). */
@@ -232,13 +269,18 @@ export interface LegalDocOptions extends Partial<BaseTokens> {
   features?: Partial<LegalFeatures>;
   /** Compliance pills to show when `features.badges` is on. */
   badges?: string[];
-  /** Document title. Defaults to `"{{appName}} Terms of Service & Privacy Policy"`. */
+  /**
+   * Document title. Defaults to the selected policies' names, e.g.
+   * `"{{appName}} Terms of Service & Privacy Policy"`.
+   */
   title?: string;
 }
 
 /** A fully-resolved document, ready to render. */
 export interface LegalDoc {
   variant: Variant;
+  /** The policies this document contains, in order. */
+  documents: DocumentId[];
   title: string;
   tokens: LegalTokens;
   features: LegalFeatures;

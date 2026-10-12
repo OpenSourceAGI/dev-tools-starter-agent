@@ -14,6 +14,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'BookOpen',
     accent: 'emerald',
     part: 'core',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',
@@ -35,6 +36,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'FileText',
     accent: 'blue',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -59,6 +61,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Sparkles',
     accent: 'purple',
     part: 'ai',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -114,6 +117,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'User',
     accent: 'amber',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -144,6 +148,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Shield',
     accent: 'rose',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -178,6 +183,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Eye',
     accent: 'cyan',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -213,6 +219,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Settings',
     accent: 'teal',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -268,6 +275,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Scale',
     accent: 'indigo',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -292,6 +300,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Lock',
     accent: 'green',
     part: 'security',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -326,6 +335,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Star',
     accent: 'yellow',
     part: 'cookies',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -355,6 +365,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Building2',
     accent: 'purple',
     part: 'thirdParty',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',
@@ -379,6 +390,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'AlertTriangle',
     accent: 'red',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'note',
@@ -405,6 +417,7 @@ export const SUMMARY_SECTIONS: Section[] = [
     icon: 'Mail',
     accent: 'blue',
     part: 'core',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',

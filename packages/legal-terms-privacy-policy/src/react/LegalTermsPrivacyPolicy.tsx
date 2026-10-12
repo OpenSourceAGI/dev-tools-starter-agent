@@ -98,9 +98,10 @@ function SectionBody({
 }
 
 /**
- * A combined Terms of Service and Privacy Policy page with two presentations
- * of the same policy — a scannable card summary and the full legal text — and
- * a switch between them.
+ * A Terms of Service and Privacy Policy page with two presentations of the
+ * same policy — a scannable card summary and the full legal text — and a
+ * switch between them. Pass `document` to render the policies separately
+ * (`'terms'`, `'privacy'`, `'security'`) instead of combined.
  *
  * Content, tokens, which sections appear and in what order all come from
  * {@link LegalDocOptions}; nothing here needs editing to adopt it.
@@ -112,6 +113,7 @@ function SectionBody({
  *   contactEmail="legal@qwksearch.com"
  *   lastRevisedDate="March 1, 2026"
  *   defaultVariant="full"
+ *   document="privacy"
  *   parts={{ california: false }}
  * />
  * ```

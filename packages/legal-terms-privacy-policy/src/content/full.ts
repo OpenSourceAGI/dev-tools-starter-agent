@@ -15,6 +15,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'BookOpen',
     accent: 'emerald',
     part: 'core',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',
@@ -36,6 +37,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'FileText',
     accent: 'blue',
     part: 'core',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',
@@ -49,6 +51,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Sparkles',
     accent: 'purple',
     part: 'ai',
+    documents: ['terms'],
     subsections: [
       {
         id: 'ai-trust-but-verify',
@@ -129,6 +132,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'User',
     accent: 'amber',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -146,6 +150,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Globe',
     accent: 'blue',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -163,6 +168,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'FileText',
     accent: 'indigo',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -180,6 +186,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Shield',
     accent: 'rose',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -262,6 +269,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Star',
     accent: 'yellow',
     part: 'cookies',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -283,6 +291,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Users',
     accent: 'purple',
     part: 'privacy',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'ol',
@@ -307,6 +316,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Users',
     accent: 'cyan',
     part: 'thirdParty',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -320,6 +330,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Building2',
     accent: 'purple',
     part: 'thirdParty',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',
@@ -333,6 +344,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Users',
     accent: 'emerald',
     part: 'children',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -346,6 +358,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Lock',
     accent: 'green',
     part: 'security',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -367,6 +380,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Scale',
     accent: 'indigo',
     part: 'california',
+    documents: ['privacy'],
     blocks: [
       {
         type: 'p',
@@ -463,6 +477,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Star',
     accent: 'amber',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -476,6 +491,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'AlertTriangle',
     accent: 'red',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -493,6 +509,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'X',
     accent: 'slate',
     part: 'core',
+    documents: ['terms'],
     blocks: [
       {
         type: 'p',
@@ -506,6 +523,7 @@ export const FULL_SECTIONS: Section[] = [
     icon: 'Mail',
     accent: 'blue',
     part: 'core',
+    documents: ['terms', 'privacy'],
     blocks: [
       {
         type: 'p',

@@ -5,6 +5,8 @@
 export { default as LegalTermsPrivacyPolicy } from './LegalTermsPrivacyPolicy';
 export { default } from './LegalTermsPrivacyPolicy';
 export type { LegalTermsPrivacyPolicyProps } from './LegalTermsPrivacyPolicy';
+export { PrivacyPolicy, SecurityPolicy, TermsOfService } from './policies';
+export type { PolicyPageProps } from './policies';
 export { BlockView, linkify } from './blocks';
 export { default as CookieConsent } from './CookieConsent';
 export type { CookieConsentLink, CookieConsentProps } from './CookieConsent';
