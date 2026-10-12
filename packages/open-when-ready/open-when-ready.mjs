@@ -219,8 +219,12 @@ function resolvePortless() {
  * file, and polls the log for ready/error signals to open the browser or AI helper.
  */
 async function run() {
+  // Pin the log to an absolute path: the poll below runs for as long as the
+  // server does, and must keep reading this run's log even if the process's
+  // working directory changes in the meantime.
+  const logFile = path.resolve(logPath);
   try {
-    await fsPromises.rm(logPath, { force: true });
+    await fsPromises.rm(logFile, { force: true });
   } catch {}
 
   const { portlessBin, appName } = resolvePortless();
@@ -230,7 +234,12 @@ async function run() {
     detached: true,
   });
 
-  const logStream = fs.createWriteStream(logPath);
+  const logStream = fs.createWriteStream(logFile);
+  // A log that cannot be written (e.g. its directory was removed) must not
+  // crash the wrapper; the server output still reaches the terminal.
+  logStream.on("error", (err) => {
+    console.error(`[open-ready] Could not write ${logFile}: ${err.message}`);
+  });
   proc.stdout?.pipe(process.stdout);
   proc.stdout?.pipe(logStream);
   proc.stderr?.pipe(process.stderr);
@@ -244,8 +253,8 @@ async function run() {
 
   const poll = setInterval(async () => {
     try {
-      const stats = fs.statSync(logPath);
-      const currentLog = await fsPromises.readFile(logPath, "utf8");
+      const stats = fs.statSync(logFile);
+      const currentLog = await fsPromises.readFile(logFile, "utf8");
 
       // Stability check LAST - check ready first!
       const logChanged = stats.size !== lastLogSize;
