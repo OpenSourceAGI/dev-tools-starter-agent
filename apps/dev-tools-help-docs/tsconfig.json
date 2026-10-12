@@ -19,6 +19,7 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
+      "@code-tree-graph/*": ["../../packages/code-tree-graph/*"],
       "fumadocs-mdx:collections/*": [".source/*"]
     },
     "plugins": [

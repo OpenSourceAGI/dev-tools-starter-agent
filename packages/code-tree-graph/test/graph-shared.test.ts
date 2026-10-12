@@ -96,8 +96,8 @@ describe("buildChart", () => {
     expect(chart).toContain('UpdateElementStyle(app_types_ts, $bgColor="#7e22ce"'); // "type" in name
     expect(chart).toContain('UpdateElementStyle(app_lib_helper_ts, $bgColor="#1d4ed8"'); // core
     expect(chart).toContain('UpdateElementStyle(tool_ts, $bgColor="#334155"'); // util
-    expect(chart).toContain('UpdateBoundaryStyle(pkg_app, ');
-    expect(chart).toContain('UpdateBoundaryStyle(pkg_app_lib, ');
+    // Mermaid's C4 lexer has no UpdateBoundaryStyle; emitting it breaks the parse.
+    expect(chart).not.toContain("UpdateBoundaryStyle");
     expect(chart.trim().split("\n").at(-1)).toContain("UpdateLayoutConfig");
   });
 

@@ -1,0 +1,6 @@
+{
+  "title": "Demos",
+  "icon": "Play",
+  "description": "Live demos of packages in the monorepo.",
+  "pages": ["code-tree-graph"]
+}
