@@ -1,11 +1,6 @@
 <p align="center">
-    <img src="https://i.imgur.com/5lsiepL.png" width="300" >
+    <img src="https://i.imgur.com/CbolNVa"  >
     <br />
-<b>💍One Code to rule them all — and in the cloud compile them. </b>
-</p>
-
-<!-- template-git-repo:badges:start -->
-<p align="center">
     <a href="https://1computer.online/docs/packages/ask-ai-button"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
