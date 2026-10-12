@@ -13,7 +13,7 @@ config();
 /**
  * Cloud storage provider type
  */
-export type Provider = "amazon" | "backblaze" | "cloudflare";
+export type Provider = "amazon" | "backblaze" | "cloudflare" | "google";
 
 /**
  * Storage operation action type.
@@ -50,9 +50,12 @@ export interface StorageConfig {
   accessKeyId?: string;
   /** Secret access key. Falls back to `<PROVIDER>_SECRET_ACCESS_KEY`. */
   secretAccessKey?: string;
-  /** S3 endpoint for the bucket. Falls back to `<PROVIDER>_BUCKET_URL`. */
+  /**
+   * S3 endpoint for the bucket. Falls back to `<PROVIDER>_BUCKET_URL`, and for
+   * Google Cloud Storage to `https://storage.googleapis.com`.
+   */
   endpoint?: string;
-  /** Region. Only S3 uses it; R2 and B2 are always `auto`. */
+  /** Region. Only S3 uses it; R2, B2 and GCS are always `auto`. */
   region?: string;
   /**
    * A pre-built client, for tests or for a client configured with retry,
@@ -162,14 +165,25 @@ const PROVIDER_PREFIXES: Record<Provider, string> = {
   cloudflare: "CLOUDFLARE",
   backblaze: "BACKBLAZE",
   amazon: "AMAZON",
+  google: "GOOGLE",
 };
+
+/**
+ * Google Cloud Storage's S3-compatible XML API. Unlike R2 and B2 the endpoint is
+ * the same for every bucket, so it is the default rather than a required var.
+ */
+export const GOOGLE_STORAGE_ENDPOINT = "https://storage.googleapis.com";
+
+/** How many single-object deletes run at once where batch delete is missing. */
+const DELETE_CONCURRENCY = 10;
 
 /** `DeleteObjects` takes at most 1000 keys per request. */
 const DELETE_BATCH_SIZE = 1000;
 
 /**
  * Which provider the environment is configured for, by looking for a complete
- * set of credentials under each prefix in turn: Cloudflare, Backblaze, Amazon.
+ * set of credentials under each prefix in turn: Cloudflare, Backblaze, Amazon,
+ * Google. Google needs no `GOOGLE_BUCKET_URL`, since its endpoint is fixed.
  *
  * @returns The detected provider, or `cloudflare` when none is fully configured
  * (in which case the missing credentials are reported on the first call).
@@ -183,12 +197,9 @@ export function detectProvider(): Provider {
     Provider,
     string
   ][]) {
-    const complete = [
-      "BUCKET_NAME",
-      "ACCESS_KEY_ID",
-      "SECRET_ACCESS_KEY",
-      "BUCKET_URL",
-    ].every((name) => process.env[`${prefix}_${name}`]);
+    const required = ["BUCKET_NAME", "ACCESS_KEY_ID", "SECRET_ACCESS_KEY"];
+    if (provider !== "google") required.push("BUCKET_URL");
+    const complete = required.every((name) => process.env[`${prefix}_${name}`]);
 
     if (complete) return provider;
   }
@@ -213,27 +224,35 @@ export function resolveConfig(config: StorageConfig = {}): ResolvedConfig {
 
   return {
     provider,
-    // R2 and B2 derive the region from the endpoint; only S3 needs a real one.
+    // R2, B2 and GCS derive the region from the endpoint; only S3 needs a real one.
     region:
       provider === "amazon"
         ? config.region || process.env.AMAZON_REGION || "us-east-1"
         : "auto",
-    endpoint: config.endpoint || env("BUCKET_URL"),
+    endpoint:
+      config.endpoint ||
+      env("BUCKET_URL") ||
+      (provider === "google" ? GOOGLE_STORAGE_ENDPOINT : ""),
     bucket: config.bucket || env("BUCKET_NAME"),
     // B2 calls the same two credentials "application key id" and "application
     // key", and its console labels them that way, so both spellings are read.
+    // GCS calls its HMAC pair "access ID" and "secret", read the same way.
     accessKeyId:
-      config.accessKeyId || env("ACCESS_KEY_ID") || env("APPLICATION_KEY_ID"),
+      config.accessKeyId ||
+      env("ACCESS_KEY_ID") ||
+      env("APPLICATION_KEY_ID") ||
+      env("HMAC_ACCESS_ID"),
     secretAccessKey:
       config.secretAccessKey ||
       env("SECRET_ACCESS_KEY") ||
-      env("APPLICATION_KEY"),
+      env("APPLICATION_KEY") ||
+      env("HMAC_SECRET"),
   };
 }
 
 /**
- * One bucket, on Amazon S3, Cloudflare R2 or Backblaze B2, as an object with a
- * method per operation.
+ * One bucket, on Amazon S3, Cloudflare R2, Backblaze B2 or Google Cloud Storage,
+ * as an object with a method per operation.
  *
  * Credentials are resolved once, in the constructor, from the config you pass
  * and the environment: `new StorageManager()` with the env vars set is the whole
@@ -318,6 +337,12 @@ export class StorageManager {
       region,
       endpoint,
       credentials: { accessKeyId, secretAccessKey },
+      // GCS's XML API rejects the CRC32 checksum headers the SDK adds to every
+      // request by default, so only send them where an operation requires one.
+      ...(provider === "google" && {
+        requestChecksumCalculation: "WHEN_REQUIRED",
+        responseChecksumValidation: "WHEN_REQUIRED",
+      }),
     });
 
     return this.cachedClient;
@@ -534,7 +559,9 @@ export class StorageManager {
    * Empty the bucket, or everything under a prefix. Irreversible.
    *
    * Lists and deletes in batches of 1000 (the API's per-request limit) until
-   * nothing is left, so it finishes the job on a bucket of any size.
+   * nothing is left, so it finishes the job on a bucket of any size. GCS has no
+   * multi-object delete in its S3 API, so there each key is deleted on its own,
+   * a few at a time.
    *
    * @param prefix - Restrict the deletion to keys starting with this string.
    * Omitting it deletes everything in the bucket.
@@ -545,6 +572,17 @@ export class StorageManager {
   async deleteAll(prefix?: string): Promise<DeleteAllResult> {
     const keys = await this.list(prefix);
     if (keys.length === 0) return { success: true, count: 0 };
+
+    if (this.config.provider === "google") {
+      for (let index = 0; index < keys.length; index += DELETE_CONCURRENCY) {
+        await Promise.all(
+          keys
+            .slice(index, index + DELETE_CONCURRENCY)
+            .map((key) => this.delete(key)),
+        );
+      }
+      return { success: true, count: keys.length };
+    }
 
     for (let index = 0; index < keys.length; index += DELETE_BATCH_SIZE) {
       const batch = keys.slice(index, index + DELETE_BATCH_SIZE);

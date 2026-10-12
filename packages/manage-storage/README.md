@@ -38,7 +38,7 @@
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
     <br />
     <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/manage-storage"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
-    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </p>
 <!-- template-git-repo:badges:end -->
 
@@ -50,7 +50,8 @@
 
 # Cloud Storage Manager
 
-One class, `StorageManager`, for Amazon S3, Cloudflare R2 and Backblaze B2. It
+One class, `StorageManager`, for Amazon S3, Cloudflare R2, Backblaze B2 and
+Google Cloud Storage. It
 resolves credentials once, from the environment or from what you pass it, then
 exposes the bucket as methods: `.upload()`, `.download()`, `.list()`, `.copy()`,
 `.rename()`, `.delete()`, `.deleteAll()`, `.exists()`. Built on the official AWS
@@ -61,9 +62,19 @@ body an operation needs are in its signature rather than in a comment.
 — it boots this package with its dependencies installed; add your bucket's four
 env vars in the StackBlitz shell and the snippets below run as written.
 
+## Live demo
+
+`bun run dev` starts a demo page with a shadcn/ui settings panel: pick a
+provider, enter a bucket and its keys, test the connection, then upload, list,
+read and delete objects. Every action is a `StorageManager` call made by the
+demo's own server route (`api/storage.ts` on Vercel, Vite middleware locally),
+so the bucket needs no CORS setup. Blank fields fall back to the server's
+`<PROVIDER>_*` env vars. `bun run build:demo` builds it into `dist-demo/`, and
+`vercel.json` deploys the page and the route together.
+
 ## Features
 
-- **Multi-cloud**: the same calls against S3, R2 and B2 — only the endpoint differs
+- **Multi-cloud**: the same calls against S3, R2, B2 and GCS — only the endpoint differs
 - **Auto-detection**: the provider is read from whichever credential prefix your environment has
 - **Typed end to end**: `.upload(key, body)` and `.list(prefix)` are checked at the call site, not documented in prose
 - **Paginated**: `list()` follows the continuation token and `deleteAll()` batches, so neither stops silently at 1000 keys
@@ -100,7 +111,8 @@ await storage.delete("documents/report.pdf");
 
 Set environment variables for your preferred provider. The library detects which
 provider to use from the first prefix whose four variables are all present:
-Cloudflare, then Backblaze, then Amazon.
+Cloudflare, then Backblaze, then Amazon, then Google (which needs only three,
+since its endpoint is fixed).
 
 ### Cloudflare R2
 
@@ -133,6 +145,21 @@ AMAZON_BUCKET_URL=https://s3.amazonaws.com
 AMAZON_REGION=us-east-1
 ```
 
+### Google Cloud Storage
+
+```env
+GOOGLE_BUCKET_NAME=my-bucket
+GOOGLE_ACCESS_KEY_ID=GOOG1E...
+GOOGLE_SECRET_ACCESS_KEY=your-hmac-secret
+# GOOGLE_BUCKET_URL defaults to https://storage.googleapis.com
+```
+
+GCS is reached through its S3-compatible XML API with an **HMAC key**: Cloud
+Storage → Settings → Interoperability → *Create a key for a service account*.
+`GOOGLE_HMAC_ACCESS_ID` and `GOOGLE_HMAC_SECRET` are read too. GCS has no
+multi-object delete in that API, so `deleteAll()` deletes keys one at a time
+(ten in parallel) there.
+
 Or pass any of it to the constructor, which wins over the environment — the only
 option on an edge runtime, where there is no `process.env` to read:
 
@@ -154,12 +181,12 @@ const storage = new StorageManager({
 
 | Option            | Type                                     | Falls back to                                              |
 | ----------------- | ---------------------------------------- | ---------------------------------------------------------- |
-| `provider`        | `"amazon" \| "cloudflare" \| "backblaze"` | Auto-detected from the environment                         |
+| `provider`        | `"amazon" \| "cloudflare" \| "backblaze" \| "google"` | Auto-detected from the environment             |
 | `bucket`          | `string`                                 | `<PROVIDER>_BUCKET_NAME`                                   |
 | `accessKeyId`     | `string`                                 | `<PROVIDER>_ACCESS_KEY_ID`                                 |
 | `secretAccessKey` | `string`                                 | `<PROVIDER>_SECRET_ACCESS_KEY`                             |
-| `endpoint`        | `string`                                 | `<PROVIDER>_BUCKET_URL`                                    |
-| `region`          | `string`                                 | `AMAZON_REGION`, else `us-east-1`; R2 and B2 are `auto`     |
+| `endpoint`        | `string`                                 | `<PROVIDER>_BUCKET_URL`; GCS defaults to `https://storage.googleapis.com` |
+| `region`          | `string`                                 | `AMAZON_REGION`, else `us-east-1`; R2, B2 and GCS are `auto` |
 | `client`          | `S3Client`                               | A client built from the above — pass one to supply your own |
 
 Credentials are checked on the first operation, not in the constructor, so a
