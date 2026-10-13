@@ -113,6 +113,11 @@ export default defineConfig({
           transformerEscape(),
         ],
       },
+      // Remote README images (imgur, shields.io) are sized at build time; a
+      // rate-limited or unreachable host must not fail the whole build.
+      remarkImageOptions: {
+        onError: 'ignore',
+      },
       remarkCodeTabOptions: {
         parseMdx: true,
       },

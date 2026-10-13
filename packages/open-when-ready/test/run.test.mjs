@@ -20,6 +20,7 @@ let origArgv;
 let sigintBefore;
 let origTTY;
 let origCI;
+let intervals;
 
 const printfArgs = (text) => ["printf", `'${text}'`];
 
@@ -46,6 +47,15 @@ beforeEach(() => {
   sigintBefore = process.listeners("SIGINT");
   origTTY = process.stdin.isTTY;
   origCI = process.env.CI;
+  // Each run() starts a poll that only stops once the server is ready or its
+  // log goes quiet; stop any left over so one case's poll cannot outlive it.
+  intervals = [];
+  const realSetInterval = globalThis.setInterval;
+  vi.spyOn(globalThis, "setInterval").mockImplementation((...args) => {
+    const id = realSetInterval(...args);
+    intervals.push(id);
+    return id;
+  });
   opener.mockReset();
   waitOn.mockReset().mockResolvedValue(undefined);
   vi.spyOn(console, "error").mockImplementation(() => {});
@@ -54,6 +64,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  for (const id of intervals) clearInterval(id);
   process.chdir(cwd);
   process.argv = origArgv;
   for (const l of process.listeners("SIGINT")) {

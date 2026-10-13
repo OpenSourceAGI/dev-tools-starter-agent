@@ -1,12 +1,13 @@
 ---
 title: 'legal-terms'
-description: 'Configurable Terms of Service and Privacy Policy — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page and cookie consent banner, plus Markdown/HTML/text renderers and a CLI.'
+description: 'Configurable Terms of Service, Privacy Policy and Security Policy, together or separately — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page and cookie consent banner, plus Markdown/HTML/text renderers and a CLI.'
 icon: Scale
 ---
 
 {/* Generated from packages/legal-terms-privacy-policy/readme.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
 
 <div align="center">
+    <img src="https://i.imgur.com/jT7mxJk.png" /><br />
     <a href="https://1computer.online/docs/packages/legal-terms-privacy-policy"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
@@ -29,7 +30,7 @@ icon: Scale
 
 **🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill legal-terms-privacy-policy` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/legal-terms-privacy-policy/SKILL.md))
 
-One combined **Terms of Service + Privacy Policy**, in two presentations of the same policy, with every section addable, removable and reorderable from config.
+A **Terms of Service**, **Privacy Policy** and **Security Policy**, rendered together on one page or each on its own, in two presentations of the same policy, with every section addable, removable and reorderable from config.
 
 - **Summary** — the scannable card-and-icon layout published at [rights.institute/terms-privacy](https://rights.institute/terms-privacy).
 - **Full text** — the long-form legal document published by QwkSearch, Debate AI and AI Broker.
@@ -71,6 +72,40 @@ export default function TermsPage() {
 ```
 
 The component renders the whole page — back link, title, badges, revision date, the summary ⇄ full-text switch, section navigation and the body. It is Tailwind-styled and works in light and dark.
+
+### Separate policies
+
+By default the page is the combined Terms of Service + Privacy Policy. Pass `document` to split them, or use the single-policy components:
+
+```tsx
+import { PrivacyPolicy, SecurityPolicy, TermsOfService } from 'legal-terms-privacy-policy/react';
+
+<TermsOfService appName="QwkSearch" contactEmail="legal@qwksearch.com" />   // /terms
+<PrivacyPolicy appName="QwkSearch" contactEmail="legal@qwksearch.com" />    // /privacy
+<SecurityPolicy appName="QwkSearch" securityEmail="security@qwksearch.com" /> // /security
+
+// equivalent:
+<LegalTermsPrivacyPolicy appName="QwkSearch" document="privacy" />
+```
+
+| `document` | Renders | Default title |
+| --- | --- | --- |
+| `'combined'` (default) | Terms of Service + Privacy Policy | `{appName} Terms of Service & Privacy Policy` |
+| `'terms'` | Introduction, AI use, accounts, use of services, materials, feedback, liability, termination, contact | `{appName} Terms of Service` |
+| `'privacy'` | Introduction, data collection and disclosure, cookies, children, data security, California notice, contact | `{appName} Privacy Policy` |
+| `'security'` | The Security Policy (below) | `{appName} Security Policy` |
+| `['terms', 'security']` | Any combination, on one page | `{appName} Terms of Service & Security Policy` |
+
+Sections shared by both halves (introduction, changes, third-party links, contact) appear in each. Every top-level section carries a `documents` field naming the policies it belongs to.
+
+### Security Policy
+
+`document="security"` renders a Security Policy modeled on a repository `SECURITY.md`: **Supported Versions**, **Reporting a Vulnerability** (to `securityEmail`, which falls back to `contactEmail`), the coordinated **Disclosure Process**, **Scope**, **Safe Harbor** and a **Security Contact**. It is not part of the combined default; add it with `document={['terms', 'privacy', 'security']}` if you want all three on one page. The CLI writes it straight to a repo file:
+
+```sh
+npx legal-terms-privacy-policy --app-name Acme --security-email security@acme.com \
+  --supported-versions "2.x" --document security > SECURITY.md
+```
 
 ### Controlling the variant
 
@@ -147,6 +182,10 @@ The legal text carries `{{token}}` placeholders. Unknown tokens are left visible
 | `minimumAge` | `18` | Acceptance of Terms |
 | `childrenAge` | `13` | Children's Privacy |
 | `dataDeletionDays` | `30` | Data Security and Retention |
+| `securityEmail` | same as `contactEmail` | Security Policy: reporting, contact |
+| `supportedVersions` | `"The latest release"` | Security Policy: supported versions |
+| `securityResponseDays` | `3` | Security Policy: acknowledgement time (business days) |
+| `disclosureDays` | `90` | Security Policy: time to fix before disclosure |
 | `tokens` | `{}` | Extra placeholders for your own sections |
 
 ### Adding and removing parts
@@ -228,7 +267,7 @@ Card and note blocks render as tinted tiles in the summary variant and flatten t
 
 ### Chrome
 
-`features` toggles the page furniture: `backLink`, `sidebar`, `tableOfContents`, `copyButtons`, `badges`, `variantSwitch`, `footer`, `numbered`. `badges` (the array) sets the compliance pills — `['GDPR Compliant', 'CCPA Compliant', 'Cookie Policy']` by default; pass `[]` to drop them.
+`features` toggles the page furniture: `backLink`, `sidebar`, `tableOfContents`, `copyButtons`, `badges`, `variantSwitch`, `footer`, `numbered`. `badges` (the array) sets the compliance pills — `['GDPR Compliant', 'CCPA Compliant', 'Cookie Policy']` by default when the Privacy Policy is on the page, plus `'Coordinated Disclosure'` with the Security Policy, and none for the Terms of Service alone; pass `[]` to drop them.
 
 ## Rendering without React
 
@@ -255,8 +294,14 @@ npx legal-terms-privacy-policy \
   --format html --standalone \
   --no-part california --exclude social-features > terms.html
 
+npx legal-terms-privacy-policy --app-name Acme --document terms > TERMS.md
+npx legal-terms-privacy-policy --app-name Acme --document privacy > PRIVACY.md
+npx legal-terms-privacy-policy --app-name Acme --document security > SECURITY.md
+
 npx legal-terms-privacy-policy --list-sections --variant summary
 ```
+
+`--document` takes `combined` (default), `terms`, `privacy`, `security`, or a comma list such as `terms,security`. `--security-email`, `--supported-versions`, `--response-days` and `--disclosure-days` set the Security Policy's values.
 
 `--format` takes `markdown`, `html`, `text` or `json`. Run `--help` for the full list.
 

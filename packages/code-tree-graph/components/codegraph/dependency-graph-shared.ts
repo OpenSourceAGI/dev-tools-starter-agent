@@ -109,17 +109,12 @@ export function buildChart(
     pathLookup.set(f.path.replace(/\.[^.]+$/, ""), f.id);
   }
 
-  // Track boundary IDs for styling
-  const pkgBoundaryIds: string[] = [];
-  const dirBoundaryIds: string[] = [];
-
   // Track all file IDs and their color classification for styling
   const fileStyles: { id: string; color: keyof typeof NODE_COLORS }[] = [];
 
   // Emit Container_Boundary per package, nested by subdirectory
   for (const [pkg, pkgFiles] of pkgs) {
     const pkgId = `pkg_${pkg.replace(/[^a-zA-Z0-9_]/g, "_")}`;
-    pkgBoundaryIds.push(pkgId);
     lines.push(`  Container_Boundary(${pkgId}, "${pkg} ➕") {`);
 
     // Separate files into subdirectories vs package root
@@ -145,7 +140,6 @@ export function buildChart(
     // Nested subdirectory boundaries
     for (const [subDir, subFiles] of subDirs) {
       const subId = `${pkgId}_${subDir.replace(/[^a-zA-Z0-9_]/g, "_")}`;
-      dirBoundaryIds.push(subId);
       lines.push(`    Container_Boundary(${subId}, "${subDir}/ ➕") {`);
       for (const f of subFiles) {
         const shortName = f.path.startsWith(`${pkg}/`)
@@ -375,17 +369,9 @@ export function buildChart(
     );
   }
 
-  // Per-boundary styling
-  for (const id of pkgBoundaryIds) {
-    lines.push(
-      `  UpdateBoundaryStyle(${id}, $bgColor="#0f172a", $fontColor="#38bdf8", $borderColor="#0284c7")`,
-    );
-  }
-  for (const id of dirBoundaryIds) {
-    lines.push(
-      `  UpdateBoundaryStyle(${id}, $bgColor="#1e293b", $fontColor="#a78bfa", $borderColor="#7c3aed")`,
-    );
-  }
+  // No per-boundary styling: Mermaid's C4 grammar has no UpdateBoundaryStyle,
+  // and emitting it makes the whole chart fail to parse. Boundaries take the
+  // cluster colors from the Mermaid theme instead.
 
   // Layout
   lines.push(`  UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="2")`);

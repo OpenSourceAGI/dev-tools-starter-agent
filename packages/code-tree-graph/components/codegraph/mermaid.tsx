@@ -41,14 +41,14 @@ function Mermaid({
         startOnLoad: false,
         maxTextSize: 500000,
         theme: 'dark',
+        // The chart is C4, which lays out boxes from its own font metrics.
+        // Inflating label text via theme/CSS makes labels overflow their boxes.
         themeVariables: {
           fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-          fontSize: '80px',
           primaryTextColor: '#f8fafc',
           lineColor: '#94a3b8',
           clusterBkg: '#0f172a',
           clusterBorder: '#64748b',
-          clusterTextSize: '96px',
         },
         flowchart: { curve: 'basis', rankSpacing: 120, nodeSpacing: 80 },
         securityLevel: 'loose',
@@ -141,7 +141,7 @@ function Mermaid({
     <TooltipProvider delayDuration={0}>
       <div
         ref={containerRef}
-        className="relative my-6 mx-auto max-w-[3000px] rounded-2xl border border-slate-800 bg-slate-950/70 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.35)] [&_.cluster-label]:overflow-visible [&_.cluster-label]:text-[80px] [&_.cluster-label]:font-black [&_.cluster-label]:leading-[1.15] [&_.cluster-label]:!fill-sky-300 [&_.cluster-label_span]:px-4 [&_.cluster-label_span]:py-1 [&_.cluster-label_span]:leading-[1.15] [&_.cluster-label_span]:text-sky-300 [&_.edgeLabel]:text-lg [&_.label]:text-[64px] [&_.label]:font-bold [&_.node]:cursor-pointer [&_.cluster_rect]:!stroke-sky-500/50 [&_.cluster_rect]:!stroke-[3px]"
+        className="relative my-6 mx-auto max-w-[3000px] rounded-2xl border border-slate-800 bg-slate-950/70 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.35)] [&_.cluster-label]:overflow-visible [&_.cluster-label]:font-black [&_.cluster-label]:leading-[1.15] [&_.cluster-label]:!fill-sky-300 [&_.cluster-label_span]:px-4 [&_.cluster-label_span]:py-1 [&_.cluster-label_span]:leading-[1.15] [&_.cluster-label_span]:text-sky-300 [&_.node]:cursor-pointer [&_.cluster_rect]:!stroke-sky-500/50 [&_.cluster_rect]:!stroke-[3px]"
       >
         {svgData ? (
           <div

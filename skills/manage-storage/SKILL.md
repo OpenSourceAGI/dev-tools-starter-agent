@@ -1,6 +1,6 @@
 ---
 name: manage-storage
-description: Guide to manage-storage (packages/manage-storage), the unified S3 / Cloudflare R2 / Backblaze B2 client — the StorageManager class and its upload/download/list/exists/copy/rename/delete/deleteAll methods, provider auto-detection from env vars, constructor credentials for Workers and serverless, and the deprecated manageStorage(action, options) function. Use when working with manage-storage or troubleshooting it — "missing credentials", credentials that work locally but not on the edge, wrong bucket or region, 403/SignatureDoesNotMatch, downloads coming back as the wrong type, list returning nothing or stopping at 1000 keys, or migrating a caller off manageStorage().
+description: Guide to manage-storage (packages/manage-storage), the unified S3 / Cloudflare R2 / Backblaze B2 / Google Cloud Storage client — the StorageManager class and its upload/download/list/exists/copy/rename/delete/deleteAll methods, provider auto-detection from env vars, constructor credentials for Workers and serverless, and the deprecated manageStorage(action, options) function. Use when working with manage-storage or troubleshooting it — "missing credentials", credentials that work locally but not on the edge, wrong bucket or region, 403/SignatureDoesNotMatch, downloads coming back as the wrong type, list returning nothing or stopping at 1000 keys, or migrating a caller off manageStorage().
 ---
 
 # Working With manage-storage
@@ -15,12 +15,14 @@ shapes live in [API.md](API.md).
 Two pieces:
 
 1. **Credentials**, per provider, as env vars — the provider is auto-detected
-   from whichever prefix has all four set, checked Cloudflare → Backblaze → Amazon:
+   from whichever prefix has all four set, checked Cloudflare → Backblaze → Amazon
+   → Google (Google needs no `BUCKET_URL`; it defaults to `https://storage.googleapis.com`):
 
 ```env
 CLOUDFLARE_BUCKET_NAME=…  CLOUDFLARE_ACCESS_KEY_ID=…  CLOUDFLARE_SECRET_ACCESS_KEY=…  CLOUDFLARE_BUCKET_URL=https://<account>.r2.cloudflarestorage.com
 BACKBLAZE_BUCKET_NAME=…   BACKBLAZE_ACCESS_KEY_ID=…   BACKBLAZE_SECRET_ACCESS_KEY=…   BACKBLAZE_BUCKET_URL=https://s3.us-west-004.backblazeb2.com
 AMAZON_BUCKET_NAME=…      AMAZON_ACCESS_KEY_ID=…      AMAZON_SECRET_ACCESS_KEY=…      AMAZON_BUCKET_URL=https://s3.amazonaws.com  AMAZON_REGION=us-east-1
+GOOGLE_BUCKET_NAME=…      GOOGLE_ACCESS_KEY_ID=GOOG1E…  GOOGLE_SECRET_ACCESS_KEY=…  # an HMAC key, from Cloud Storage → Settings → Interoperability
 ```
 
 2. **One manager** — `import { StorageManager } from "manage-storage"`, then
@@ -100,13 +102,14 @@ arguments are in the signatures instead of being runtime throws.
 
 | Symptom | Cause → fix |
 | --- | --- |
-| `Missing credentials for <provider>: …` | The error names the exact env vars it could not find. Either none of the three prefixes is fully set, or `.env` is loaded after the first operation. Set all four for one provider, or pass them to the constructor. |
+| `Missing credentials for <provider>: …` | The error names the exact env vars it could not find. Either none of the four prefixes is fully set, or `.env` is loaded after the first operation. Set all four for one provider, or pass them to the constructor. |
 | Works locally, fails on Cloudflare Workers / Vercel Edge | Auto-detection reads `process.env`, which edge runtimes don't populate. Pass credentials to the constructor (see recipe above). |
-| The wrong bucket or provider is used | Two providers are configured and detection picked the first complete one (Cloudflare, then Backblaze, then Amazon). Pass `provider` explicitly. `storage.provider` and `storage.bucket` say what it chose. |
+| The wrong bucket or provider is used | Two providers are configured and detection picked the first complete one (Cloudflare, then Backblaze, then Amazon, then Google). Pass `provider` explicitly. `storage.provider` and `storage.bucket` say what it chose. |
 | `403` / `SignatureDoesNotMatch` | Key/secret mismatch, or `endpoint` points at the wrong account or region. R2's endpoint is account-scoped (`https://<account_id>.r2.cloudflarestorage.com`); B2's is region-scoped (`s3.us-west-004.…`). The thrown message names the provider and bucket it failed against. |
 | B2 credentials look right and still fail | B2's console labels them *application key id* and *application key*. Both spellings are read (`BACKBLAZE_APPLICATION_KEY_ID` / `BACKBLAZE_APPLICATION_KEY`) — but use the app key, not the master key. |
 | `NoSuchBucket` | The bucket doesn't exist in that account — the library doesn't create buckets. |
-| `PermanentRedirect` / region errors on S3 | `AMAZON_REGION` (or `region`) doesn't match the bucket's region. Only S3 uses it; R2 and B2 are always `auto`. |
+| `PermanentRedirect` / region errors on S3 | `AMAZON_REGION` (or `region`) doesn't match the bucket's region. Only S3 uses it; R2, B2 and GCS are always `auto`. |
+| GCS returns `Access denied` / `InvalidAccessKeyId` | GCS's S3 API takes an **HMAC key** (access id starts `GOOG1`), not a service-account JSON key or an OAuth token. Create one under Cloud Storage → Settings → Interoperability; `GOOGLE_HMAC_ACCESS_ID` / `GOOGLE_HMAC_SECRET` are read too. The service account needs Storage Object Admin on the bucket. |
 | `download` returns mangled text | It decodes as UTF-8. For images, archives or anything binary use `downloadBytes`, which returns the `Uint8Array` unchanged. |
 | `list` comes back empty on a non-empty bucket | The credentials point at a different bucket, or the prefix doesn't match — prefixes are exact string matches, so `"documents"` and `"documents/"` differ. `list` returns keys only, no sizes or timestamps. |
 | `list` looks like it's missing files | It shouldn't any more: it follows the continuation token. If you are on an older release, `manageStorage("list")` stopped at the first 1000 keys. |

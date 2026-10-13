@@ -1,7 +1,7 @@
 {
   "name": "legal-terms",
-  "version": "0.2.33",
-  "description": "Configurable Terms of Service and Privacy Policy — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page and cookie consent banner, plus Markdown/HTML/text renderers and a CLI.",
+  "version": "0.3.2",
+  "description": "Configurable Terms of Service, Privacy Policy and Security Policy, together or separately — a scannable summary and the full legal text, with every section addable, removable and reorderable. React page and cookie consent banner, plus Markdown/HTML/text renderers and a CLI.",
   "type": "module",
   "author": "vtempest",
   "license": "rights.institute/prosper",
@@ -20,6 +20,7 @@
     },
     "./content/full": "./src/content/full.ts",
     "./content/summary": "./src/content/summary.ts",
+    "./content/security": "./src/content/security.ts",
     "./package.json": "./package.json",
     "./*": "./src/*"
   },
@@ -38,6 +39,9 @@
     "test:ci": "vitest run --reporter=default --reporter=junit --outputFile=./junit.xml --coverage",
     "typecheck": "tsc --noEmit",
     "demo": "node cli.mjs --app-name 'Example App' --variant full --format markdown",
+    "demo:terms": "node cli.mjs --app-name 'Example App' --document terms --format markdown",
+    "demo:privacy": "node cli.mjs --app-name 'Example App' --document privacy --format markdown",
+    "demo:security": "node cli.mjs --app-name 'Example App' --document security --format markdown",
     "pub": "npm version patch && npm publish"
   },
   "keywords": [

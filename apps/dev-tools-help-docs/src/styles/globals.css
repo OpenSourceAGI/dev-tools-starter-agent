@@ -5,6 +5,9 @@
 @import 'fumadocs-openapi/css/preset.css';
 @import 'tw-animate-css';
 
+/* code-tree-graph demo renders the package source; scan it for Tailwind classes */
+@source '../../../../packages/code-tree-graph/components';
+
 
 /* Custom Refined Beige & Sand Desert Paper Theme Variables */
 :root {

@@ -1,5 +1,7 @@
 import type {
   Block,
+  DocumentId,
+  DocumentSelection,
   Card,
   LegalDoc,
   LegalDocOptions,
@@ -12,6 +14,7 @@ import type {
 } from './types';
 import { FULL_SECTIONS } from './content/full';
 import { SUMMARY_SECTIONS } from './content/summary';
+import { SECURITY_FULL_SECTIONS, SECURITY_SUMMARY_SECTIONS } from './content/security';
 
 /**
  * Placeholder values. Every one is overridable; `appName` is the only field
@@ -29,6 +32,10 @@ export const DEFAULT_TOKENS: LegalTokens = {
   minimumAge: 18,
   childrenAge: 13,
   dataDeletionDays: 30,
+  securityEmail: '',
+  supportedVersions: 'The latest release',
+  securityResponseDays: 3,
+  disclosureDays: 90,
 };
 
 /** Chrome shown unless a caller turns it off. */
@@ -46,11 +53,67 @@ export const DEFAULT_FEATURES: LegalFeatures = {
 /** Compliance pills shown under the title when `features.badges` is on. */
 export const DEFAULT_BADGES = ['GDPR Compliant', 'CCPA Compliant', 'Cookie Policy'];
 
-/** The built-in section trees, keyed by variant. */
+/** Pill added to the defaults when the Security Policy is on the page. */
+export const SECURITY_BADGE = 'Coordinated Disclosure';
+
+/**
+ * The built-in combined Terms of Service + Privacy Policy section trees, keyed
+ * by variant. Each top-level section's `documents` field says which of the two
+ * policies it belongs to.
+ */
 export const VARIANTS: Record<Variant, Section[]> = {
   summary: SUMMARY_SECTIONS,
   full: FULL_SECTIONS,
 };
+
+/** The built-in Security Policy section trees, keyed by variant. */
+export const SECURITY_VARIANTS: Record<Variant, Section[]> = {
+  summary: SECURITY_SUMMARY_SECTIONS,
+  full: SECURITY_FULL_SECTIONS,
+};
+
+/** Display names of each policy, used to build the default title. */
+export const DOCUMENT_TITLES: Record<DocumentId, string> = {
+  terms: 'Terms of Service',
+  privacy: 'Privacy Policy',
+  security: 'Security Policy',
+};
+
+const DOCUMENT_ORDER: DocumentId[] = ['terms', 'privacy', 'security'];
+const COMBINED: DocumentId[] = ['terms', 'privacy'];
+
+/**
+ * Turn a {@link DocumentSelection} into the list of policies it names, in
+ * canonical order (terms, privacy, security). `'combined'`, an empty list or
+ * nothing at all means the Terms of Service and Privacy Policy together.
+ */
+export function normalizeDocuments(selection?: DocumentSelection): DocumentId[] {
+  if (!selection || selection === 'combined') return [...COMBINED];
+  const list: string[] = Array.isArray(selection) ? selection : [selection];
+  const documents = DOCUMENT_ORDER.filter((id) => list.includes(id));
+  return documents.length ? documents : [...COMBINED];
+}
+
+/** `"A"`, `"A & B"`, `"A, B & C"`. */
+function joinTitles(names: string[]): string {
+  if (names.length <= 2) return names.join(' & ');
+  return `${names.slice(0, -1).join(', ')} & ${names[names.length - 1]}`;
+}
+
+/**
+ * The top-level sections of the chosen policies, before any caller filtering.
+ * Terms and privacy sections keep their order in the combined text, so a
+ * section shared by both (the introduction, the contact details) appears once.
+ */
+function selectSections(variant: Variant, documents: DocumentId[]): Section[] {
+  const sections = (VARIANTS[variant] ?? VARIANTS.full).filter((section) =>
+    (section.documents ?? COMBINED).some((id) => documents.includes(id)),
+  );
+  if (documents.includes('security')) {
+    sections.push(...(SECURITY_VARIANTS[variant] ?? SECURITY_VARIANTS.full));
+  }
+  return sections;
+}
 
 /**
  * Replace every `{{token}}` in `text` with its value.
@@ -199,7 +262,8 @@ function reorderSections(sections: Section[], order: string[]): Section[] {
 /**
  * Build a ready-to-render document from a caller's options.
  *
- * Order of operations: pick the variant's sections → drop parts and ids →
+ * Order of operations: pick the variant's sections for the chosen policies
+ * (`document`) → drop parts and ids →
  * patch surviving sections → insert new ones → reorder → interpolate tokens.
  * Inserted sections are interpolated too, so caller-authored text can use the
  * same `{{appName}}` placeholders as the built-ins.
@@ -211,6 +275,7 @@ function reorderSections(sections: Section[], order: string[]): Section[] {
  *   contactEmail: 'legal@qwksearch.com',
  *   lastRevisedDate: 'March 1, 2026',
  *   variant: 'full',
+ *   document: 'privacy',            // just the Privacy Policy
  *   parts: { california: false },   // drop the CCPA notice
  *   exclude: ['social-features'],   // drop one section by id
  * });
@@ -219,6 +284,7 @@ function reorderSections(sections: Section[], order: string[]): Section[] {
 export function resolveLegalDoc(options: LegalDocOptions = {}): LegalDoc {
   const {
     variant = 'full',
+    document,
     parts = {},
     include,
     exclude = [],
@@ -241,9 +307,11 @@ export function resolveLegalDoc(options: LegalDocOptions = {}): LegalDoc {
   const tokens: LegalTokens = { ...DEFAULT_TOKENS, ...extraTokens, ...defined };
   if (!tokens.companyName) tokens.companyName = tokens.appName;
   if (!tokens.effectiveDate) tokens.effectiveDate = tokens.lastRevisedDate;
+  if (!tokens.securityEmail) tokens.securityEmail = tokens.contactEmail;
 
+  const documents = normalizeDocuments(document);
   let sections = filterSections(
-    VARIANTS[variant] ?? VARIANTS.full,
+    selectSections(variant, documents),
     parts,
     include?.length ? new Set(include) : null,
     new Set(exclude),
@@ -253,12 +321,19 @@ export function resolveLegalDoc(options: LegalDocOptions = {}): LegalDoc {
   if (order?.length) sections = reorderSections(sections, order);
   sections = sections.map((s) => interpolateSection(s, tokens));
 
+  const defaultTitle = `{{appName}} ${joinTitles(documents.map((id) => DOCUMENT_TITLES[id]))}`;
+  const defaultBadges = [
+    ...(documents.includes('privacy') ? DEFAULT_BADGES : []),
+    ...(documents.includes('security') ? [SECURITY_BADGE] : []),
+  ];
+
   return {
     variant,
-    title: interpolate(title ?? '{{appName}} Terms of Service & Privacy Policy', tokens),
+    documents,
+    title: interpolate(title ?? defaultTitle, tokens),
     tokens,
     features: { ...DEFAULT_FEATURES, ...features },
-    badges: badges ?? DEFAULT_BADGES,
+    badges: badges ?? defaultBadges,
     sections,
   };
 }

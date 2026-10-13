@@ -1,6 +1,6 @@
 {
   "name": "ask-ai-button",
-  "version": "0.1.1",
+  "version": "0.1.10",
   "description": "Ask AI about this page: a dropdown or floating button that sends the current docs page plus your question to Claude, ChatGPT, Gemini, Perplexity and more, or copies the prompt",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -20,6 +20,9 @@
   "scripts": {
     "dev": "vite --config vite.demo.config.ts",
     "build": "vite build",
+    "build:demo": "vite build --config vite.demo.config.ts",
+    "preview": "vite preview --config vite.demo.config.ts",
+    "deploy:vercel": "npx vercel deploy --prod",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",

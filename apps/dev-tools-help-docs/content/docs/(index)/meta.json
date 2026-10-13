@@ -3,5 +3,5 @@
   "description": "Packages, apps and comparisons.",
   "icon": "BookOpen",
   "root": true,
-  "pages": ["index", "guides", "packages", "apps", "..."]
+  "pages": ["index", "guides", "packages", "demos", "apps", "..."]
 }

@@ -7,12 +7,8 @@ icon: Sparkles
 {/* Generated from packages/ask-ai-button/README.md by scripts/sync-readme-docs.ts. Edit the README, then run `bun run docs:sync`. */}
 
 <div align="center">
-    <img src="https://i.imgur.com/5lsiepL.png" width="300" />
+    <img src="https://i.imgur.com/CbolNVa.png" />
     <br />
-<b>💍One Code to rule them all — and in the cloud compile them. </b>
-</div>
-
-<div align="center">
     <a href="https://1computer.online/docs/packages/ask-ai-button"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
@@ -175,6 +171,14 @@ bun run dev        # demo page at demo/
 bun run test
 bun run build
 ```
+
+### Deploy the demo to Vercel
+
+`bun run build:demo` builds `demo/` as a static site into `dist-demo/`
+(`bun run preview` serves it). `vercel.json` points Vercel at that build, so a
+Vercel project with **Root Directory** set to `packages/ask-ai-button` deploys
+the demo with no other settings. From this directory, `bun run deploy:vercel`
+deploys with the Vercel CLI.
 
 ---
 

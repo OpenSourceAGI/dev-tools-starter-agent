@@ -1,0 +1,36 @@
+---
+title: code-tree-graph demo
+description: DependencyGraph and FileTreeView running on real packages from this monorepo.
+icon: Workflow
+---
+
+import { CodeTreeDemo } from '@/components/code-tree-demo'
+
+This page runs [`code-tree-graph`](/docs/packages/code-tree-graph) against its
+own source and a few other packages in the repo. Each tab is parsed with the
+package's local TypeScript/JS analyzer when the site is built, so nothing is
+fetched at runtime.
+
+- **Graph**: drag to pan, `Ctrl` + scroll to zoom, click a node to jump to it
+  in the table. The toggles show npm imports, types, private and exported
+  functions.
+- **Table**: search across names, imports, exports and JSDoc. Every row links
+  to the file on GitHub.
+
+<CodeTreeDemo />
+
+## The code behind this page
+
+```tsx title="src/components/code-tree-demo.tsx"
+import { DependencyGraph, FileTreeView } from 'code-tree-graph'
+
+<DependencyGraph paths={['../../packages/code-tree-graph']} ignore={['test']} />
+<FileTreeView
+  paths={['../../packages/code-tree-graph']}
+  ghBase='https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/code-tree-graph'
+  ignore={['test']}
+/>
+```
+
+Both components read the filesystem, so render them from a server component or
+MDX page. See the [package docs](/docs/packages/code-tree-graph) for every prop.

@@ -31,7 +31,7 @@ export interface GenerateProps {
 //     weight: 700,
 //   })
 // )
-const logo = readFile('./public/logo.svg').then((data) => ({
+const logo = readFile('./src/app/logo.svg').then((data) => ({
   src: 'logo.svg',
   data,
 }))
