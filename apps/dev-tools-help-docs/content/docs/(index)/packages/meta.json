@@ -27,6 +27,7 @@
     "verify-phone-sms",
     "web2mobile-wrapper",
     "---Other---",
+    "shadcn-sidebar",
     "shadcn-theme-menu"
   ]
 }
