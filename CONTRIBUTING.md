@@ -1,13 +1,13 @@
-# Contributing to Debate-AI
+# Contributing to Dev Tools
 
 Thanks for your interest in contributing! We welcome bug reports, documentation improvements, feature ideas, and pull requests.
 
-Debate-AI is a Bun + Turborepo monorepo: the web app lives in `apps/debate-ai.com`, and shared libraries — including the `reason-editor` argument editor — live in `packages/`.
+Dev Tools is a Bun + Turborepo monorepo: the web app lives in `apps/Dev Tools.com`, and shared libraries — including the `reason-editor` argument editor — live in `packages/`.
 
 ## Before You Start
 
 - Read the [README](README.md), the [CLAUDE.md](CLAUDE.md) repo guide, and the docs under [`packages/debate-help-docs/content/docs`](packages/debate-help-docs/content/docs).
-- Search [existing issues](https://github.com/debate/debate-ai.com/issues) and [pull requests](https://github.com/debate/debate-ai.com/pulls) to avoid duplicating work.
+- Search [existing issues](https://github.com/debate/Dev Tools.com/issues) and [pull requests](https://github.com/debate/Dev Tools.com/pulls) to avoid duplicating work.
 - For substantial changes — new tools, schema changes, or changes to how arguments and evidence are modeled — open an issue first to discuss the problem, proposed approach, and scope.
 - Be respectful and constructive in issues, reviews, and discussions.
 
@@ -40,7 +40,7 @@ Avoid starting a large implementation before maintainers have had a chance to co
 The fastest way to get the project running is [`git0`](https://www.npmjs.com/package/git0) — it downloads the repo, detects the project type, installs dependencies with Bun, and opens your editor in one step:
 
 ```bash
-npx git0 debate/debate-ai.com
+npx git0 debate/Dev Tools.com
 ```
 
 `git0` downloads a source snapshot without `.git` history, which is ideal for trying the project out. To submit a pull request you need a real git clone of your own fork:
@@ -51,8 +51,8 @@ npx git0 debate/debate-ai.com
 4. Run the project locally and confirm the existing tests pass.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/debate-ai.com.git
-cd debate-ai.com
+git clone https://github.com/YOUR-USERNAME/Dev Tools.com.git
+cd Dev Tools.com
 git checkout -b feat/short-description
 
 bun install          # installs every workspace package
@@ -65,7 +65,7 @@ Requires [Bun](https://bun.sh) 1.3.11 or newer (`packageManager` pins the exact 
 Useful filtered targets:
 
 ```bash
-bun run dev:web      # just the debate-ai.com web app
+bun run dev:web      # just the Dev Tools.com web app
 bun run dev:editor   # just the reason-editor package
 ```
 
