@@ -19,6 +19,10 @@ pnpm typecheck # tsc over the demo and the package source it pulls in
 
 From the package root, `pnpm demo` runs the dev server for you.
 
+## Deploying to Vercel
+
+A [`vercel.json`](./vercel.json) is included so a Vercel project with **Root Directory** set to `packages/shadcn-theme-menu/demo` builds with Vite (`bun run build`) and serves `dist/` without triggering Turborepo defaults.
+
 ## What it covers
 
 | Section | Shows |
