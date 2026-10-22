@@ -11,6 +11,7 @@ node_modules
 vite.config.*.timestamp-*
 .cloudflare
 .wrangler
+.vercel
 .vscode/
 .svelte-kit/*
 .source

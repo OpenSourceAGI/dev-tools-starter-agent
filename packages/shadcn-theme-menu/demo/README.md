@@ -6,22 +6,50 @@ against the package **source** rather than a published build, so a change in
 
 ## Running it
 
+The demo pins `bun` as its package manager, so use `bun` rather than `npm` or
+`pnpm` — `pnpm` refuses to run in a directory whose `packageManager` field names
+another runner.
+
 ```bash
-pnpm install
-pnpm dev       # http://localhost:3001
+bun install
+bun dev       # http://localhost:3001
 ```
 
 ```bash
-pnpm build     # production bundle in dist/
-pnpm preview   # serve that bundle
-pnpm typecheck # tsc over the demo and the package source it pulls in
+bun build     # production bundle in dist/
+bun preview   # serve that bundle
+bun typecheck # tsc over the demo and the package source it pulls in
 ```
 
-From the package root, `pnpm demo` runs the dev server for you.
+From the package root, `bun demo` runs the dev server for you.
 
 ## Deploying to Vercel
 
 A [`vercel.json`](./vercel.json) is included so a Vercel project with **Root Directory** set to `packages/shadcn-theme-menu/demo` builds with Vite (`bun run build`) and serves `dist/` without triggering Turborepo defaults.
+
+The `vercel.json` values are what make the build work, and they rely on two
+things that are easy to get wrong in the dashboard:
+
+- **Install command `bun install`**, not the default `npm install`. `npm`
+  refuses to run in a directory whose `packageManager` field names another
+  runner, and the demo's does.
+- **Root Directory** pointing at this folder, with the rest of the repo still
+  available to the build. The demo compiles the package *source* from `../src`,
+  so the build needs files above the root directory — keep Vercel's
+  "Include source files outside of the Root Directory" setting on.
+
+Note that the demo directory is deliberately **not** a member of the root
+`bun` workspace (`packages/*` does not reach `packages/shadcn-theme-menu/demo`).
+That is what keeps `bun install` here scoped to this one package instead of
+installing the whole monorepo.
+
+On a Hobby plan the team gets **one concurrent build**, and every project
+connected to this repository builds on every push. With several projects
+connected, a push queues one build per project behind each other, and a
+deployment can sit in "Queued" for many minutes before it even starts — the
+dashboard shows "Build Logs: Loading" the whole time, because there are no
+logs yet. Two ways out: connect only the projects you actually want to deploy,
+or stop auto-deploying on every push for the ones you don't.
 
 ## What it covers
 

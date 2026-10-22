@@ -26,7 +26,7 @@
   "scripts": {
     "build": "vite build",
     "ship": "npm run build; npx standard-version --release-as patch; rm CHANGELOG.md; npm publish",
-    "demo": "cd demo && pnpm dev",
+    "demo": "cd demo && bun dev",
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage"
