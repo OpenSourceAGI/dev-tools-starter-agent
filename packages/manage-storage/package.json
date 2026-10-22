@@ -1,6 +1,6 @@
 {
   "name": "manage-storage",
-  "version": "0.0.146",
+  "version": "0.0.148",
   "description": "Storage manager supporting AWS S3, Backblaze B2, Cloudflare R2, and Google Cloud Storage with automatic provider detection",
   "main": "./dist/manage-storage.js",
   "module": "./dist/manage-storage.js",
