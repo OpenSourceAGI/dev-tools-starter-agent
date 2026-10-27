@@ -71,12 +71,6 @@ jobs:
             install: npm install --ignore-scripts --legacy-peer-deps
             coverage: true
 
-          - name: legal-terms-privacy-policy
-            dir: packages/legal-terms-privacy-policy
-            runtime: node
-            install: npm install --ignore-scripts --legacy-peer-deps
-            coverage: true
-
           - name: test-google-login
             dir: packages/test-google-login
             runtime: bun
