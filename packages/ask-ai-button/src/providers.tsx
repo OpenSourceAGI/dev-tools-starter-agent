@@ -58,9 +58,9 @@ export const AI_PROVIDERS = [
     getHref: (p) => `https://chat.mistral.ai/chat?q=${q(p)}`,
   },
   {
-    id: "t3chat",
-    title: "T3 Chat",
-    getHref: (p) => `https://t3.chat/new?q=${q(p)}`,
+    id: "venice",
+    title: "Venice",
+    getHref: (p) => `https://venice.ai/chat?q=${q(p)}`,
   },
   {
     id: "brave",
