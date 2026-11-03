@@ -162,60 +162,6 @@ npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent
 npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill manage-storage
 ```
 
-See [skills/README.md](skills/README.md) for the full index.
-
-### ✅ Tests
-
-Seven packages are wired into CI reporting today. Each exposes a `test:ci` script that writes a
-`junit.xml` (and lcov coverage where its runner can produce one) for
-[`.github/workflows/tests.yml`](.github/workflows/tests.yml) to upload to Codecov
-Test Analytics, which tracks run times, failure rates and flaky tests, and comments
-the failing ones on the pull request.
-
-| Package | Runner | Run locally |
-| --- | --- | --- |
-| [setup-git-repo](packages/setup-git-repo/) | Vitest | `bun run test` |
-| [git0-repo-downloader](packages/git0-repo-downloader/) | `bun test` | `bun test` |
-| [web2mobile-wrapper](packages/web2mobile-wrapper/) | Jest | `npm test` |
-| [verify-phone-sms](packages/verify-phone-sms/) | Vitest | `npm test` |
-| [manage-storage](packages/manage-storage/) | Vitest | `bun run test` |
-| [template-git-repo](packages/template-git-repo/) | Vitest | `bun run test` |
-| [test-google-login](packages/test-google-login/) | Vitest | `bun run test` |
-
-Wiring up another package means adding a `test:ci` script that writes `junit.xml`
-into the package directory, then adding a matrix entry to that workflow. Coverage
-is flagged per package in [`codecov.yml`](codecov.yml), which is also what the
-per-package coverage badge in each README reads.
-
-### 📖 READMEs, badges and docs
-
-Each package README opens with a generated header describing **that package**: a
-badge row (its npm version and download counts, its published tarball's types and
-install size, its own Codecov flag, its docs page, a StackBlitz link to its
-directory) and the one-line command that installs **its** agent skill. Both live
-between markers and are never hand-edited:
-
-```bash
-bun run readmes          # rewrite every package's README header
-bun run readmes:check    # fail if any header is stale (for CI)
-```
-
-The skill line is generated because the command differs per package
-(`--skill <name>`, and a skill is not always named after its package): pasting it
-is how a README ends up advertising another package's skill. The script fails if
-a name has no `skills/<name>/SKILL.md`, and reports skills no README links to.
-
-Every package and app README is then published as a docs page under
-[`/docs/packages`](https://1computer.online/docs/packages), so the
-README is the single source and the docs site is a view of it:
-
-```bash
-bun run docs:sync       # regenerate apps/dev-tools-help-docs/content/docs/(index)/{packages,apps}
-```
-
-Edit the README, run `bun run docs:sync`, and commit both. The badge catalog
-itself lives in [`packages/template-git-repo/src/badges.js`](packages/template-git-repo/src/badges.js);
-its setup notes are generated into [`docs/BADGES.md`](packages/template-git-repo/docs/BADGES.md).
 
 
 🌟 Please star this repo so it will grow and get new features!
