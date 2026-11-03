@@ -18,6 +18,18 @@ const q = (prompt: string) => encodeURIComponent(prompt);
 /** Every provider that ships with the package, in display order. */
 export const AI_PROVIDERS = [
   {
+    id: "qwksearch",
+    title: "QwkSearch",
+    icon: <QwkSearchIcon />,
+    getHref: (p) => `https://qwksearch.com/?q=${q(p)}`,
+  },
+  {
+    id: "perplexity",
+    title: "Perplexity",
+    icon: <PerplexityIcon />,
+    getHref: (p) => `https://www.perplexity.ai/search?q=${q(p)}`,
+  },
+  {
     id: "claude",
     title: "Claude",
     icon: <ClaudeIcon />,
@@ -35,12 +47,6 @@ export const AI_PROVIDERS = [
     icon: <GeminiIcon />,
     getHref: (p) =>
       `https://aistudio.google.com/prompts/new_chat?prompt=${q(p)}`,
-  },
-  {
-    id: "perplexity",
-    title: "Perplexity",
-    icon: <PerplexityIcon />,
-    getHref: (p) => `https://www.perplexity.ai/search?q=${q(p)}`,
   },
   {
     id: "grok",
@@ -67,12 +73,6 @@ export const AI_PROVIDERS = [
     title: "Brave",
     icon: <BraveIcon />,
     getHref: (p) => `https://search.brave.com/ask?q=${q(p)}`,
-  },
-  {
-    id: "qwksearch",
-    title: "QwkSearch",
-    icon: <QwkSearchIcon />,
-    getHref: (p) => `https://qwksearch.com/?q=${q(p)}`,
   },
   {
     id: "cursor",

@@ -1,6 +1,6 @@
 ---
 name: ask-ai-button
-description: Guide to ask-ai-button (packages/ask-ai-button) — the "Ask AI about this page" React component for docs sites. Covers AskAIButton as a dropdown or floating action button, the inline AskAIPanel, CopyPageButton, link vs content prompt modes, choosing built-in providers (Claude, ChatGPT, Gemini, Perplexity, Grok, Copilot, Le Chat, Venice, Brave, QwkSearch, Cursor), adding custom URL or API (onSelect) providers, the URL-length fallback, theming with --aai-* variables, and Fumadocs integration. Use when adding an Ask AI / copy-for-LLM button to a docs page or troubleshooting one — prompts not pre-filling, popups blocked, the page text missing, unstyled panels, or CSP errors from the injected stylesheet.
+description: Guide to ask-ai-button (packages/ask-ai-button) — the "Ask AI about this page" React component for docs sites. Covers AskAIButton as a dropdown or floating action button, the inline AskAIPanel, CopyPageButton, link vs content prompt modes, choosing built-in providers (QwkSearch, Perplexity, Claude, ChatGPT, Gemini, Grok, Copilot, Le Chat, Venice, Brave, Cursor — listed in that order), adding custom URL or API (onSelect) providers, the URL-length fallback, theming with --aai-* variables, and Fumadocs integration. Use when adding an Ask AI / copy-for-LLM button to a docs page or troubleshooting one — prompts not pre-filling, popups blocked, the page text missing, unstyled panels, or CSP errors from the injected stylesheet.
 ---
 
 # Working With ask-ai-button
