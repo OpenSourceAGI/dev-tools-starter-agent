@@ -2,12 +2,23 @@
 
 A month-by-month summary of this repository's history, generated from `git log`. Each month is a bullet list, one bullet per change.
 
+## November 2026
+
+- **Replaced the T3 Chat provider with Venice** in `ask-ai-button` (`venice`, opens `venice.ai/chat`).
+- Listed **QwkSearch and Perplexity first** in `ask-ai-button`, so they lead the dropdown, the default provider list and the Ctrl/Cmd+Enter target.
+- Added an **AI services comparison table** to the `ask-ai-button` README and docs page, plus a collapsible table of other self-hosted and specialist tools.
+- Regrouped the **root and packages READMEs by category** with total and monthly npm download badges.
+
 ## October 2026
 
 - Added a **live demo page** to `code-tree-graph` and made it deployable on Vercel.
 - Rendered **Terms, Privacy, and Security policies separately** in `legal-terms`.
 - Added **Google Cloud Storage** and a live demo to `manage-storage`.
 - Made the `ask-ai-button` demo deployable on Vercel.
+- Made the **`shadcn-theme-menu` demo deployable on Vercel**.
+- Kept each `open-ready` run's poll on **its own log file**.
+- Added **in-place docs page editing** with the reason editor to `template-fumadocs`.
+- Removed the duplicate `test.yml` workflow, leaving `tests.yml` as the single test pipeline.
 - Spun the **Fumadocs Ask AI dropdown** out into its own package (#117).
 - Added a **hero parallax package showcase** to the `dev-tools-help-docs` homepage (#116).
 - Split the docs site into sections and moved search to the sidebar (#115).

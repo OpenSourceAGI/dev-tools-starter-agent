@@ -1,0 +1,21 @@
+---
+title: November 2026
+description: Venice replaces T3 Chat in the Ask AI button, QwkSearch and Perplexity move to the top, and a provider comparison table.
+---
+
+## Packages
+
+- **ask-ai-button** — the built-in `t3chat` provider is replaced by `venice`,
+  which opens `https://venice.ai/chat?q=…`. Code that passed `"t3chat"` in
+  `providers` should switch to `"venice"`.
+- **ask-ai-button** — `qwksearch` and `perplexity` now lead `AI_PROVIDERS`, so
+  they come first in the dropdown and the default provider list, and
+  Ctrl/Cmd+Enter opens QwkSearch.
+- **ask-ai-button** — the [package page](/docs/packages/ask-ai-button) and
+  README gained a table comparing every built-in AI service, plus a collapsible
+  table of other self-hosted and specialist tools.
+
+## Repository
+
+- The root README and `packages/readme.md` are regrouped by category, with
+  total and monthly npm download badges on each package.
