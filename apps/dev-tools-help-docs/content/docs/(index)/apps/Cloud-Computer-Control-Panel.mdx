@@ -148,6 +148,20 @@ required; each of the others turns on one more feature.
 | `RESEND_API_KEY` (alias `AUTH_RESEND_KEY`) | Magic-link sign-in. Without it, only password and OAuth sign-in work. | [resend.com/api-keys](https://resend.com/api-keys) |
 | `AUTH_TRUSTED_ORIGINS` | Extra comma-separated origins allowed to call the auth endpoints — needed when the VS Code extension webview signs in against a deployed instance. | Your own origins. |
 
+### Analytics — Amplitude + Session Replay
+
+Optional. With no key set, nothing is loaded or sent. When set, the signed-in
+user's better-auth ID becomes the Amplitude User ID (on login, signup, and a
+restored session), and sign-out resets it. Guest (anonymous) sessions stay on
+Amplitude's device ID. Replays use the `conservative` mask level, so all text
+and inputs are masked. Call `trackEvent(name, props)` from
+[`lib/analytics.ts`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/apps/Cloud-Computer-Control-Panel/lib/analytics.ts) in client code for custom events.
+
+| Variable | Enables | Where to get it |
+| --- | --- | --- |
+| `NEXT_PUBLIC_AMPLITUDE_API_KEY` | Analytics (autocapture) and Session Replay. | Amplitude → **Settings → Projects →** your project → **API Key**. |
+| `NEXT_PUBLIC_AMPLITUDE_REPLAY_SAMPLE_RATE` | Fraction of sessions recorded, `0`–`1`. Defaults to `1` (every session) for verifying capture; lower it in production, e.g. `0.1`. | Your own value. |
+
 ### AWS fallback credentials
 
 Optional, and only for single-tenant installs. A user's own saved credentials
