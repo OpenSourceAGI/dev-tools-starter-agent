@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { cookies } from "next/headers"
 import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { AmplitudeProvider } from "@/components/analytics/amplitude-provider"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Toaster as SonnerToaster } from "@/components/ui/sonner"
@@ -59,6 +60,7 @@ export default async function RootLayout({
           <SonnerToaster position="top-right" />
         </ThemeProvider>
         <Analytics />
+        <AmplitudeProvider />
       </body>
     </html>
   )
