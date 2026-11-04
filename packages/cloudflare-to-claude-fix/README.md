@@ -12,6 +12,7 @@
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/dt/cloudflare-to-claude-fix.svg" alt="NPM Total Downloads" /></a>
     <a href="https://www.npmjs.com/package/cloudflare-to-claude-fix"><img src="https://img.shields.io/npm/types/cloudflare-to-claude-fix" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=cloudflare-to-claude-fix"><img src="https://packagephobia.com/badge?p=cloudflare-to-claude-fix" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=cloudflare-to-claude-fix&label=cloudflare-to-claude-fix%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
