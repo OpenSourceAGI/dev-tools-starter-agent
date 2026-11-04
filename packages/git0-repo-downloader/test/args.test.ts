@@ -41,4 +41,15 @@ describe('parseArgs', () => {
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });
+
+  test('reads --service with and without an action, and --port', () => {
+    expect(parseArgs(['--service']).flags.service).toBe('run');
+    expect(parseArgs(['--service=install']).flags.service).toBe('install');
+    expect(parseArgs(['--service=status', '--port=5000']).flags).toMatchObject({ service: 'status', port: 5000 });
+    expect(parseArgs([]).flags.service).toBeUndefined();
+  });
+
+  test('keeps git0:// links as positional arguments', () => {
+    expect(parseArgs(['git0://install/acme/app']).positional).toEqual(['git0://install/acme/app']);
+  });
 });

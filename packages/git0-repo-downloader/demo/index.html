@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>git0 install button</title>
+<style>
+  :root { --bg:#fafafa; --fg:#18181b; --muted:#52525b; --card:#fff; --line:#e4e4e7; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#0b0b0f; --fg:#f4f4f5; --muted:#a1a1aa; --card:#18181b; --line:#27272a; }
+  }
+  :root[data-theme="dark"] { --bg:#0b0b0f; --fg:#f4f4f5; --muted:#a1a1aa; --card:#18181b; --line:#27272a; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,sans-serif; }
+  main { max-width:720px; margin:0 auto; padding:48px 16px; }
+  h1 { font-size:28px; margin:0 0 8px; }
+  p { color:var(--muted); margin:0 0 16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:28px; margin:24px 0; }
+  .card h2 { font-size:17px; margin:0 0 6px; }
+  .stage { display:flex; flex-wrap:wrap; gap:16px; align-items:center; margin-top:18px; }
+  code, pre { font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }
+  pre { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:14px; overflow-x:auto; }
+  .status { font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>One-click install from any website</h1>
+  <p>
+    With the git0 background service running, a download button installs the right
+    release for the visitor's OS and CPU, shows the progress inside the button,
+    and opens the app when it is done.
+  </p>
+
+  <section class="card">
+    <h2>Simulated</h2>
+    <p>Plays the full sequence with fake numbers, no service needed.</p>
+    <div class="stage">
+      <a href="#" data-git0-repo="junegunn/fzf" data-git0-simulate>Download for your system</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Live, through your local service</h2>
+    <p class="status" id="svc">Checking for the git0 service on 127.0.0.1:47100…</p>
+    <div class="stage">
+      <a href="https://github.com/obsidianmd/obsidian-releases/releases/latest"
+         data-git0-repo="obsidianmd/obsidian-releases">Install Obsidian</a>
+      <a href="https://github.com/junegunn/fzf/releases/latest"
+         data-git0-repo="junegunn/fzf">Install fzf</a>
+    </div>
+    <p style="margin-top:16px">Without the service these links fall back to the normal releases page. Start it with:</p>
+    <pre>npx git0 --service=install   # start at login, register git0:// links
+npx git0 --service           # or just run it in this terminal</pre>
+  </section>
+
+  <section class="card">
+    <h2>Add it to your site</h2>
+<pre>&lt;a href="https://github.com/owner/repo/releases/latest"
+   data-git0-repo="owner/repo"&gt;Download&lt;/a&gt;
+&lt;script src="https://unpkg.com/git0/demo/git0-button.js"&gt;&lt;/script&gt;</pre>
+  </section>
+</main>
+<script src="git0-button.js"></script>
+<script>
+  fetch('http://127.0.0.1:47100/health')
+    .then(r => r.json())
+    .then(h => { document.getElementById('svc').textContent = `git0 service ${h.version ?? ''} is running (${h.os} ${h.arch}).`; })
+    .catch(() => { document.getElementById('svc').textContent = 'The git0 service is not running, so these buttons fall back to the releases page.'; });
+</script>
+</body>
+</html>

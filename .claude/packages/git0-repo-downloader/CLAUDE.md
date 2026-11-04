@@ -30,11 +30,23 @@ and launch an IDE. Four bins: `git0`, `g`, `gg`, `fm`.
   Moving the `await` earlier silently gives back the speed the feature exists to
   keep — `benchmark/` is what measures that.
 
+- **`--service` is a daemon, so nothing in `src/service/` may `process.exit`.**
+  That is why it reads releases with plain `fetch` rather than `GithubAPI`,
+  whose 403 handler exits. Keep it that way.
+- **The approval prompt is the security boundary of the service.** Any website
+  can call `/install`; only the `/job/:id` page (token, no CORS, no framing,
+  Origin check on `POST /approve`) can let it run. Do not add CORS to that page,
+  return the token from a JSON route, or auto-approve untrusted repos.
+
 ## Layout
 
 `src/cli.ts` · `src/args.ts` · `src/github-api.ts` · `src/download.ts` ·
 `src/history.ts` · `src/install.ts` · `src/ide.ts` · `src/package-menu.ts` ·
-`src/platform.ts` · `src/fm.js`
+`src/platform.ts` · `src/fm.js` · `src/service/` (background install service:
+`assets.ts` picks the release asset, `installer.ts` downloads/installs/launches,
+`server.ts` is the job queue + HTTP API, `system-service.ts` registers it with
+the OS, `client.ts` handles `git0://` links) · `demo/` (the progress-bar
+button, `git0-button.js`, and a page to try it)
 
 `cli.ts` runs `main()` at import, so anything worth unit-testing lives elsewhere
 — that is why flag parsing is `args.ts` and not a function in `cli.ts`.

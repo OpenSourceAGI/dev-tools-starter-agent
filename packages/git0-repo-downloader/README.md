@@ -5,7 +5,7 @@
 <!-- template-git-repo:badges:start -->
 <p align="center">
     <a href="https://git0.js.org"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
-    <a href="https://starterdocs.vtempest.workers.dev/docs/packages/git0-repo-downloader"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <a href="https://1computer.online/docs/packages/git0-repo-downloader"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
     <a href="https://www.npmjs.com/package/git0"><img src="https://img.shields.io/npm/dm/git0.svg" alt="NPM Monthly Downloads" /></a>
@@ -61,6 +61,7 @@ bun install -g git0
 - **Partial paths** - paste a `/tree/` or `/blob/` link and download just that folder or file
 - **Optional `.git` history** - `--history` attaches the full history *after* the source is already on disk
 - **Faster than git** - skips `.git` history and uncompresses while downloading
+- **One-click install service** - `--service=install` lets website download buttons install the right release for your system and show progress in the button
 
 ## 🎯 Usage
 
@@ -217,6 +218,53 @@ git0 automatically detects and opens projects in your preferred IDE:
 - **VSCode Server WebUI**
 - **Neovim**
 - **Webstorm**
+
+## ⚡ Background Install Service
+
+git0 can run as a small background service that turns any website's download button into a one-click installer. The button hands the service a repository; the service picks the release asset built for your OS and CPU, downloads it, installs it, and opens the app, while the button fills up as a progress bar.
+
+```bash
+git0 --service=install     # start at login and register git0:// links
+git0 --service=status      # is it running, and what is it installing
+git0 --service=uninstall   # remove it
+git0 --service            # or run it in the foreground, on 127.0.0.1:47100
+```
+
+It installs as a **per-user** service, because launching a desktop app has to happen inside your session: a `systemd --user` unit on Linux, a LaunchAgent on macOS, and a logon task on Windows. No admin rights are needed to install it.
+
+### Add the button to a site
+
+```html
+<a href="https://github.com/owner/repo/releases/latest" data-git0-repo="owner/repo">Download</a>
+<script src="https://unpkg.com/git0/demo/git0-button.js"></script>
+```
+
+When the service is running, clicking the link does not download a file. The button morphs into a progress bar showing the download, then the install, then the launch. When the service is not running, the link behaves as a normal link. `demo/index.html` has a live and a simulated example.
+
+Links also work without the script: `git0://install/owner/repo` is registered with the OS on Linux and Windows, and `http://127.0.0.1:47100/install?repo=owner/repo` works everywhere.
+
+### What it installs
+
+| OS | Preferred asset, in order | Result |
+| --- | --- | --- |
+| Linux | `.AppImage`, `.deb`, `.rpm`, `.tar.gz`, bare binary | AppImage and binaries go to `~/.git0/apps`; `.deb`/`.rpm` install through the desktop's password prompt (`pkexec`) |
+| macOS | `.dmg`, `.pkg`, `.zip`/`.tar.gz` | The `.app` is copied to `~/Applications`; a `.pkg` opens Installer |
+| Windows | setup `.exe`, `.msi`, `.zip` | The installer runs with its own UI; a portable `.zip` is extracted to `~/.git0/apps` |
+
+Asset names are matched on whole words, so `darwin` is never mistaken for `win`. An exact CPU match beats an unlabelled build, and an unlabelled build beats Rosetta or 32-bit fallbacks. Checksums, signatures and source archives are never picked. A command-line tool is installed but not launched, because it would start with no terminal attached.
+
+### Security
+
+Any website can ask, but only you can say yes. The first install of a repository opens a git0 page from `127.0.0.1` asking you to allow it, and the website cannot answer that prompt for you: the page carries a one-time token, is served without CORS headers so other sites can't read it, and refuses to be framed. Tick "Always allow" to skip the prompt for that repository next time (stored in `~/.git0/service.json`). The service listens on loopback only, rejects requests whose `Host` isn't loopback (DNS rebinding), and caps pending prompts at five.
+
+### HTTP API
+
+| Route | Returns |
+| --- | --- |
+| `GET /health` | `{ ok, name: "git0", version, os, arch }` |
+| `POST /install` `{ "repo": "owner/repo" }` | the job, plus `statusUrl` and `approveUrl` |
+| `GET /status/:id` | `status` (`awaiting-approval`, `resolving`, `downloading`, `installing`, `launching`, `done`, `error`, `denied`), `progress` 0–1, `receivedBytes`, `totalBytes`, `asset`, `tag`, `installedPath`, `launched`, `error` |
+| `GET /jobs` | every job |
 
 ## 🔧 Configuration
 
