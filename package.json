@@ -16,6 +16,7 @@
     "apps/*"
   ],
   "scripts": {
+    "merge": "bash .github/scripts/merge.sh",
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",

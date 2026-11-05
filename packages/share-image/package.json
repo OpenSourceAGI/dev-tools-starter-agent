@@ -1,0 +1,27 @@
+{
+  "name": "share-image",
+  "version": "1.0.0",
+  "description": "CLI that uploads images to Imgur by URL, file or folder and prints the Imgur link for each one",
+  "type": "module",
+  "bin": {
+    "share-image": "bin/share-image.mjs"
+  },
+  "files": [
+    "bin"
+  ],
+  "scripts": {
+    "test": "node --test test/cli.test.mjs",
+    "demo": "node test/demo.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "imgur",
+    "image",
+    "upload",
+    "rehost",
+    "cli"
+  ],
+  "license": "UNLICENSED"
+}
