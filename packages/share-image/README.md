@@ -1,3 +1,25 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://1computer.online/docs/packages/share-image"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/share-img"><img src="https://img.shields.io/npm/dm/share-img.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/share-img"><img src="https://img.shields.io/npm/v/share-img.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/share-img"><img src="https://img.shields.io/npm/dt/share-img.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/share-img"><img src="https://img.shields.io/npm/types/share-img" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=share-img"><img src="https://packagephobia.com/badge?p=share-img" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/share-image"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" />
+</p>
+<!-- template-git-repo:badges:end -->
+
 # share-img
 
 Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed, and no dependencies. Requires Node 18 or later.
@@ -32,12 +54,21 @@ share-img ./photos
 
 ### Uploading a folder
 
-A folder is searched for images, including in all its subfolders, and each result shows the file's path:
+A folder is searched for images, including in all its subfolders. The images are then uploaded one at a time, and each result shows the file's path as soon as it's done:
 
 ```
+$ share-img ./photos
+Scanning ./photos for images...
+Found 2 images in ./photos
+[1/2] Uploading photos/a.png
 photos/a.png	https://i.imgur.com/xxxxxxx.png
+[2/2] Uploading photos/trips/b.jpg
 photos/trips/b.jpg	https://i.imgur.com/yyyyyyy.jpg
+Done: 2 uploaded, 0 failed
+Copied to clipboard
 ```
+
+The `Scanning`, `Found`, `[n/total] Uploading` and `Done` lines are progress, printed to stderr. Only the result lines go to stdout, so piping the output still gives you just the results.
 
 - **Every image found is uploaded publicly, and this tool can't delete uploads.** Check what's in a folder before you point the tool at it.
 - These file types are included: `apng`, `bmp`, `gif`, `heic`, `jpeg`, `jpg`, `png`, `svg`, `tif`, `tiff` and `webp`. Imgur may still reject some of them, which shows up as an error for that file.
@@ -132,7 +163,7 @@ This makes a real, public upload to Imgur, and it can't be deleted with this too
 
 ## How it works
 
-Up to 4 images upload at a time. Imgur first tries to fetch each URL itself. If it can't, the image is downloaded on your machine and sent to Imgur directly, which helps with hosts that block Imgur. This retry is skipped on `401`, `403` and `429` responses, since sending the image again wouldn't help.
+Images upload one at a time, in input order. Imgur first tries to fetch each URL itself. If it can't, the image is downloaded on your machine and sent to Imgur directly, which helps with hosts that block Imgur. This retry is skipped on `401`, `403` and `429` responses, since sending the image again wouldn't help.
 
 Each request times out after 60 seconds.
 

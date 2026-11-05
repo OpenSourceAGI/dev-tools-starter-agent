@@ -383,8 +383,17 @@ describe("files and folders", () => {
 					uploaded(`https://i.imgur.com/${contents}.png`),
 				]),
 			);
-			const { code, stdout } = await run([dir], { routes });
+			const { code, stdout, stderr } = await run([dir], { routes });
 			assert.equal(code, 0);
+			assert.deepEqual(stderr.split("\n").slice(0, 7), [
+				`Scanning ${dir} for images...`,
+				`Found 4 images in ${dir}`,
+				`[1/4] Uploading ${join(dir, "a.png")}`,
+				`[2/4] Uploading ${join(dir, "m/c.jpg")}`,
+				`[3/4] Uploading ${join(dir, "m/deep/d.webp")}`,
+				`[4/4] Uploading ${join(dir, "z.GIF")}`,
+				"Done: 4 uploaded, 0 failed",
+			]);
 			assert.equal(
 				stdout,
 				[
@@ -548,14 +557,25 @@ describe("multiple inputs", () => {
 		);
 	});
 
-	test("uploads at most 4 at a time, and uploads every input", async () => {
+	test("uploads one at a time, and uploads every input", async () => {
 		const urls = Array.from({ length: 10 }, (_, index) => `https://example.com/${index}.png`);
 		const routes = Object.fromEntries(urls.map(url => [`POST ${url}`, { ...uploaded(), delay: 25 }]));
 		const { code, stdout, calls } = await run(urls, { routes });
 		assert.equal(code, 0);
 		assert.equal(stdout.trimEnd().split("\n").length, urls.length);
 		assert.equal(calls.length, urls.length);
-		assert.equal(Math.max(...calls.map(call => call.inFlight)), 4);
+		assert.equal(Math.max(...calls.map(call => call.inFlight)), 1);
+	});
+
+	test("prints progress for each upload to stderr, leaving stdout unchanged", async () => {
+		const { code, stdout, stderr } = await run([good, bad], { routes: partialFailure });
+		assert.equal(code, 1);
+		assert.equal(stdout, `${good}\thttps://i.imgur.com/good.png\n${bad}\tERROR: Too many requests\n`);
+		assert.deepEqual(stderr.split("\n").slice(0, 3), [
+			`[1/2] Uploading ${good}`,
+			`[2/2] Uploading ${bad}`,
+			"Done: 1 uploaded, 1 failed",
+		]);
 	});
 });
 
@@ -569,7 +589,7 @@ describe("clipboard", { skip: process.platform === "win32" }, () => {
 		assert.equal(code, 0);
 		assert.equal(clipboard, "https://i.imgur.com/abc.png");
 		assert.equal(stdout, line);
-		assert.equal(stderr, "Copied to clipboard\n");
+		assert.match(stderr, /^Copied to clipboard$/m);
 	});
 
 	test("copies only the Imgur link with --json", async () => {
@@ -599,7 +619,7 @@ describe("clipboard", { skip: process.platform === "win32" }, () => {
 		});
 		assert.equal(code, 1);
 		assert.equal(clipboard, null);
-		assert.equal(stderr, "");
+		assert.doesNotMatch(stderr, /clipboard/);
 	});
 
 	const unavailable = {
@@ -612,7 +632,7 @@ describe("clipboard", { skip: process.platform === "win32" }, () => {
 			assert.equal(code, 0);
 			assert.equal(clipboard, null);
 			assert.equal(stdout, line);
-			assert.equal(stderr, "Couldn't copy to clipboard\n");
+			assert.match(stderr, /^Couldn't copy to clipboard$/m);
 		});
 	}
 });

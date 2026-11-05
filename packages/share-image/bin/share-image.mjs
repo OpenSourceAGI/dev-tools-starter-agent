@@ -13,7 +13,11 @@ const USAGE = `Usage:
 Folders are searched for images, including in subfolders. Hidden files and
 folders and symlinks are skipped. Uploads are public and can't be deleted.
 
-Prints one "<url or file path><TAB><imgur url>" line per image, in input order.
+Images upload one at a time. Progress such as "[2/5] Uploading photos/b.jpg"
+goes to stderr, so stdout stays safe to pipe.
+
+Prints one "<url or file path><TAB><imgur url>" line per image, in input order,
+as soon as that image is done.
 A failed upload prints "<url or file path><TAB>ERROR: <reason>" and the exit code is 1.
 
 The Imgur links, and nothing else, are also copied to the clipboard, one per line.
@@ -29,7 +33,6 @@ Environment:
 const API_URL = "https://api.imgur.com/3/image";
 const CLIENT_ID = process.env.IMGUR_CLIENT_ID || "9b0aa5cb5d65843";
 const CLIENT_SECRET = process.env.IMGUR_CLIENT_SECRET || "97851ab8356b4994619acc566d854529b0ca640f";
-const CONCURRENCY = 4;
 const TIMEOUT_MS = 60_000;
 const IMAGE_EXTENSIONS = new Set([
 	".apng", ".bmp", ".gif", ".heic", ".jpeg", ".jpg", ".png", ".svg", ".tif", ".tiff", ".webp",
@@ -154,7 +157,10 @@ async function expandInputs(inputs) {
 		// Anything that isn't on disk, such as a URL, makes stat fail.
 		const stats = await stat(input).catch(() => null);
 		if (stats?.isDirectory()) {
+			progress(`Scanning ${input} for images...`);
 			const found = await findImages(input);
+			const count = found.filter(item => !item.error).length;
+			progress(`Found ${count} image${count === 1 ? "" : "s"} in ${input}`);
 			items.push(...(found.length > 0 ? found : [{ input, error: "no images found in folder" }]));
 		} else {
 			items.push({ input, isFile: stats?.isFile() ?? false });
@@ -170,24 +176,25 @@ async function uploadItem({ input, isFile, error }) {
 	return isFile ? postImage((await readFile(input)).toString("base64")) : upload(input);
 }
 
-async function uploadAll(items) {
-	const results = new Array(items.length);
-	let next = 0;
-
-	async function worker() {
-		while (next < items.length) {
-			const index = next++;
-			const item = items[index];
-			try {
-				results[index] = { input: item.input, imgur: await uploadItem(item) };
-			} catch (error) {
-				results[index] = { input: item.input, error: error.message };
-			}
+// One at a time, in input order, so each result can be printed as soon as it's done.
+async function uploadAll(items, onResult) {
+	const results = [];
+	for (const [index, item] of items.entries()) {
+		progress(`[${index + 1}/${items.length}] Uploading ${item.input}`);
+		let result;
+		try {
+			result = { input: item.input, imgur: await uploadItem(item) };
+		} catch (error) {
+			result = { input: item.input, error: error.message };
 		}
+		results.push(result);
+		onResult(result);
 	}
-
-	await Promise.all(Array.from({ length: Math.min(CONCURRENCY, items.length) }, worker));
 	return results;
+}
+
+function progress(message) {
+	console.error(message);
 }
 
 function pipeToCommand([command, ...args], text) {
@@ -253,15 +260,18 @@ function parseArgs(argv) {
 }
 
 const { inputs, json } = parseArgs(process.argv.slice(2));
-const results = await uploadAll(await expandInputs(inputs));
+const results = await uploadAll(await expandInputs(inputs), ({ input, imgur, error }) => {
+	if (!json) {
+		console.log(`${input}\t${imgur ?? `ERROR: ${error}`}`);
+	}
+});
 
 if (json) {
 	console.log(JSON.stringify(results, null, 2));
-} else {
-	for (const { input, imgur, error } of results) {
-		console.log(`${input}\t${imgur ?? `ERROR: ${error}`}`);
-	}
 }
+
+const failed = results.filter(result => result.error).length;
+progress(`Done: ${results.length - failed} uploaded, ${failed} failed`);
 
 // Status goes to stderr so stdout stays safe to parse. The exit code only reports uploads.
 const links = results.flatMap(result => result.imgur ?? []);

@@ -4,6 +4,7 @@
   "description": "CLI that uploads images to Imgur by URL, file or folder and prints the Imgur link for each one",
   "type": "module",
   "bin": {
+    "share-img": "bin/share-image.mjs",
     "share-image": "bin/share-image.mjs"
   },
   "files": [
