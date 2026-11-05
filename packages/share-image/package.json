@@ -1,6 +1,6 @@
 {
   "name": "share-img",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI that uploads images to Imgur by URL, file or folder and prints the Imgur link for each one",
   "type": "module",
   "bin": {
