@@ -63,6 +63,8 @@ async function run(args, { routes = {}, env = {}, script = CLI } = {}) {
 						...cleanEnv,
 						PATH: binDir,
 						FAKE_CLIPBOARD_FILE: clipboardPath,
+						// No waiting between retries unless a test asks for it.
+						SHARE_IMG_RETRY_DELAY_MS: "0",
 						...env,
 						MOCK_FETCH_ROUTES: JSON.stringify(routes),
 						MOCK_FETCH_LOG: logPath,
@@ -275,7 +277,9 @@ describe("fallback to sending the image bytes", () => {
 			});
 			assert.equal(code, 1);
 			assert.equal(stdout, `${IMAGE_URL}\tERROR: Too many requests\n`);
-			assert.equal(calls.length, 1);
+			// A 429 is retried 3 times; 401 and 403 aren't. None of them fall back to a download.
+			assert.equal(calls.length, status === 429 ? 4 : 1);
+			assert.ok(calls.every(call => call.method === "POST"));
 		});
 	}
 
@@ -532,7 +536,8 @@ describe("multiple inputs", () => {
 	test("a failure doesn't stop the others, and exits 1", async () => {
 		const { code, stdout } = await run([bad, good], { routes: partialFailure });
 		assert.equal(code, 1);
-		assert.equal(stdout, `${bad}\tERROR: Too many requests\n${good}\thttps://i.imgur.com/good.png\n`);
+		// The failed upload is retried after the others, so it's printed last.
+		assert.equal(stdout, `${good}\thttps://i.imgur.com/good.png\n${bad}\tERROR: Too many requests\n`);
 	});
 
 	test("--json reports an imgur or error field for each input, and exits 1", async () => {
@@ -571,11 +576,81 @@ describe("multiple inputs", () => {
 		const { code, stdout, stderr } = await run([good, bad], { routes: partialFailure });
 		assert.equal(code, 1);
 		assert.equal(stdout, `${good}\thttps://i.imgur.com/good.png\n${bad}\tERROR: Too many requests\n`);
-		assert.deepEqual(stderr.split("\n").slice(0, 3), [
+		assert.deepEqual(stderr.split("\n").slice(0, 7), [
 			`[1/2] Uploading ${good}`,
 			`[2/2] Uploading ${bad}`,
+			"[2/2] Failed, will retry: Too many requests",
+			`Retry 1/3 [1/1]: waiting 0s, then uploading ${bad}`,
+			`Retry 2/3 [1/1]: waiting 0s, then uploading ${bad}`,
+			`Retry 3/3 [1/1]: waiting 0s, then uploading ${bad}`,
 			"Done: 1 uploaded, 1 failed",
 		]);
+	});
+});
+
+describe("retries", () => {
+	const a = "data:image/png;base64,QQ==";
+	const b = "data:image/png;base64,Qg==";
+	const c = "data:image/png;base64,Qw==";
+	const key = url => `POST ${url.split(",")[1]}`;
+
+	const retryable = {
+		"429": rejected(429, "Too many requests"),
+		"503 over capacity": rejected(503, "Imgur is temporarily over capacity. Please try again later."),
+		"a non-JSON 502": { status: 502, body: "<html>Bad gateway</html>" },
+		"a network error": { networkError: "fetch failed" },
+	};
+	for (const [name, failure] of Object.entries(retryable)) {
+		test(`retries after ${name} and succeeds`, async () => {
+			const { code, stdout, calls } = await run([a], {
+				routes: { [key(a)]: [failure, uploaded("https://i.imgur.com/a.png")] },
+			});
+			assert.equal(code, 0);
+			assert.equal(stdout, `${a}\thttps://i.imgur.com/a.png\n`);
+			assert.equal(calls.length, 2);
+		});
+	}
+
+	test("gives up after 3 retries", async () => {
+		const { code, stdout, calls } = await run([a], { routes: { [key(a)]: rejected(503, "HTTP 503") } });
+		assert.equal(code, 1);
+		assert.equal(stdout, `${a}\tERROR: HTTP 503\n`);
+		assert.equal(calls.length, 4);
+	});
+
+	test("doesn't retry an image Imgur rejects", async () => {
+		const { code, calls } = await run([a], { routes: { [key(a)]: rejected(400, "Bad image") } });
+		assert.equal(code, 1);
+		assert.equal(calls.length, 1);
+	});
+
+	test("retries only the failures, one at a time, in input order, after waiting", async () => {
+		const routes = {
+			[key(a)]: [rejected(429, "Too many requests"), uploaded("https://i.imgur.com/a.png")],
+			[key(b)]: uploaded("https://i.imgur.com/b.png"),
+			[key(c)]: [rejected(503, "HTTP 503"), rejected(503, "HTTP 503"), uploaded("https://i.imgur.com/c.png")],
+		};
+		const started = Date.now();
+		const { code, stdout, stderr, calls, clipboard } = await run([a, b, c], {
+			routes,
+			env: { SHARE_IMG_RETRY_DELAY_MS: "40" },
+		});
+		assert.equal(code, 0);
+		// Two waits in round 1 (40ms each) and one in round 2 (80ms).
+		assert.ok(Date.now() - started >= 160);
+		assert.deepEqual(calls.map(call => call.key), [key(a), key(b), key(c), key(a), key(c), key(c)]);
+		assert.equal(Math.max(...calls.map(call => call.inFlight)), 1);
+		assert.equal(
+			stdout,
+			`${b}\thttps://i.imgur.com/b.png\n${a}\thttps://i.imgur.com/a.png\n${c}\thttps://i.imgur.com/c.png\n`,
+		);
+		assert.match(stderr, /^Retry 1\/3 \[2\/2\]: waiting 0\.04s, then uploading data:/m);
+		assert.match(stderr, /^Retry 2\/3 \[1\/1\]: waiting 0\.08s, then uploading data:/m);
+		assert.match(stderr, /^Done: 3 uploaded, 0 failed$/m);
+		if (process.platform !== "win32") {
+			// The clipboard keeps input order even though the retried links finished last.
+			assert.equal(clipboard, "https://i.imgur.com/a.png\nhttps://i.imgur.com/b.png\nhttps://i.imgur.com/c.png");
+		}
 	});
 });
 

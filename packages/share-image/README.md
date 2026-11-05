@@ -91,7 +91,7 @@ The `Scanning`, `Found`, `[n/total] Uploading` and `Done` lines are progress, pr
 
 ## Output
 
-Results are printed in the same order as the inputs. Each line is the input URL, a tab, then the Imgur link:
+Results are printed in input order as each image finishes. An image that needed a retry is printed once its retry finishes, after the others. Each line is the input URL, a tab, then the Imgur link:
 
 ```
 https://example.com/a.png	https://i.imgur.com/xxxxxxx.png
@@ -108,6 +108,18 @@ With `--json`, each result has either an `imgur` or an `error` field:
 ```
 
 A failed upload doesn't stop the others.
+
+### Retries
+
+When an upload fails with a timeout, a network error, a rate limit (`429`) or an Imgur server error (`5xx`, including "Imgur is temporarily over capacity"), it's retried after the other images have been tried. Each failed image is retried up to 3 more times. The retries run one at a time, and each round waits longer before every upload: 2 seconds, then 4, then 8. Progress for each retry goes to stderr:
+
+```
+[3/3] Failed, will retry: HTTP 429
+Retry 1/3 [1/1]: waiting 2s, then uploading photos/c.png
+photos/c.png	https://i.imgur.com/zzzzzzz.png
+```
+
+Errors that would fail the same way again aren't retried, such as an image Imgur rejects, a file that can't be read, or a `401` or `403`. `--json` output and the clipboard keep input order whether or not an image was retried.
 
 ### Clipboard
 
@@ -165,7 +177,7 @@ This makes a real, public upload to Imgur, and it can't be deleted with this too
 
 Images upload one at a time, in input order. Imgur first tries to fetch each URL itself. If it can't, the image is downloaded on your machine and sent to Imgur directly, which helps with hosts that block Imgur. This retry is skipped on `401`, `403` and `429` responses, since sending the image again wouldn't help.
 
-Each request times out after 60 seconds.
+Each request times out after 60 seconds, and a timed-out upload is retried as described in [Retries](#retries).
 
 ## Good to know
 
