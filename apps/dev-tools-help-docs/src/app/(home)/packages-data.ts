@@ -149,7 +149,7 @@ export const categories: Category[] = [
         icon: "HardDrive",
         description: "One-command bootstrap for a modern dev environment: installs fish, nvim, nushell, bun, node, helix, starship, docker, and more.",
         longDescription: "Turn a fresh server into a comfortable workstation with one line. It installs fish and nushell, Neovim and Helix, Node via Volta, Bun, Docker, Starship, yazi, code-server and more — interactively or fully unattended — sets your default shell, and adds a curated set of aliases. Works across the major Linux distros.",
-        commands: ["wget -qO- tinyurl.com/shellsetup | bash"],
+        commands: ["curl -sSL https://tinyurl.com/shellsetup | bash "],
         path: "packages/server-shell-setup/",
         image: "/packages/server-shell-setup.svg",
         href: "/docs/packages/server-shell-setup",
