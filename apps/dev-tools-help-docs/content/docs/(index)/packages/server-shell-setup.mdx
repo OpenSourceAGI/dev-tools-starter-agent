@@ -122,7 +122,7 @@ When the run finishes, the script `exec`s into fish if fish is on the PATH — s
 | `bun` | Fast JavaScript runtime, bundler, and package manager | [bun.sh/install](https://bun.sh/install) | `bun --version` |
 | `docker` | Docker with rootless mode enabled | get.docker.com + rootless setuptool | `docker version` |
 | `starship` | Cross-shell prompt configured for bash, fish, and nushell | [starship.rs/install.sh](https://starship.rs/install.sh) | `starship --version` |
-| `systeminfo` | Prints system stats (user, host, disk, RAM, CPU, uptime, IP, location, open ports) on login | `npx about-system@latest` in shell configs | open a new shell |
+| `systeminfo` | Prints system stats (user, host, disk, RAM, CPU, uptime, IP, location, open ports) on login | installs the `about-system` npm package globally and runs it from each interactive shell's config | open a new shell |
 | `pacstall` | AUR-like package manager for Ubuntu/Debian | [pacstall.dev/q/install](https://pacstall.dev/q/install) | `pacstall -V` |
 | `code` | [code-server](https://github.com/coder/code-server) — VSCode in the browser | code-server.dev/install.sh | `code-server --version` |
 | `sudo` | Enable passwordless sudo for current user | writes `/etc/sudoers.d/$USER` | `sudo -n true` |
@@ -547,7 +547,7 @@ It finishes by syncing and dropping the kernel page cache. The Docker prune dele
 | `docker` commands fail after install | Rootless docker runs as a user service: `systemctl --user status docker`, and open a new shell to pick up the PATH change |
 | Node installed but `node` not found | Open a new shell, or run `fish_add_path ~/.volta/bin` — Volta's shims live in `~/.volta/bin` |
 | Neovim opens with errors on first launch | Plugin sync runs in the background; wait for it, or run `nvim --headless "+Lazy! sync" +qa` again |
-| Login greeting is missing | `systeminfo` shells out to `npx about-system@latest`, which needs Node and network access on each login |
+| Login greeting is missing | The greeting only runs when the `about-system` binary is on PATH; install the `node` component, then re-run `--components systeminfo` (or `npm i -g about-system`) |
 
 ## Example: System Info on Login
 
