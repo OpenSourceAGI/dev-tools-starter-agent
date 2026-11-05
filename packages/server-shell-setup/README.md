@@ -68,7 +68,7 @@ An existing root password is only replaced when `--root-password`/`--password` i
 
 **Interactive menu** — pick what to install:
 ```bash
-wget -qO- tinyurl.com/shellsetup | bash
+wget -qO- https://tinyurl.com/shellsetup | bash
 ```
 ```bash
 curl -sSL https://tinyurl.com/shellsetup | bash
@@ -76,12 +76,12 @@ curl -sSL https://tinyurl.com/shellsetup | bash
 
 **Install everything unattended:**
 ```bash
-wget -qO- tinyurl.com/shellsetup | bash -s -- all
+wget -qO- https://tinyurl.com/shellsetup | bash -s -- all
 ```
 
 **Install specific components only:**
 ```bash
-wget -qO- tinyurl.com/shellsetup | bash -s -- starship,docker,node
+wget -qO- https://tinyurl.com/shellsetup | bash -s -- starship,docker,node
 ```
 
 The `-s --` is what forwards arguments through the pipe to `bash`. Dropping it silently gives you the interactive menu instead.
