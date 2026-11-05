@@ -16,8 +16,12 @@ folders and symlinks are skipped. Uploads are public and can't be deleted.
 Images upload one at a time. Progress such as "[2/5] Uploading photos/b.jpg"
 goes to stderr, so stdout stays safe to pipe.
 
-Prints one "<url or file path><TAB><imgur url>" line per image, in input order,
-as soon as that image is done.
+Uploads that fail with a timeout, a network error, rate limiting (429) or a
+server error (5xx) are retried up to 3 more times, one at a time, waiting
+longer before each round (2s, then 4s, then 8s).
+
+Prints one "<url or file path><TAB><imgur url>" line per image as soon as that
+image is done, so an image that needed a retry is printed after the others.
 A failed upload prints "<url or file path><TAB>ERROR: <reason>" and the exit code is 1.
 
 The Imgur links, and nothing else, are also copied to the clipboard, one per line.
@@ -48,6 +52,10 @@ const CLIPBOARD_COMMANDS = {
 };
 const DEFAULT_CLIPBOARD_COMMANDS = [["wl-copy"], ["xclip", "-selection", "clipboard"]];
 const CLIPBOARD_TIMEOUT_MS = 5_000;
+
+// Each retry round waits twice as long as the last: 2s, 4s, 8s.
+const MAX_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = Number(process.env.SHARE_IMG_RETRY_DELAY_MS ?? 2_000);
 
 class ImgurError extends Error {
 	constructor(message, status) {
@@ -120,7 +128,10 @@ async function upload(input) {
 		try {
 			image = await downloadAsBase64(input);
 		} catch (downloadError) {
-			throw new Error(`Imgur: ${imgurError.message}; direct download: ${downloadError.message}`);
+			// Keep the Imgur error as the cause so a rate limit or outage is still retried.
+			throw new Error(`Imgur: ${imgurError.message}; direct download: ${downloadError.message}`, {
+				cause: imgurError,
+			});
 		}
 		return postImage(image);
 	}
@@ -176,20 +187,65 @@ async function uploadItem({ input, isFile, error }) {
 	return isFile ? postImage((await readFile(input)).toString("base64")) : upload(input);
 }
 
-// One at a time, in input order, so each result can be printed as soon as it's done.
+// Failures worth another try: timeouts, network errors, rate limits and server errors.
+// A bad image, a missing file or a rejected client fails the same way every time.
+function isRetryable(error) {
+	if (!error) {
+		return false;
+	}
+	if (error.name === "TimeoutError" || error.name === "AbortError" || error instanceof TypeError) {
+		return true;
+	}
+	if (error instanceof ImgurError) {
+		return error.status === 408 || error.status === 429 || error.status >= 500 || /over capacity/i.test(error.message);
+	}
+	return isRetryable(error.cause);
+}
+
+async function attempt(item) {
+	try {
+		return { result: { input: item.input, imgur: await uploadItem(item) }, retry: false };
+	} catch (error) {
+		return { result: { input: item.input, error: error.message }, retry: isRetryable(error) };
+	}
+}
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+// One at a time. Each result is reported as soon as it's final; results keep input order.
 async function uploadAll(items, onResult) {
-	const results = [];
+	const results = new Array(items.length);
+	let pending = [];
+
 	for (const [index, item] of items.entries()) {
 		progress(`[${index + 1}/${items.length}] Uploading ${item.input}`);
-		let result;
-		try {
-			result = { input: item.input, imgur: await uploadItem(item) };
-		} catch (error) {
-			result = { input: item.input, error: error.message };
+		const { result, retry } = await attempt(item);
+		results[index] = result;
+		if (retry) {
+			progress(`[${index + 1}/${items.length}] Failed, will retry: ${result.error}`);
+			pending.push(index);
+		} else {
+			onResult(result);
 		}
-		results.push(result);
-		onResult(result);
 	}
+
+	for (let round = 1; round <= MAX_RETRIES && pending.length > 0; round++) {
+		const delay = RETRY_BASE_DELAY_MS * 2 ** (round - 1);
+		const stillFailing = [];
+		for (const [position, index] of pending.entries()) {
+			progress(`Retry ${round}/${MAX_RETRIES} [${position + 1}/${pending.length}]: waiting ${delay / 1000}s, then uploading ${items[index].input}`);
+			await sleep(delay);
+			const { result, retry } = await attempt(items[index]);
+			results[index] = result;
+			if (retry && round < MAX_RETRIES) {
+				stillFailing.push(index);
+			} else {
+				onResult(result);
+			}
+		}
+		pending = stillFailing;
+	}
+
 	return results;
 }
 
