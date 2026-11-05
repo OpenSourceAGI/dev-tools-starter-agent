@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, test } from "node:test";
@@ -34,11 +34,25 @@ async function withFiles(files, callback) {
 	}
 }
 
+// Puts stand-ins for the clipboard commands on PATH so tests never touch the real clipboard.
+async function installFakeClipboard(dir) {
+	const binDir = join(dir, "bin");
+	await mkdir(binDir);
+	for (const name of ["pbcopy", "wl-copy", "xclip"]) {
+		const path = join(binDir, name);
+		await writeFile(path, '#!/bin/sh\n[ -z "$FAKE_CLIPBOARD_FAIL" ] || exit 1\n/bin/cat > "$FAKE_CLIPBOARD_FILE"\n');
+		await chmod(path, 0o755);
+	}
+	return binDir;
+}
+
 async function run(args, { routes = {}, env = {}, script = CLI } = {}) {
 	const dir = await mkdtemp(join(tmpdir(), "share-image-test-"));
 	const logPath = join(dir, "requests.log");
+	const clipboardPath = join(dir, "clipboard");
 
 	try {
+		const binDir = await installFakeClipboard(dir);
 		const { IMGUR_CLIENT_ID, IMGUR_CLIENT_SECRET, ...cleanEnv } = process.env;
 		const { code, stdout, stderr } = await new Promise(resolve => {
 			execFile(
@@ -47,6 +61,8 @@ async function run(args, { routes = {}, env = {}, script = CLI } = {}) {
 				{
 					env: {
 						...cleanEnv,
+						PATH: binDir,
+						FAKE_CLIPBOARD_FILE: clipboardPath,
 						...env,
 						MOCK_FETCH_ROUTES: JSON.stringify(routes),
 						MOCK_FETCH_LOG: logPath,
@@ -56,6 +72,7 @@ async function run(args, { routes = {}, env = {}, script = CLI } = {}) {
 			);
 		});
 
+		const clipboard = await readFile(clipboardPath, "utf8").catch(() => null);
 		const log = await readFile(logPath, "utf8").catch(() => "");
 		const calls = log
 			.split("\n")
@@ -67,7 +84,7 @@ async function run(args, { routes = {}, env = {}, script = CLI } = {}) {
 			[],
 			"the CLI made a request the test didn't expect",
 		);
-		return { code, stdout, stderr, calls };
+		return { code, stdout, stderr, calls, clipboard };
 	} finally {
 		await rm(dir, { recursive: true, force: true });
 	}
@@ -540,4 +557,62 @@ describe("multiple inputs", () => {
 		assert.equal(calls.length, urls.length);
 		assert.equal(Math.max(...calls.map(call => call.inFlight)), 4);
 	});
+});
+
+// The fake clipboard commands are shell scripts, which Windows can't run.
+describe("clipboard", { skip: process.platform === "win32" }, () => {
+	const routes = { [`POST ${IMAGE_URL}`]: uploaded() };
+	const line = `${IMAGE_URL}\thttps://i.imgur.com/abc.png\n`;
+
+	test("copies only the Imgur link and leaves stdout unchanged", async () => {
+		const { code, stdout, stderr, clipboard } = await run([IMAGE_URL], { routes });
+		assert.equal(code, 0);
+		assert.equal(clipboard, "https://i.imgur.com/abc.png");
+		assert.equal(stdout, line);
+		assert.equal(stderr, "Copied to clipboard\n");
+	});
+
+	test("copies only the Imgur link with --json", async () => {
+		const { stdout, clipboard } = await run(["--json", IMAGE_URL], { routes });
+		assert.equal(clipboard, "https://i.imgur.com/abc.png");
+		assert.deepEqual(JSON.parse(stdout), [{ input: IMAGE_URL, imgur: "https://i.imgur.com/abc.png" }]);
+	});
+
+	test("copies one link per line in input order and leaves out failed uploads", async () => {
+		const { code, clipboard } = await run(
+			["https://example.com/slow.png", "https://example.com/bad.png", "https://example.com/fast.png"],
+			{
+				routes: {
+					"POST https://example.com/slow.png": { ...uploaded("https://i.imgur.com/slow.png"), delay: 100 },
+					"POST https://example.com/bad.png": rejected(429, "Too many requests"),
+					"POST https://example.com/fast.png": uploaded("https://i.imgur.com/fast.png"),
+				},
+			},
+		);
+		assert.equal(code, 1);
+		assert.equal(clipboard, "https://i.imgur.com/slow.png\nhttps://i.imgur.com/fast.png");
+	});
+
+	test("leaves the clipboard alone when every upload fails", async () => {
+		const { code, stderr, clipboard } = await run([IMAGE_URL], {
+			routes: { [`POST ${IMAGE_URL}`]: rejected(429, "Too many requests") },
+		});
+		assert.equal(code, 1);
+		assert.equal(clipboard, null);
+		assert.equal(stderr, "");
+	});
+
+	const unavailable = {
+		"is not installed": { PATH: "/nonexistent" },
+		"fails": { FAKE_CLIPBOARD_FAIL: "1" },
+	};
+	for (const [name, env] of Object.entries(unavailable)) {
+		test(`warns and still succeeds when the clipboard command ${name}`, async () => {
+			const { code, stdout, stderr, clipboard } = await run([IMAGE_URL], { routes, env });
+			assert.equal(code, 0);
+			assert.equal(clipboard, null);
+			assert.equal(stdout, line);
+			assert.equal(stderr, "Couldn't copy to clipboard\n");
+		});
+	}
 });

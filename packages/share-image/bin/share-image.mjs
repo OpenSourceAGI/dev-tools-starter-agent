@@ -2,6 +2,7 @@
 // Upload images to Imgur anonymously by URL, file or folder and print the Imgur link for each.
 // Requires Node 18+. No dependencies.
 
+import { spawn } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
 
@@ -14,6 +15,8 @@ folders and symlinks are skipped. Uploads are public and can't be deleted.
 
 Prints one "<url or file path><TAB><imgur url>" line per image, in input order.
 A failed upload prints "<url or file path><TAB>ERROR: <reason>" and the exit code is 1.
+
+The Imgur links, and nothing else, are also copied to the clipboard, one per line.
 
 Options:
   --json      Print a JSON array of {"input", "imgur"} or {"input", "error"}
@@ -34,6 +37,14 @@ const IMAGE_EXTENSIONS = new Set([
 
 // Retrying with the image bytes can't help when the client is rejected or rate limited.
 const NO_FALLBACK_STATUSES = new Set([401, 403, 429]);
+
+// Tried in order until one works. Linux varies by display server, so wl-copy fails over to xclip.
+const CLIPBOARD_COMMANDS = {
+	darwin: [["pbcopy"]],
+	win32: [["clip"]],
+};
+const DEFAULT_CLIPBOARD_COMMANDS = [["wl-copy"], ["xclip", "-selection", "clipboard"]];
+const CLIPBOARD_TIMEOUT_MS = 5_000;
 
 class ImgurError extends Error {
 	constructor(message, status) {
@@ -179,6 +190,29 @@ async function uploadAll(items) {
 	return results;
 }
 
+function pipeToCommand([command, ...args], text) {
+	return new Promise(resolve => {
+		const child = spawn(command, args, {
+			stdio: ["pipe", "ignore", "ignore"],
+			timeout: CLIPBOARD_TIMEOUT_MS,
+		});
+		child.on("error", () => resolve(false));
+		child.on("close", code => resolve(code === 0));
+		// A missing or crashing command closes the pipe, which "error" and "close" already report.
+		child.stdin.on("error", () => {});
+		child.stdin.end(text);
+	});
+}
+
+async function copyToClipboard(text) {
+	for (const command of CLIPBOARD_COMMANDS[process.platform] ?? DEFAULT_CLIPBOARD_COMMANDS) {
+		if (await pipeToCommand(command, text)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 function usageError(message) {
 	console.error(`${message}\n\n${USAGE}`);
 	process.exit(2);
@@ -227,6 +261,12 @@ if (json) {
 	for (const { input, imgur, error } of results) {
 		console.log(`${input}\t${imgur ?? `ERROR: ${error}`}`);
 	}
+}
+
+// Status goes to stderr so stdout stays safe to parse. The exit code only reports uploads.
+const links = results.flatMap(result => result.imgur ?? []);
+if (links.length > 0) {
+	console.error((await copyToClipboard(links.join("\n"))) ? "Copied to clipboard" : "Couldn't copy to clipboard");
 }
 
 process.exitCode = results.some(result => result.error) ? 1 : 0;

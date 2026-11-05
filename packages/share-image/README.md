@@ -1,4 +1,4 @@
-# share-image
+# share-img
 
 Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed, and no dependencies. Requires Node 18 or later.
 
@@ -7,13 +7,13 @@ Upload one or many images to Imgur by URL, file or folder and get the Imgur link
 Run it without installing:
 
 ```sh
-npx share-image https://compote.slate.com/images/b136d0ff-db57-4a8b-9a3b-b280e373f27f.jpeg?crop=1560%2C1040%2Cx0%2Cy0&s=image-1170
+npx share-img https://compote.slate.com/images/b136d0ff-db57-4a8b-9a3b-b280e373f27f.jpeg?crop=1560%2C1040%2Cx0%2Cy0&s=image-1170
 ```
 
 Or install the command globally:
 
 ```sh
-npm install -g share-image
+npm install -g share-img
 ```
 
 ## Usage
@@ -21,11 +21,11 @@ npm install -g share-image
 Pass one or more URLs, files or folders, or a JSON array of them:
 
 ```sh
-share-image https://example.com/a.png
-share-image https://example.com/a.png https://example.com/b.jpg
-share-image '["https://example.com/a.png", "https://example.com/b.jpg"]'
-share-image ./logo.png
-share-image ./photos
+share-img https://example.com/a.png
+share-img https://example.com/a.png https://example.com/b.jpg
+share-img '["https://example.com/a.png", "https://example.com/b.jpg"]'
+share-img ./logo.png
+share-img ./photos
 ```
 
 `http`, `https` and `data:` (base64) image URLs are accepted.
@@ -78,6 +78,12 @@ With `--json`, each result has either an `imgur` or an `error` field:
 
 A failed upload doesn't stop the others.
 
+### Clipboard
+
+The Imgur links are also copied to your clipboard, without the input paths or any error lines. Several links are copied one per line, and this works with `--json` too. The clipboard isn't changed if every upload fails.
+
+The copy uses `pbcopy` on macOS, `clip` on Windows, and `wl-copy` or `xclip` on Linux. A `Copied to clipboard` or `Couldn't copy to clipboard` message goes to stderr, so it won't end up in piped output, and a failed copy doesn't change the exit code.
+
 ### Exit codes
 
 | Code | Meaning |
@@ -91,13 +97,13 @@ A failed upload doesn't stop the others.
 Print only the Imgur links:
 
 ```sh
-share-image https://example.com/a.png https://example.com/b.jpg | cut -f2
+share-img https://example.com/a.png https://example.com/b.jpg | cut -f2
 ```
 
 The same with `--json` and [jq](https://jqlang.github.io/jq/):
 
 ```sh
-share-image --json https://example.com/a.png | jq -r '.[].imgur'
+share-img --json https://example.com/a.png | jq -r '.[].imgur'
 ```
 
 ## Testing
