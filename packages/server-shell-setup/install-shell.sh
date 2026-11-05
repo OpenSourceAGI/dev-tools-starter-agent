@@ -1101,15 +1101,55 @@ starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.n
 install_systeminfo() {
   header "Installing system information greeting"
 
-  # Do not invoke npx automatically at every shell startup: that can be slow,
-  # network-dependent, and mutate a package cache. Define a command instead.
-  # The user can run `systeminfo` when desired.
+  # Install the about-system npm package once, globally, so every new shell
+  # can run the local binary instead of fetching it through npx on each login.
+  local volta_bin="$HOME/.volta/bin/volta"
+  if [[ -x "$volta_bin" ]] || have volta; then
+    [[ -x "$volta_bin" ]] || volta_bin=$(command -v volta)
+    run "$volta_bin" install about-system@latest
+  elif have npm; then
+    if ! run npm install --global about-system@latest; then
+      warn "npm could not install about-system globally; the greeting will be skipped until it is installed"
+    fi
+  else
+    warn "npm was not found; install the node component first so the greeting can install about-system"
+  fi
+
+  # Show the greeting in interactive shells only, and only when the package is
+  # installed, so scripts and non-interactive shells never wait on it.
+  # `systeminfo` stays available on demand and falls back to npx.
   replace_managed_block "$CONFIG_DIR/fish/functions/systeminfo.fish" "function-systeminfo" 'function systeminfo --description "Display system information through about-system"
-    npx --yes --silent about-system@latest
+    if type -q about-system
+        about-system $argv
+    else
+        npx --yes --silent about-system@latest $argv
+    end
+end'
+  replace_managed_block "$CONFIG_DIR/fish/config.fish" "systeminfo-greeting" 'if status is-interactive; and type -q about-system
+    about-system
 end'
 
-  append_managed_block "$HOME/.bashrc" "systeminfo" 'systeminfo() { npx --yes  --silent about-system@latest; }'
-  append_managed_block "$CONFIG_DIR/nushell/config.nu" "systeminfo" 'def systeminfo [] { npx --yes  --silent about-system@latest }'
+  replace_managed_block "$HOME/.bashrc" "systeminfo" 'systeminfo() {
+  if command -v about-system >/dev/null 2>&1; then
+    about-system "$@"
+  else
+    npx --yes --silent about-system@latest "$@"
+  fi
+}
+if [[ $- == *i* ]] && command -v about-system >/dev/null 2>&1; then
+  about-system
+fi'
+
+  replace_managed_block "$CONFIG_DIR/nushell/config.nu" "systeminfo" 'def systeminfo [...args] {
+    if (which about-system | is-empty) {
+        npx --yes --silent about-system@latest ...$args
+    } else {
+        ^about-system ...$args
+    }
+}
+if $nu.is-interactive and not (which about-system | is-empty) {
+    ^about-system
+}'
 
   # .hushlogin suppresses standard motd output for the current user only. It
   # does not delete /etc/motd or OS-managed update scripts.
@@ -1121,7 +1161,7 @@ end'
     fi
   fi
 
-  success "Added an on-demand systeminfo command"
+  success "Installed about-system and added it as the shell greeting"
 }
 
 install_code_server() {
