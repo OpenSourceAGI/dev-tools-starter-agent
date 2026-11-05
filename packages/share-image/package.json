@@ -9,6 +9,9 @@
   "files": [
     "bin"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "node --test test/cli.test.mjs",
     "demo": "node test/demo.mjs"
