@@ -129,3 +129,12 @@ describe("toAbsoluteUrl", () => {
     );
   });
 });
+
+describe("AI_PROVIDERS", () => {
+  it("lists QwkSearch and Perplexity first", () => {
+    expect(AI_PROVIDERS.slice(0, 2).map((p) => p.id)).toEqual([
+      "qwksearch",
+      "perplexity",
+    ]);
+  });
+});

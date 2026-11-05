@@ -29,11 +29,32 @@ icon: Sparkles
     <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </div>
 
+<div align="center">
+    <a href="https://1computer.online/docs/packages/ask-ai-button"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/dm/ask-ai-button.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/v/ask-ai-button.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/dt/ask-ai-button.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/ask-ai-button"><img src="https://img.shields.io/npm/types/ask-ai-button" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=ask-ai-button"><img src="https://packagephobia.com/badge?p=ask-ai-button" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=ask-ai-button&label=ask-ai-button%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/ask-ai-button"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
+</div>
+
 **🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill ask-ai-button` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/ask-ai-button/SKILL.md))
 
 An **Ask AI** button for docs sites. The visitor types a question, picks a
-model, and a new tab opens in Claude, ChatGPT, Gemini, Perplexity, Grok,
-Copilot, Le Chat, T3 Chat, Brave, QwkSearch or Cursor with the prompt already
+model, and a new tab opens in QwkSearch, Perplexity, Claude, ChatGPT, Gemini,
+Grok, Copilot, Le Chat, Venice, Brave or Cursor with the prompt already
 filled in: the current page (as a link or as pasted Markdown) plus their
 question. They can also just copy the prompt, or copy the page as Markdown.
 
@@ -100,8 +121,9 @@ clipboard so the visitor can paste it.
 <AskAIButton providers={["claude", "chatgpt", "perplexity"]} />
 ```
 
-Built-in IDs: `claude`, `chatgpt`, `gemini`, `perplexity`, `grok`, `copilot`,
-`mistral`, `t3chat`, `brave`, `qwksearch`, `cursor`. Mix them with your own:
+Built-in IDs, in menu order: `qwksearch`, `perplexity`, `claude`, `chatgpt`,
+`gemini`, `grok`, `copilot`, `mistral`, `venice`, `brave`, `cursor`. Mix them
+with your own:
 
 ```tsx
 <AskAIButton
@@ -116,6 +138,47 @@ Built-in IDs: `claude`, `chatgpt`, `gemini`, `perplexity`, `grok`, `copilot`,
 ```
 
 A provider without an `icon` shows its site's favicon.
+
+### Comparing the built-in providers
+
+Every provider below opens in a new tab with the prompt pre-filled. They differ
+in what happens after that.
+
+| Provider | ID | Primary role | Models | Search & citations | Files & knowledge | Extensibility | Main trade-off |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [QwkSearch](https://qwksearch.com) | `qwksearch` | Self-hostable AI research, writing and personal knowledge stack (Cloudflare Workers or Docker, open source) | Bring your own keys: Claude, GPT, Gemini, Grok, Llama and others | Strong: 100+ sites in 13 categories, selectable sources, query expansion, cited answers, APA formatting | PDF, YouTube and DOCX extraction; cloud-storage sync | MCP, editable prompts, skills, memory, notes editor, browser extension, desktop app, VS Code | You run the infrastructure, keys, sources and usage costs yourself |
+| [Perplexity](https://www.perplexity.ai) | `perplexity` | Hosted AI answer engine for web research | Perplexity picks the model | Strong web answers with citations; little control over sources | Partial PDF support | Memory; no self-hosted MCP/server extensibility | Fast and polished, but no self-hosting, BYOK, deep prompt/tool customization or source selection |
+| [Claude](https://claude.ai) | `claude` | Hosted reasoning, writing and AI workspace | Anthropic models only | Web search available; citations can be inconsistent | Files, projects, Google Drive support | Skills, memory, project instructions, MCP; Claude Code separately | Strong reasoning and writing, but closed and single-provider |
+| [ChatGPT](https://chatgpt.com) | `chatgpt` | Hosted general-purpose assistant | OpenAI models only | Web search, more limited than a dedicated research engine | Files; Drive/SharePoint connectors on eligible plans | Memory, custom GPTs, custom instructions, code/data tools, paid connectors | Broad capability, but no self-hosting or cross-provider models |
+| [Gemini](https://aistudio.google.com) | `gemini` | Google search ecosystem plus the Gemini assistant (opens in AI Studio) | Gemini family only | Google's broad web index; synthesized answers | Strong Google Drive and Workspace alignment | Gems, extensions, memory | Best for Google-centric teams; not self-hostable or source-configurable |
+| [Grok](https://grok.com) | `grok` | Hosted chat with X-aware discovery | Grok models only | X posts plus web search; citations can be inconsistent | Partial file support | Custom instructions, memory; limited open tool ecosystem | Great for current X context; no self-hosting, BYOK or source controls |
+| [Copilot](https://copilot.microsoft.com) | `copilot` | Microsoft's hosted consumer assistant | Microsoft-managed (OpenAI-based) models | Bing-grounded answers with source links | Files; Microsoft 365 integration on business plans | Limited open extensibility in the consumer app | Convenient in the Microsoft ecosystem; little model or source control |
+| [Le Chat](https://chat.mistral.ai) | `mistral` | Mistral's hosted assistant | Mistral models only | Web search with sources | File uploads and document analysis | Agents, connectors, memory | European, fast and open-weight-friendly, but single-provider |
+| [Venice](https://venice.ai) | `venice` | Privacy-oriented hosted multi-model chat | Several open model families (Llama, Qwen, DeepSeek and others) | No dedicated research/search workflow | Limited file uploads | System prompts; no built-in MCP, skills or durable memory | Private and flexible on models, but light on research and productivity tooling |
+| [Brave](https://search.brave.com) | `brave` | AI answers on top of Brave's independent search index | Brave-managed models | Search-first answers with cited results | — | Brave Search API for developers | Privacy-focused search, but a shallow chat and tooling surface |
+| [Cursor](https://cursor.com) | `cursor` | AI code editor; the prompt opens in Cursor's agent | Multiple providers (Claude, GPT, Gemini and others) | Codebase-aware, with web and docs lookup | Your local project | MCP, rules, agents | Built for code; needs Cursor installed and is not a general research tool |
+
+For general web research, **Perplexity** is the simplest hosted
+answer-with-citations experience, while **QwkSearch** is the most complete
+research-to-writing environment: source control, editable prompts, structured
+file extraction, MCP, notes, storage sync, browser tooling and IDE integration.
+
+<details>
+<summary>Other tools worth knowing about (not built in — add them as custom providers if they take a prompt in their URL)</summary>
+</details>
+
+| Tool | Primary role | Deployment / licensing | Search & citations | Main trade-off |
+| --- | --- | --- | --- | --- |
+| [Open WebUI](https://openwebui.com) | Broad local-model and AI workspace | Self-hosted (Docker, Kubernetes); license has a branding-preservation condition | Web search, URL ingestion, strong RAG | Broadest feature set, but heavy to operate securely |
+| [LobeHub](https://lobehub.com) | Polished agent workspace | Self-host or cloud; LobeHub Community License | Agent workflows rather than cited web research | Heavier than a simple chat UI; check the license before white-labeling |
+| [AnythingLLM](https://anythingllm.com) | Private document chat and turnkey RAG | Desktop apps and Docker; MIT | Web browsing secondary to document workflows | Opinionated around workspaces; desktop edition lacks server features |
+| [LibreChat](https://librechat.ai) | Multi-provider ChatGPT/Claude-style app | Self-hosted; MIT | Web search, but not search-first | Production needs MongoDB, Redis and more; fast-moving |
+| [Vane (formerly Perplexica)](https://github.com/ItzCrazyKns/Perplexica) | Self-hosted Perplexity-style research engine | Local/Docker; MIT | Excellent: cited answers, SearxNG, academic/discussion modes, domain filters | Closest open-source Perplexity, but immature auth and multi-user support |
+| [Onyx](https://onyx.app) | Enterprise internal search and deep research | Docker, Kubernetes, Helm, Terraform; MIT core, paid enterprise features | Hybrid retrieval, web search, deep research | Infrastructure-heavy; lite mode drops most of the RAG stack |
+| [Notion](https://www.notion.com) | Cloud workspace with AI-assisted organizational search | Proprietary cloud | Enterprise Search across Notion, connected apps and the web | Strong if Notion is your hub; closed and plan-gated |
+| [Elicit](https://elicit.com) | Scientific research and evidence synthesis | Proprietary hosted; API and MCP | Excellent for scholarship: 138M papers, 545K clinical trials, sentence-level citations | Rigorous for academic evidence, but not general web search or self-hosted |
+
+
 
 ## Props
 

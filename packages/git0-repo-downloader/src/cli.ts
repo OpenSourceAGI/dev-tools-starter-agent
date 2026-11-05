@@ -10,6 +10,8 @@ import { attachGitHistoryLazily, cloneHistoryOnly } from './history.js';
 import { parseArgs, type Flags } from './args.js';
 import { getAvailableDirectoryName } from './download.js';
 import { printLogo } from './utils.js';
+import { runServiceCommand } from './service/index.js';
+import pkg from '../package.json' with { type: 'json' };
 import type { SearchResult } from './types.js';
 
 const Github = new GithubAPI({ debug: false });
@@ -185,11 +187,17 @@ async function handleRepoDownload(selectedRepo: SearchResult, flags: Flags): Pro
  *
  * // Search:
  * //   git0 react template starter
+ *
+ * // Background install service for website download buttons:
+ * //   git0 --service=install
+ * //   git0 git0://install/owner/repo
  */
 async function main(): Promise<void> {
   printLogo();
 
   const { positional, flags } = parseArgs(process.argv.slice(2));
+  if (await runServiceCommand(positional, flags, pkg.version)) return;
+
   if (!positional.length) {
     console.log(chalk.yellow('Usage: git0 <github-url | owner/repo[/path] | search-query>'));
     console.log(chalk.gray('  --path=<path>   download only that folder or file'));
@@ -197,6 +205,7 @@ async function main(): Promise<void> {
     console.log(chalk.gray('  --history       also fetch .git history, in the background'));
     console.log(chalk.gray('  --history-only  clone only the history, no working files'));
     console.log(chalk.gray('  --mirror        keep every ref when cloning history'));
+    console.log(chalk.gray('  --service[=install|uninstall|status]  background install service for download buttons'));
     process.exit(1);
   }
 

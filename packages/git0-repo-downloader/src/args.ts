@@ -16,6 +16,13 @@ export interface Flags {
   historyOnly: boolean;
   /** `--mirror` — use `--mirror` rather than `--bare` when cloning history. */
   mirror: boolean;
+  /**
+   * `--service[=run|install|uninstall|status]` — the background install
+   * service. Bare `--service` runs it in the foreground.
+   */
+  service?: 'run' | 'install' | 'uninstall' | 'status';
+  /** `--port=<n>` — the port the service listens on. */
+  port?: number;
 }
 
 /**
@@ -51,6 +58,9 @@ export function parseArgs(argv: string[]): { positional: string[]; flags: Flags 
     else if (name === 'history' || name === 'git') flags.history = true;
     else if (name === 'history-only' || name === 'git-only') flags.historyOnly = true;
     else if (name === 'mirror') flags.mirror = true;
+    else if (name === 'service' && ['', 'run', 'install', 'uninstall', 'status'].includes(value)) {
+      flags.service = (value || 'run') as Flags['service'];
+    } else if (name === 'port' && /^\d+$/.test(value)) flags.port = Number(value);
     else console.log(chalk.yellow(`Ignoring unknown flag: ${arg}`));
   }
 

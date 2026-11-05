@@ -18,6 +18,18 @@ const q = (prompt: string) => encodeURIComponent(prompt);
 /** Every provider that ships with the package, in display order. */
 export const AI_PROVIDERS = [
   {
+    id: "qwksearch",
+    title: "QwkSearch",
+    icon: <QwkSearchIcon />,
+    getHref: (p) => `https://qwksearch.com/?q=${q(p)}`,
+  },
+  {
+    id: "perplexity",
+    title: "Perplexity",
+    icon: <PerplexityIcon />,
+    getHref: (p) => `https://www.perplexity.ai/search?q=${q(p)}`,
+  },
+  {
     id: "claude",
     title: "Claude",
     icon: <ClaudeIcon />,
@@ -37,12 +49,6 @@ export const AI_PROVIDERS = [
       `https://aistudio.google.com/prompts/new_chat?prompt=${q(p)}`,
   },
   {
-    id: "perplexity",
-    title: "Perplexity",
-    icon: <PerplexityIcon />,
-    getHref: (p) => `https://www.perplexity.ai/search?q=${q(p)}`,
-  },
-  {
     id: "grok",
     title: "Grok",
     getHref: (p) => `https://grok.com/?q=${q(p)}`,
@@ -58,21 +64,15 @@ export const AI_PROVIDERS = [
     getHref: (p) => `https://chat.mistral.ai/chat?q=${q(p)}`,
   },
   {
-    id: "t3chat",
-    title: "T3 Chat",
-    getHref: (p) => `https://t3.chat/new?q=${q(p)}`,
+    id: "venice",
+    title: "Venice",
+    getHref: (p) => `https://venice.ai/chat?q=${q(p)}`,
   },
   {
     id: "brave",
     title: "Brave",
     icon: <BraveIcon />,
     getHref: (p) => `https://search.brave.com/ask?q=${q(p)}`,
-  },
-  {
-    id: "qwksearch",
-    title: "QwkSearch",
-    icon: <QwkSearchIcon />,
-    getHref: (p) => `https://qwksearch.com/?q=${q(p)}`,
   },
   {
     id: "cursor",

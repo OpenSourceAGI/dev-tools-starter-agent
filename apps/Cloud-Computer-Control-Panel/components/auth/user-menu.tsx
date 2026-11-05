@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { signOut, useSession } from "@/lib/auth-client"
+import { clearUser } from "@/lib/analytics"
 
 function initials(name?: string | null, email?: string | null) {
   const source = name || email || "?"
@@ -45,6 +46,7 @@ export function UserMenu() {
 
   const handleSignOut = async () => {
     await signOut()
+    await clearUser()
     router.push("/")
     router.refresh()
   }

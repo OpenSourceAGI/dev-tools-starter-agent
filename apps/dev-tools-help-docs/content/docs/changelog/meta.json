@@ -3,5 +3,5 @@
   "description": "Notable changes across the packages, apps and templates.",
   "icon": "ScrollText",
   "root": true,
-  "pages": ["index", "2026-10", "2026-09"]
+  "pages": ["index", "2026-11", "2026-10", "2026-09"]
 }

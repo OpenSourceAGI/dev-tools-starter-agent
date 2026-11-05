@@ -23,6 +23,8 @@ export const env = createEnv({
         NEXT_PUBLIC_APP_URL: z.string().optional(),
         NEXT_PUBLIC_APP_NAME: z.string().optional(),
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: z.string().optional(),
+        NEXT_PUBLIC_AMPLITUDE_API_KEY: z.string().optional(),
+        NEXT_PUBLIC_AMPLITUDE_REPLAY_SAMPLE_RATE: z.string().optional(),
     },
     runtimeEnv: {
         DATABASE_URL: process.env.DATABASE_URL,
@@ -39,6 +41,8 @@ export const env = createEnv({
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
         NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
         NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+        NEXT_PUBLIC_AMPLITUDE_API_KEY: process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY,
+        NEXT_PUBLIC_AMPLITUDE_REPLAY_SAMPLE_RATE: process.env.NEXT_PUBLIC_AMPLITUDE_REPLAY_SAMPLE_RATE,
     },
     skipValidation: !!process.env.SKIP_ENV_VALIDATION,
     emptyStringAsUndefined: true,

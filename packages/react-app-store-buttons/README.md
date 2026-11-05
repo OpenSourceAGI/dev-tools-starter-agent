@@ -14,6 +14,7 @@
     <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/dt/react-app-store-buttons.svg" alt="NPM Total Downloads" /></a>
     <a href="https://www.npmjs.com/package/react-app-store-buttons"><img src="https://img.shields.io/npm/types/react-app-store-buttons" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=react-app-store-buttons"><img src="https://packagephobia.com/badge?p=react-app-store-buttons" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=react-app-store-buttons&label=react-app-store-buttons%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>

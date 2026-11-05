@@ -12,6 +12,7 @@
     <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/dt/export-svg-typescript.svg" alt="NPM Total Downloads" /></a>
     <a href="https://www.npmjs.com/package/export-svg-typescript"><img src="https://img.shields.io/npm/types/export-svg-typescript" alt="TypeScript types" /></a>
     <a href="https://packagephobia.com/result?p=export-svg-typescript"><img src="https://packagephobia.com/badge?p=export-svg-typescript" alt="Install size" /></a>
+    <a href="https://app.codecov.io/gh/OpenSourceAGI/dev-tools-starter-agent/flags"><img src="https://img.shields.io/codecov/c/github/OpenSourceAGI/dev-tools-starter-agent?flag=export-svg-icons-typescript&label=export-svg-icons-typescript%20coverage&logo=codecov&logoColor=white" alt="Coverage" /></a>
     <br />
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
     <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
