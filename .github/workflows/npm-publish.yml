@@ -80,6 +80,9 @@ jobs:
           failed_packages=""
 
           for dir in packages/*/; do
+            # The glob leaves a trailing slash; strip it so paths below read
+            # packages/foo/package.json, not packages/foo//package.json.
+            dir="${dir%/}"
             pkg="$dir/package.json"
 
             if [ ! -f "$pkg" ]; then
@@ -146,11 +149,16 @@ jobs:
               # Nothing was published, so drop the version bump instead of
               # committing it below — otherwise the repo drifts ahead of the
               # registry by one patch version per failed run.
-              if [ -f "$dir/package-lock.json" ]; then
-                git checkout -- "$dir/package.json" "$dir/package-lock.json"
-              else
-                git checkout -- "$dir/package.json"
-              fi
+              # Restore only what git tracks: a lockfile that `npm install`
+              # just created is untracked, and naming it in `git checkout`
+              # fails the whole step with "pathspec did not match".
+              for file in "$dir/package.json" "$dir/package-lock.json"; do
+                if git ls-files --error-unmatch -- "$file" >/dev/null 2>&1; then
+                  git checkout -- "$file"
+                elif [ -f "$file" ]; then
+                  rm -f -- "$file"
+                fi
+              done
             }
           done
 
@@ -165,7 +173,9 @@ jobs:
       - name: Commit version bumps
         if: always()
         run: |
-          git add -- packages/*/package.json packages/*/package-lock.json
+          # One pathspec covering both files: listing package-lock.json on its own
+          # fails the step with "pathspec did not match" when no package has one.
+          git add -- ':(glob)packages/*/package*.json'
 
           if git diff --staged --quiet; then
             echo "No version changes to commit"

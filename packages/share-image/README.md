@@ -1,3 +1,25 @@
+<!-- template-git-repo:badges:start -->
+<p align="center">
+    <a href="https://1computer.online/docs/packages/share-image"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/stargazers"><img src="https://img.shields.io/github/stars/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Stars" /></a>
+    <a href="https://www.npmjs.com/package/@vtempest/share-image"><img src="https://img.shields.io/npm/dm/@vtempest/share-image.svg" alt="NPM Monthly Downloads" /></a>
+    <a href="https://www.npmjs.com/package/@vtempest/share-image"><img src="https://img.shields.io/npm/v/@vtempest/share-image.svg" alt="npm version" /></a>
+    <a href="https://www.npmjs.com/package/@vtempest/share-image"><img src="https://img.shields.io/npm/dt/@vtempest/share-image.svg" alt="NPM Total Downloads" /></a>
+    <a href="https://www.npmjs.com/package/@vtempest/share-image"><img src="https://img.shields.io/npm/types/@vtempest/share-image" alt="TypeScript types" /></a>
+    <a href="https://packagephobia.com/result?p=@vtempest/share-image"><img src="https://packagephobia.com/badge?p=@vtempest/share-image" alt="Install size" /></a>
+    <br />
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/issues"><img src="https://img.shields.io/github/issues/OpenSourceAGI/dev-tools-starter-agent?logo=github" alt="GitHub Issues" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls"><img src="https://img.shields.io/github/issues-pr/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs" alt="Open Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/pulls?q=is%3Apr+is%3Aclosed"><img src="https://img.shields.io/github/issues-pr-closed/OpenSourceAGI/dev-tools-starter-agent?logo=github&label=PRs%20merged&color=8957e5" alt="Merged Pull Requests" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/discussions"><img src="https://img.shields.io/github/discussions/OpenSourceAGI/dev-tools-starter-agent" alt="GitHub Discussions" /></a>
+    <a href="https://github.com/OpenSourceAGI/dev-tools-starter-agent/commits/master/"><img src="https://img.shields.io/github/last-commit/OpenSourceAGI/dev-tools-starter-agent.svg" alt="GitHub last commit" /></a>
+    <br />
+    <a href="https://stackblitz.com/github/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/share-image"><img height="20px" src="https://developer.stackblitz.com/img/open_in_stackblitz.svg" alt="Open in StackBlitz" /></a>
+    <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" />
+</p>
+<!-- template-git-repo:badges:end -->
+
 # share-image
 
 Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed, and no dependencies. Requires Node 18 or later.
@@ -7,13 +29,13 @@ Upload one or many images to Imgur by URL, file or folder and get the Imgur link
 Run it without installing:
 
 ```sh
-npx share-image https://compote.slate.com/images/b136d0ff-db57-4a8b-9a3b-b280e373f27f.jpeg?crop=1560%2C1040%2Cx0%2Cy0&s=image-1170
+npx @vtempest/share-image https://compote.slate.com/images/b136d0ff-db57-4a8b-9a3b-b280e373f27f.jpeg?crop=1560%2C1040%2Cx0%2Cy0&s=image-1170
 ```
 
 Or install the command globally:
 
 ```sh
-npm install -g share-image
+npm install -g @vtempest/share-image
 ```
 
 ## Usage
