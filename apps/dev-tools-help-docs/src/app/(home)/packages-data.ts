@@ -85,14 +85,14 @@ export const categories: Category[] = [
     color: "ember",
     packages: [
       {
-        name: "about-system-info",
+        name: "about-system",
         icon: "Cpu",
         description: "Cross-platform CLI that prints CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line.",
         longDescription: "A cross-platform system summary for Windows, macOS and Linux. One command prints CPU, memory, disk, uptime, public IP, ISP and the dev tools you have installed as a compact, emoji-labelled line. Pick individual info blocks, emit JSON for scripts, customise colours, emojis and order in a settings file, and install it as a shell greeting that runs on every new terminal.",
         commands: ["npx about-system", "npm install -g about-system"],
-        path: "packages/about-system-info/",
-        image: "/packages/about-system-info.svg",
-        href: "/docs/packages/about-system-info",
+        path: "packages/about-system/",
+        image: "/packages/about-system.svg",
+        href: "/docs/packages/about-system",
       },
       {
         name: "api2ai-mcp-generator",

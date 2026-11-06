@@ -8,7 +8,7 @@ description: Guide to native-app-wrapper (packages/native-app-wrapper), the Taur
 The scaffold in `packages/native-app-wrapper` (marked `private`, so run it from a checkout). It renders a [Tauri 2](https://v2.tauri.app) app whose entire identity comes from one profile JSON, and packages one of two things:
 
 - **`"mode": "remote"`** — the window loads a live website. The wrapper adds what a browser tab can't: an OS-registered app icon and installer, a deep-link handoff so OAuth can happen in the system browser, and a fullscreen toggle.
-- **`"mode": "local"`** — the window loads a bundled `dist/`, and a CLI compiled to a single executable ships beside it as a Tauri sidecar. The app then needs no Node/Python/runtime on the user's machine. `packages/about-system-info/native` is the worked example.
+- **`"mode": "local"`** — the window loads a bundled `dist/`, and a CLI compiled to a single executable ships beside it as a Tauri sidecar. The app then needs no Node/Python/runtime on the user's machine. `packages/about-system/native` is the worked example.
 
 ## Setup
 

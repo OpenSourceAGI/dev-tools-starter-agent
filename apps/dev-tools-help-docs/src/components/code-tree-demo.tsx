@@ -21,7 +21,7 @@ const IGNORE = ['test', 'tests', 'benchmark', 'docs', 'coverage', 'web']
 export const DEMO_PACKAGES = [
   { name: 'code-tree-graph', dir: 'packages/code-tree-graph' },
   { name: 'git0', dir: 'packages/git0-repo-downloader/src' },
-  { name: 'about-system', dir: 'packages/about-system-info/src' },
+  { name: 'about-system', dir: 'packages/about-system/src' },
   { name: 'manage-storage', dir: 'packages/manage-storage/src' },
 ] as const
 

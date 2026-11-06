@@ -59,8 +59,8 @@ jobs:
             install: bun install --ignore-scripts
             coverage: true
 
-          - name: about-system-info
-            dir: packages/about-system-info
+          - name: about-system
+            dir: packages/about-system
             runtime: node
             install: npm install --ignore-scripts --legacy-peer-deps
             coverage: true

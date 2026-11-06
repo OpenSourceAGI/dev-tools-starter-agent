@@ -143,7 +143,7 @@ const SKILLS_SOURCE = 'https://github.com/OpenSourceAGI/dev-tools-starter-agent'
  * if a name does not exist on disk.
  */
 const SKILLS_BY_PACKAGE = {
-  'about-system-info': ['about-system'],
+  'about-system': ['about-system'],
   'api2ai-mcp-generator': ['api2ai'],
   'ask-ai-button': ['ask-ai-button'],
   'cloudflare-to-claude-fix': ['cloudflare-to-claude-fix'],

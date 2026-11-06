@@ -2,7 +2,7 @@
 
 Remote mode wraps a website. Local mode wraps something that has no website at all — a
 command-line tool — and turns it into an installable GUI app that needs no runtime on the user's
-machine. `packages/about-system-info/native` is the worked example: the `about-system` CLI, a
+machine. `packages/about-system/native` is the worked example: the `about-system` CLI, a
 Node program, shipped as a `.msi` / `.dmg` / `.AppImage` that a user who has never installed Node
 can double-click.
 

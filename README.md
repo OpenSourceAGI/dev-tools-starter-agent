@@ -124,7 +124,7 @@ Download badges show total npm downloads and downloads over the rolling last mon
 
 ### 🖥️ Desktop, Mobile & System Utilities
 
-[about-system-info](packages/about-system-info/) — Cross-platform CLI displaying CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line. Can run on terminal startup through your shell configuration. Also includes a [desktop app](packages/about-system-info/native/) with the CLI bundled inside. Supports Windows, macOS, and Linux.  
+[about-system](packages/about-system/) — Cross-platform CLI displaying CPU, memory, disk, uptime, public IP, ISP, and installed tools as a compact emoji line. Can run on terminal startup through your shell configuration. Also includes a [desktop app](packages/about-system/native/) with the CLI bundled inside. Supports Windows, macOS, and Linux.  
 [![Total npm downloads](https://img.shields.io/npm/dt/about-system.svg?label=total%20downloads)](https://www.npmjs.com/package/about-system)
 [![Monthly npm downloads](https://img.shields.io/npm/dm/about-system.svg?label=downloads%2Fmonth)](https://www.npmjs.com/package/about-system)  
 `npx about-system` · `npm install -g about-system`

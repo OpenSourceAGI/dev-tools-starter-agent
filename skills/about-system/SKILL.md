@@ -1,11 +1,11 @@
 ---
 name: about-system
-description: Guide to about-system (packages/about-system-info), the cross-platform system-info CLI and library — install and run it, pick specific info blocks, JSON output, the settings file (colors, emojis, labels, display order), the cache, the shell-greeting installer, and the programmatic API. Use when working with about-system or troubleshooting it — blocks that print empty, a greeting that doesn't run on terminal start, stale or wrong values, `infoFunctions` import errors, or `--set` changes that seem ignored.
+description: Guide to about-system (packages/about-system), the cross-platform system-info CLI and library — install and run it, pick specific info blocks, JSON output, the settings file (colors, emojis, labels, display order), the cache, the shell-greeting installer, and the programmatic API. Use when working with about-system or troubleshooting it — blocks that print empty, a greeting that doesn't run on terminal start, stale or wrong values, `infoFunctions` import errors, or `--set` changes that seem ignored.
 ---
 
 # Working With about-system
 
-The CLI and library in `packages/about-system-info`, published to npm as **`about-system`** (the directory name is not the package name). It prints 30+ system metrics as one emoji line, on Linux, macOS, Windows, and Android/Termux. Full block list, settings keys, and cache TTLs live in [API.md](API.md); read it when you need an exact block name, setting path, or default.
+The CLI and library in `packages/about-system`, published to npm as **`about-system`**. It prints 30+ system metrics as one emoji line, on Linux, macOS, Windows, and Android/Termux. Full block list, settings keys, and cache TTLs live in [API.md](API.md); read it when you need an exact block name, setting path, or default.
 
 ## Setup
 

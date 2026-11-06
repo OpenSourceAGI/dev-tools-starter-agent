@@ -2,7 +2,7 @@
 import { defineConfig } from "vitest/config";
 
 // Per-package Vitest setup. Coverage is written to this package's own
-// ./coverage/lcov.info so Codecov can flag it under "about-system-info".
+// ./coverage/lcov.info so Codecov can flag it under "about-system".
 export default defineConfig({
   test: {
     environment: "node",

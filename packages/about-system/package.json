@@ -70,9 +70,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
-    "directory": "packages/about-system-info"
+    "directory": "packages/about-system"
   },
-  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system-info",
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system",
   "files": [
     "dist/**/*",
     "src/**/*.ts",

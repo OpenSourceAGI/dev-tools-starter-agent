@@ -20,8 +20,7 @@ database, and very little cross-package importing.
    separately. Do not refactor across package boundaries to "share" something
    unless the sharing is the point of the PR.
 3. **The directory name is not the npm name.** `git0-repo-downloader` publishes
-   as `git0`; `about-system-info` as `about-system`; `open-when-ready` as
-   `open-ready`. Turbo filters take the **npm name**. See
+   as `git0`; `open-when-ready` as `open-ready`. Turbo filters take the **npm name**. See
    [`architecture/monorepo.md`](.claude/architecture/monorepo.md#names).
 4. **Package README headers are generated.** The badge row and the skill-install
    line at the top of every `packages/*/README.md` come from
@@ -101,7 +100,7 @@ one tree rather than beside the source.
 | `apps/cccp-vscode-ext` | [.claude/apps/cccp-vscode-ext/CLAUDE.md](.claude/apps/cccp-vscode-ext/CLAUDE.md) |
 | `apps/dev-tools-help-docs` | [.claude/apps/dev-tools-help-docs/CLAUDE.md](.claude/apps/dev-tools-help-docs/CLAUDE.md) |
 | `apps/vscode-cloud` | [.claude/apps/vscode-cloud/CLAUDE.md](.claude/apps/vscode-cloud/CLAUDE.md) |
-| `packages/about-system-info` | [.claude/packages/about-system-info/CLAUDE.md](.claude/packages/about-system-info/CLAUDE.md) |
+| `packages/about-system` | [.claude/packages/about-system/CLAUDE.md](.claude/packages/about-system/CLAUDE.md) |
 | `packages/ask-ai-button` | [.claude/packages/ask-ai-button/CLAUDE.md](.claude/packages/ask-ai-button/CLAUDE.md) |
 | `packages/api2ai-mcp-generator` | [.claude/packages/api2ai-mcp-generator/CLAUDE.md](.claude/packages/api2ai-mcp-generator/CLAUDE.md) |
 | `packages/cloudflare-to-claude-fix` | [.claude/packages/cloudflare-to-claude-fix/CLAUDE.md](.claude/packages/cloudflare-to-claude-fix/CLAUDE.md) |
