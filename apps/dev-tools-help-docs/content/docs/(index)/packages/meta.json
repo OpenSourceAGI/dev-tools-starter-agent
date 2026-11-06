@@ -3,6 +3,8 @@
   "icon": "Package",
   "description": "Every published CLI, library, and service in the monorepo.",
   "pages": [
+    "---CLI Tools---",
+    "about-system",
     "api2ai-mcp-generator",
     "create-cloud-db",
     "create-starter-app",
@@ -24,7 +26,6 @@
     "verify-phone-sms",
     "web2mobile-wrapper",
     "---Other---",
-    "about-system",
     "shadcn-sidebar",
     "shadcn-theme-menu",
     "share-image"
