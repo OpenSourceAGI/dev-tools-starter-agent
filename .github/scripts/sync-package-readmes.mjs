@@ -159,6 +159,7 @@ const SKILLS_BY_PACKAGE = {
   'react-app-store-buttons': ['app-store-buttons'],
   'server-shell-setup': ['server-shell-setup'],
   'setup-git-repo': ['github-actions-setup', 'git-badges'],
+  'shadcn-theme-menu': ['shadcn-theme-menu'],
   'template-git-repo': ['template-git-repo', 'repo-badges'],
   'test-google-login': ['test-google-login'],
   'verify-phone-sms': ['verify-phone-sms'],

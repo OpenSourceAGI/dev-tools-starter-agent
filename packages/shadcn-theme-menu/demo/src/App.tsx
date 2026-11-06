@@ -5,13 +5,14 @@ import {
   ThemeDropdown,
   CinematicThemeSwitcher,
   SidebarUserMenu,
+  FontSwitcher,
   themeColors,
   formatThemeName,
 } from 'shadcn-theme-menu'
 import { useTheme } from 'next-themes'
-import { Check, Palette, Terminal } from 'lucide-react'
+import { Check, LayoutTemplate, Palette, Terminal } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
+import { Button, buttonVariants } from '@/components/ui/button'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/app-sidebar'
@@ -89,6 +90,11 @@ function Demo() {
             <span className="text-lg font-bold">shadcn-theme-menu</span>
           </div>
           <div className="flex items-center gap-2">
+            <a href="./app-shell.html" className={buttonVariants({ variant: 'outline', size: 'sm' })}>
+              <LayoutTemplate />
+              <span className="hidden sm:inline">App shell</span>
+            </a>
+            <FontSwitcher onFontChange={(id) => log('FontSwitcher', `onFontChange("${id}")`)} />
             <ThemeToggle onThemeChange={(mode) => log('ThemeToggle', `onThemeChange("${mode}")`)} />
             <ThemeDropdown
               key={`header-${externalChangeKey}`}

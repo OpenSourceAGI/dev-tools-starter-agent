@@ -7,7 +7,8 @@ import {
   LogOut,
   CreditCard,
   Bell,
-  Palette
+  Palette,
+  Type
 } from 'lucide-react'
 import {
   SidebarMenu,
@@ -27,7 +28,10 @@ import {
 } from "./components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "./components/ui/avatar"
 import CinematicThemeSwitcher from "./cinematic-theme-switcher"
-import { themeNames, themeColors, formatThemeName } from "./theme-dropdown"
+import { themeNames, themeColors, formatThemeName } from "./themes"
+import { applyColorTheme, COLOR_THEME_CHANGE_EVENT, getStoredColorTheme, setColorTheme as persistColorTheme } from "./color-theme"
+import { FontMenuItems, useFontSwitcher } from "./font-switcher"
+import { fontOptions, type FontOption } from "./fonts"
 
 interface SettingsDialogProps {
   trigger: React.ReactNode;
@@ -40,41 +44,54 @@ function SettingsDialog({ trigger }: SettingsDialogProps) {
 interface SidebarUserMenuProps {
   user?: { name?: string | null; email?: string | null; image?: string | null }
   onSignOut?: () => void | Promise<void>
+  /** Called after a color theme is chosen (not on hover previews). */
+  onColorThemeChange?: (theme: string) => void
+  /** Called after a font is chosen; `"theme"` means the override was cleared. */
+  onFontChange?: (fontId: string) => void
+  /** Fonts offered in the "Font" submenu. Defaults to `fontOptions`; keep it stable. */
+  fonts?: FontOption[]
+  /** Hide the "Font" submenu. */
+  hideFontMenu?: boolean
 }
 
-export function SidebarUserMenu({ user: userProp, onSignOut }: SidebarUserMenuProps = {}) {
+export function SidebarUserMenu({
+  user: userProp,
+  onSignOut,
+  onColorThemeChange,
+  onFontChange,
+  fonts = fontOptions,
+  hideFontMenu = false,
+}: SidebarUserMenuProps = {}) {
   const user = userProp || { name: "Guest User", email: "guest@example.com", image: null }
   const [colorTheme, setColorTheme] = React.useState("minimal")
   const [mounted, setMounted] = React.useState(false)
   const [previewTheme, setPreviewTheme] = React.useState<string | null>(null)
+  const fontMenu = useFontSwitcher(fonts, onFontChange)
 
   React.useEffect(() => {
     setMounted(true)
-    const saved = localStorage.getItem("color-theme")
-    if (saved && themeNames.includes(saved)) {
-      setColorTheme(saved)
-    }
+    setColorTheme(getStoredColorTheme("minimal"))
+    // Follow theme changes made by any other switcher on the page.
+    const onChange = (event: Event) => setColorTheme((event as CustomEvent<string>).detail)
+    window.addEventListener(COLOR_THEME_CHANGE_EVENT, onChange)
+    return () => window.removeEventListener(COLOR_THEME_CHANGE_EVENT, onChange)
   }, [])
 
   const handleThemeChange = (newTheme: string) => {
     setColorTheme(newTheme)
-    localStorage.setItem("color-theme", newTheme)
-    document.cookie = `color-theme=${newTheme}; path=/; max-age=31536000`
-    themeNames.forEach(t => document.documentElement.classList.remove(`theme-${t}`))
-    document.documentElement.classList.add(`theme-${newTheme}`)
+    persistColorTheme(newTheme)
     setPreviewTheme(null)
+    onColorThemeChange?.(newTheme)
   }
 
   const handleThemePreview = (themeName: string) => {
     setPreviewTheme(themeName)
-    themeNames.forEach(t => document.documentElement.classList.remove(`theme-${t}`))
-    document.documentElement.classList.add(`theme-${themeName}`)
+    applyColorTheme(themeName)
   }
 
   const handlePreviewEnd = () => {
     if (previewTheme) {
-      themeNames.forEach(t => document.documentElement.classList.remove(`theme-${t}`))
-      document.documentElement.classList.add(`theme-${colorTheme}`)
+      applyColorTheme(colorTheme)
       setPreviewTheme(null)
     }
   }
@@ -96,7 +113,12 @@ export function SidebarUserMenu({ user: userProp, onSignOut }: SidebarUserMenuPr
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu onOpenChange={(open) => !open && handlePreviewEnd()}>
+        <DropdownMenu onOpenChange={(open) => {
+          if (!open) {
+            handlePreviewEnd()
+            fontMenu.endPreview()
+          }
+        }}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -194,6 +216,25 @@ export function SidebarUserMenu({ user: userProp, onSignOut }: SidebarUserMenuPr
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
+            {!hideFontMenu && (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <Type className="mr-2 h-4 w-4" />
+                  <span>Font</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="w-60 max-h-[400px] overflow-y-auto">
+                    <FontMenuItems
+                      options={fonts}
+                      font={fontMenu.font}
+                      onSelect={fontMenu.choose}
+                      onPreview={fontMenu.preview}
+                      onPreviewEnd={fontMenu.endPreview}
+                    />
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={async () => {
               await onSignOut?.()

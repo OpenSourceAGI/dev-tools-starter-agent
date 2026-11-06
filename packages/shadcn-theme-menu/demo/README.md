@@ -23,6 +23,13 @@ bun typecheck # tsc over the demo and the package source it pulls in
 
 From the package root, `bun demo` runs the dev server for you.
 
+The demo has two pages:
+
+| URL | Page |
+| --- | --- |
+| `/` (`index.html`) | The full component demo described below |
+| `/app-shell.html` | A bare app shell with the themes built in — see [App shell](#app-shell) |
+
 ## Deploying to Vercel
 
 A [`vercel.json`](./vercel.json) is included so a Vercel project with **Root Directory** set to `packages/shadcn-theme-menu/demo` builds with Vite (`bun run build`) and serves `dist/` without triggering Turborepo defaults.
@@ -55,7 +62,7 @@ or stop auto-deploying on every push for the ones you don't.
 
 | Section | Shows |
 | --- | --- |
-| Header | `ThemeToggle`, `ThemeDropdown` and `CinematicThemeSwitcher` side by side |
+| Header | `FontSwitcher`, `ThemeToggle`, `ThemeDropdown` and `CinematicThemeSwitcher` side by side, plus a link to the app shell |
 | Every theme | Each styled theme as a clickable swatch, plus the names the menus list that ship no stylesheet |
 | A theme is a typeface too | `--font-sans` applied automatically, `.font-theme-serif` / `.font-theme-mono` opted into, with the resolved family printed live |
 | The components | Every switcher wired to its callbacks, including `ThemeDropdown` rendered through injected `Button` and `DropdownMenu` primitives |
@@ -84,3 +91,26 @@ is worth knowing if you copy this demo as a starting point:
 - **`src/lib/theme-catalog.ts`** reads the CSSOM to find which `theme-*` classes
   actually have rules behind them, so the gallery never offers a theme that would
   do nothing.
+
+## App shell
+
+`app-shell.html` → [`src/app-shell/AppShell.tsx`](./src/app-shell/AppShell.tsx)
+is the smallest useful app built on the package — the thing to copy into a new
+project:
+
+- the stock shadcn `sidebar` block with `collapsible="icon"` — folds to an icon
+  rail on desktop (header button, the rail, or `Ctrl/⌘+B`) and becomes an
+  off-canvas sheet below 768px that closes itself when you follow a link;
+- a sticky header with `FontSwitcher`, `ThemeDropdown` and `ThemeToggle`;
+- `SidebarUserMenu` in the sidebar footer, with its Color Theme and Font
+  submenus;
+- `themeInitScript()` inlined into `<head>` by the `inlineThemeInitScript`
+  plugin in `vite.config.ts` (it replaces the `<!-- theme-init -->` comment), so
+  the stored theme and font are applied before the first paint;
+- four hash-routed pages (`#home`, `#themes`, `#fonts`, `#mobile`) that explain
+  how the themes, fonts and mobile layout work. Delete them and put your app in
+  `<main>`.
+
+`vite.config.ts` lists both HTML files under `build.rollupOptions.input`, and
+`vercel.json` sets `cleanUrls`, so the deployed shell is also reachable at
+`/app-shell`.

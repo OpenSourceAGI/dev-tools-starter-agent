@@ -116,6 +116,7 @@ one tree rather than beside the source.
 | `packages/react-app-store-buttons` | [.claude/packages/react-app-store-buttons/CLAUDE.md](.claude/packages/react-app-store-buttons/CLAUDE.md) |
 | `packages/server-shell-setup` | [.claude/packages/server-shell-setup/CLAUDE.md](.claude/packages/server-shell-setup/CLAUDE.md) |
 | `packages/setup-git-repo` | [.claude/packages/setup-git-repo/CLAUDE.md](.claude/packages/setup-git-repo/CLAUDE.md) |
+| `packages/shadcn-theme-menu` | [.claude/packages/shadcn-theme-menu/CLAUDE.md](.claude/packages/shadcn-theme-menu/CLAUDE.md) |
 | `packages/template-git-repo` | [.claude/packages/template-git-repo/CLAUDE.md](.claude/packages/template-git-repo/CLAUDE.md) |
 | `packages/test-google-login` | [.claude/packages/test-google-login/CLAUDE.md](.claude/packages/test-google-login/CLAUDE.md) |
 | `packages/verify-phone-sms` | [.claude/packages/verify-phone-sms/CLAUDE.md](.claude/packages/verify-phone-sms/CLAUDE.md) |

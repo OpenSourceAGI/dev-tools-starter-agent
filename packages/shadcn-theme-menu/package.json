@@ -1,6 +1,6 @@
 {
   "name": "shadcn-theme-menu",
-  "version": "1.1.91",
+  "version": "1.2.0",
   "description": "A collection of beautiful shadcn/ui theme components with dynamic theme switching and animations",
   "author": "vtempest",
   "type": "module",
@@ -43,7 +43,10 @@
     "light-mode",
     "react",
     "nextjs",
-    "tailwind"
+    "tailwind",
+    "font-switcher",
+    "google-fonts",
+    "app-shell"
   ],
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",

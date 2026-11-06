@@ -49,6 +49,10 @@
 </p>
 <!-- template-git-repo:badges:end -->
 
+<!-- skills:install:start -->
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill shadcn-theme-menu` ([what it covers](../../skills/shadcn-theme-menu/SKILL.md))
+<!-- skills:install:end -->
+
 # shadcn-theme-menu
 
 Beautiful theme components for shadcn/ui with 24+ color themes, dark/light mode, and animations.
@@ -62,6 +66,9 @@ Beautiful theme components for shadcn/ui with 24+ color themes, dark/light mode,
 - **Customizable** – pass your own Button/DropdownMenu components or set themes programmatically
 - **Persistent** – automatic `localStorage` support for color theme preferences
 - **Themed typography** – each theme brings its own font, previewed live on hover
+- **Font switcher** – `FontSwitcher` and a Font submenu let users override the theme's font; Google families load on demand
+- **Framework-agnostic helpers** – `setColorTheme`, `setFont`, `themeInitScript` and friends work without React
+- **App shell demo** – a responsive sidebar + header shell with every switcher built in, ready to copy
 
 ---
 
@@ -194,9 +201,115 @@ that variable at two-class specificity and outranks `:root`. A bare
 `style.fontFamily` inline on **both** `<html>` and `<body>` — inline beats the
 rule, but setting it on `<html>` alone is overridden again at `<body>`, since
 the rule targets both. Clearing it back to `""` restores the theme's font.
+That is exactly what `setFont` / `FontSwitcher` do — see below.
 
 A handful of themes (`claude`, `caffeine`, `lemonade`) deliberately declare no
 font of their own and inherit whatever your app already uses.
+
+## Font Switcher
+
+`FontSwitcher` lets the *user* pick a font on top of whatever the color theme
+uses. Hover previews, click commits, the choice survives reloads, and
+**Theme default** hands typography back to the theme.
+
+```tsx
+import { FontSwitcher } from "shadcn-theme-menu";
+
+<FontSwitcher onFontChange={(id) => console.log(id)} />
+```
+
+`SidebarUserMenu` has the same list as a **Font** submenu next to
+**Color Theme** (`hideFontMenu` turns it off). Every picker on a page stays in
+sync — choosing a font in one updates the checkmark in the others.
+
+**Props:** `fonts?` (defaults to `fontOptions`), `Button?`, `onFontChange?`,
+`align?`.
+
+### Getting fonts
+
+The switcher needs the face to be loadable. There are three ways to provide
+one, and you can mix them:
+
+1. **Google Fonts, on demand (default).** Every entry in `fontOptions` with a
+   `google` family is fetched the first time it is previewed or chosen — the
+   helper injects one `<link rel="stylesheet">` per family, never twice. The
+   families `themes.css` already imports (Inter, Geist, DM Sans, Lora, JetBrains
+   Mono, …) cost nothing extra. Browse more at
+   [fonts.google.com](https://fonts.google.com) and add them by name:
+
+   ```ts
+   import { fontOptions, type FontOption } from "shadcn-theme-menu";
+
+   export const myFonts: FontOption[] = [
+     ...fontOptions,
+     { id: "manrope", label: "Manrope", category: "sans",
+       stack: '"Manrope", ui-sans-serif, sans-serif', google: "Manrope" },
+   ];
+
+   <FontSwitcher fonts={myFonts} />
+   ```
+
+   Keep the array at module level so its identity is stable.
+
+2. **Self-hosted with [Fontsource](https://fontsource.org)** — no third-party
+   request, works offline and under a strict CSP. Install and import the
+   package, then add an option **without** `google` so nothing is fetched:
+
+   ```bash
+   bun add @fontsource-variable/manrope
+   ```
+
+   ```ts
+   import "@fontsource-variable/manrope";
+   const manrope: FontOption = { id: "manrope", label: "Manrope",
+     category: "sans", stack: '"Manrope Variable", sans-serif' };
+   ```
+
+3. **`next/font`** — let Next.js download and self-host the file at build
+   time, and point the option at the CSS variable it exposes:
+
+   ```tsx
+   // app/layout.tsx
+   import { Manrope } from "next/font/google";
+   const manrope = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+   <html className={manrope.variable}>…</html>
+
+   // fonts.ts
+   { id: "manrope", label: "Manrope", category: "sans",
+     stack: "var(--font-manrope), sans-serif" }
+   ```
+
+System stacks (`system`, `system-serif`, `system-mono`) need nothing at all.
+Quote any family whose name contains a digit (`"Source Serif 4"`) — an unquoted
+one is an invalid CSS identifier and the browser drops the whole declaration.
+
+To load Google families yourself — say, preloading the one you know a user
+picked — `googleFontsUrl(["Inter", "Lora"])` returns the CSS2 URL and
+`loadGoogleFont("Inter")` injects it and resolves once it has loaded.
+
+## How the Themes Work
+
+- **A theme is a class.** `<html class="theme-nord dark">`. `themes.css`
+  defines every shadcn token (`--background`, `--primary`, `--sidebar`,
+  `--chart-1`, `--radius`, `--font-sans`, …) for each `.theme-<name>.light` and
+  `.theme-<name>.dark` pair.
+- **Mode is separate.** `next-themes` (via `ThemeProvider attribute="class"`)
+  owns `light` / `dark` / `system`. The color theme sits beside it, so every
+  palette works in both modes. In Tailwind v4, bind `dark:` to the class with
+  `@custom-variant dark (&:where(.dark, .dark *));`.
+- **Components never re-render.** shadcn components only use token utilities
+  (`bg-background`, `text-primary`), which Tailwind maps to `var(--…)`. Swapping
+  the class changes the variables and the cascade repaints everything —
+  including third-party shadcn blocks you didn't write.
+- **Persistence.** `localStorage["color-theme"]` plus a `color-theme` cookie
+  (one year), and `font-family` for the font. The cookie is there so a server
+  can render the right class on the first response.
+- **Sync.** Every switcher fires `COLOR_THEME_CHANGE_EVENT` /
+  `FONT_CHANGE_EVENT` on `window` and listens for them, so a header menu and a
+  sidebar menu never disagree.
+- **Mobile.** Touch has no hover, so previews only happen with a mouse; a tap
+  commits immediately. Fonts start downloading on pointer-down. The menus scroll
+  inside a `max-h-[400px]` panel rather than overflowing short screens.
 
 ## Custom Components
 
@@ -219,32 +332,79 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 />;
 ```
 
-## Programmatic Usage
+## JavaScript Helpers
+
+Everything the components do is also exported as plain functions, with no
+React involved, so a settings page, a command palette or a vanilla script can
+drive the theme.
+
+```ts
+import {
+  // color theme
+  setColorTheme, applyColorTheme, getStoredColorTheme, themeInitScript,
+  COLOR_THEME_CHANGE_EVENT,
+  // fonts
+  setFont, applyFont, getStoredFont, restoreFont, loadGoogleFont,
+  googleFontsUrl, getThemeFonts, fontOptions, FONT_CHANGE_EVENT,
+  // registry
+  themeNames, themeColors, formatThemeName,
+} from "shadcn-theme-menu";
+
+setColorTheme("nord");   // apply + localStorage + cookie + event
+applyColorTheme("nord"); // apply only — use for a hover preview
+setFont("lora");         // apply + persist + event; loads Lora if needed
+setFont("theme");        // clear the override, use the theme's font
+getThemeFonts();         // { sans: '"Inter", sans-serif', serif: …, mono: … }
+
+window.addEventListener(COLOR_THEME_CHANGE_EVENT, (e) =>
+  console.log((e as CustomEvent<string>).detail),
+);
+```
+
+| Function | Does |
+| --- | --- |
+| `setColorTheme(name)` | Swaps the `theme-*` class on `<html>`, saves to `localStorage["color-theme"]` and a cookie, fires `COLOR_THEME_CHANGE_EVENT` |
+| `applyColorTheme(name)` | Swaps the class only — nothing persisted |
+| `getStoredColorTheme(fallback?)` | The saved theme, or `fallback` (default `"minimal"`) |
+| `themeInitScript(default?)` | A self-contained script string for `<head>` that applies the saved theme and font before first paint |
+| `setFont(id)` / `applyFont(id)` | Same pair for fonts; `"theme"` clears the override |
+| `getStoredFont()` / `restoreFont()` | Read, or read-and-apply, the saved font |
+| `loadGoogleFont(family, weights?)` | Inject a Google Fonts stylesheet once; resolves on load |
+| `googleFontsUrl(families, weights?)` | Build a Google Fonts CSS2 URL |
+| `getThemeFonts()` | The active theme's `--font-sans/serif/mono` |
+| `useFontSwitcher(fonts?, onChange?)` | The React state behind `FontSwitcher`, for building your own picker |
+
+### Avoiding a flash of the default theme
+
+The theme lives in `localStorage`, which only the browser can read, so a page
+renders with the default theme until JavaScript runs. Inline
+`themeInitScript()` at the top of `<head>` to apply the saved theme and font
+first — the same trick `next-themes` uses for light/dark:
 
 ```tsx
-import { themeNames, themeColors, formatThemeName } from "shadcn-theme-menu";
+// app/layout.tsx (Next.js)
+import { themeInitScript } from "shadcn-theme-menu";
 
-// Set theme programmatically
-const setTheme = (themeName: string) => {
-  localStorage.setItem("color-theme", themeName);
-  themeNames.forEach((t) =>
-    document.documentElement.classList.remove(`theme-${t}`),
-  );
-  document.documentElement.classList.add(`theme-${themeName}`);
-};
-
-// Get theme info
-console.log(themeNames); // Array of all theme names
-console.log(themeColors["cyberpunk"]); // { primary: '#ff00c8', secondary: '#f0f0ff' }
-console.log(formatThemeName("modern-minimal")); // 'Modern Minimal'
+<html lang="en" suppressHydrationWarning>
+  <head>
+    <script dangerouslySetInnerHTML={{ __html: themeInitScript("minimal") }} />
+  </head>
+  …
+</html>
 ```
+
+`suppressHydrationWarning` is needed because the script changes `<html>`'s
+class before React hydrates. With Vite or plain HTML, inject the string at build
+time — the demo's `vite.config.ts` does it with a three-line
+`transformIndexHtml` plugin. Alternatively, read the `color-theme` cookie on the
+server and render the class directly.
 
 ## TypeScript
 
 Full TypeScript support with exported types:
 
 ```tsx
-import type { ThemeProviderProps } from "shadcn-theme-menu";
+import type { ThemeProviderProps, FontOption, FontCategory, FontSwitcherProps } from "shadcn-theme-menu";
 ```
 
 ## Demo
@@ -268,6 +428,17 @@ pnpm dev      # http://localhost:3001
 
 See [`demo/README.md`](./demo/README.md) for what each section covers and for
 the Vite/Tailwind wiring that lets a demo consume the package from source.
+
+### App shell
+
+`demo/app-shell.html` (`http://localhost:3001/app-shell.html`) is a second
+page: a bare, responsive app shell with the themes built in — collapsible
+sidebar (an off-canvas sheet below 768px), a sticky header with
+`FontSwitcher`, `ThemeDropdown` and `ThemeToggle`, `SidebarUserMenu` in the
+sidebar footer, and `themeInitScript()` inlined so a reload never flashes. Its
+pages explain how the themes work, the font options, and how the layout
+behaves on mobile. Copy [`demo/src/app-shell/AppShell.tsx`](./demo/src/app-shell/AppShell.tsx)
+as the starting point for a new app.
 
 ---
 
