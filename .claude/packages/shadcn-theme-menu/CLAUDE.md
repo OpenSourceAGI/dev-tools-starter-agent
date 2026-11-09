@@ -10,12 +10,16 @@ them (`ThemeToggle`, `ThemeDropdown`, `CinematicThemeSwitcher`,
 ## Rules
 
 - **Storage keys, cookie names and event names are public API**
-  (`color-theme`, `font-family`, `shadcn-theme-menu:*-change`). Apps read the
+  (`color-theme`, `font-family`, `color-theme-randomize`,
+  `shadcn-theme-menu:*-change`). Apps read the
   cookies server-side; renaming one silently resets every user's choice.
 - **Font ids in `fontOptions` are persisted** — add freely, never rename.
 - **Every switcher goes through `src/color-theme.ts` / `src/fonts.ts`** so the
   sync events fire. Don't write `document.documentElement.classList` directly
   in a component.
+- `randomizeInitFragment()` in `src/randomize.ts` is a hand-written mirror of
+  `isRandomizeDue` that runs inside `themeInitScript()`; change both together
+  (`test/randomize.test.ts` covers the pair).
 - `src/themes.ts` is the registry and must stay React-free: `color-theme.ts`
   imports it, and `demo/vite.config.ts` imports `color-theme.ts` at config time.
 - Switchers render `null` until mounted — the stored theme is unknowable on the
@@ -26,7 +30,7 @@ them (`ThemeToggle`, `ThemeDropdown`, `CinematicThemeSwitcher`,
 ## Layout
 
 `src/themes.ts` (registry) · `src/color-theme.ts` · `src/fonts.ts` ·
-`src/font-switcher.tsx` · `src/theme-dropdown.tsx` · `src/sidebar-user-menu.tsx`
+`src/font-switcher.tsx` · `src/randomize.ts` · `src/random-theme-button.tsx` · `src/theme-dropdown.tsx` · `src/sidebar-user-menu.tsx`
 · `src/themes-shadcn.css` · `demo/` (not a workspace; `index.html` full demo,
 `app-shell.html` the app shell)
 

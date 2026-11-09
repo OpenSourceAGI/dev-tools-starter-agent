@@ -13,6 +13,7 @@ import {
   ThemeToggle,
   ThemeDropdown,
   FontSwitcher,
+  RandomThemeButton,
   SidebarUserMenu,
   themeColors,
   formatThemeName,
@@ -110,6 +111,7 @@ function Shell() {
           <Separator orientation="vertical" className="mx-1 h-4 data-vertical:self-auto" />
           <h1 className="truncate text-base font-medium">{current.title}</h1>
           <div className="ml-auto flex items-center gap-0.5 sm:gap-1">
+            <RandomThemeButton />
             <FontSwitcher />
             <ThemeDropdown />
             <ThemeToggle />
@@ -310,6 +312,12 @@ function ThemesPage() {
       <p className="max-w-2xl text-sm text-muted-foreground">
         Tap a theme to apply it with <Code>setColorTheme(name)</Code>. On desktop, hovering one in the
         header palette menu previews it across the whole shell.
+      </p>
+      <p className="max-w-2xl text-sm text-muted-foreground">
+        The dice in the header picks a random theme (<Code>randomizeColorTheme()</Code>); its arrow sets
+        when to do it automatically — every visit, session, hour, day or week. The setting lives in{' '}
+        <Code>localStorage["color-theme-randomize"]</Code>, and the inline init script applies a due
+        pick before the first paint.
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
         {names.map((name) => {

@@ -1,6 +1,6 @@
 ---
 name: shadcn-theme-menu
-description: Guide to shadcn-theme-menu (packages/shadcn-theme-menu) — 60+ shadcn/ui color themes as `theme-*` classes on <html>, with ThemeToggle, ThemeDropdown, CinematicThemeSwitcher, SidebarUserMenu and FontSwitcher, plus framework-agnostic helpers (setColorTheme, setFont, loadGoogleFont, themeInitScript). Covers how a theme class pairs with next-themes light/dark, per-theme fonts, adding Google / Fontsource / next/font faces to the font switcher, avoiding a flash of the default theme, and the responsive app shell demo. Use when adding a theme or font picker to a shadcn app, wiring themes into Next.js or Vite, or debugging menus that render unstyled, fonts that do not change, a theme that flashes on reload, or two switchers that disagree.
+description: Guide to shadcn-theme-menu (packages/shadcn-theme-menu) — 60+ shadcn/ui color themes as `theme-*` classes on <html>, with ThemeToggle, ThemeDropdown, CinematicThemeSwitcher, SidebarUserMenu, FontSwitcher and RandomThemeButton, plus framework-agnostic helpers (setColorTheme, setFont, loadGoogleFont, randomizeColorTheme, themeInitScript). Covers how a theme class pairs with next-themes light/dark, per-theme fonts, adding Google / Fontsource / next/font faces to the font switcher, random themes on a schedule (every visit, session, hour, day, week), avoiding a flash of the default theme, and the responsive app shell demo. Use when adding a theme or font picker to a shadcn app, wiring themes into Next.js or Vite, or debugging menus that render unstyled, fonts that do not change, a theme that flashes on reload, or two switchers that disagree.
 ---
 
 # Working With shadcn-theme-menu
@@ -31,13 +31,16 @@ and, when consuming the package from source, `@source "<path>/shadcn-theme-menu/
 | Light/dark/system button | `ThemeToggle` |
 | Mode + color theme menu with hover preview | `ThemeDropdown` |
 | Account menu with Color Theme + Font submenus | `SidebarUserMenu` (`onColorThemeChange`, `onFontChange`, `hideFontMenu`) |
+| Random theme button + auto-randomize | `RandomThemeButton` (`onRandomize`, `onModeChange`); also atop `ThemeDropdown` / `SidebarUserMenu` (`hideRandomize`) |
+| Randomize from code | `randomizeColorTheme()`, `setRandomizeMode("hourly")`, `startRandomizeSchedule()` |
 | A font picker | `FontSwitcher` (`fonts`, `onFontChange`) or `useFontSwitcher` for a custom UI |
 | Change theme from code | `setColorTheme(name)` — `applyColorTheme` for preview only |
 | Change font from code | `setFont(id)` — `"theme"` clears the override |
 | No flash on reload | `themeInitScript()` inlined in `<head>` |
 | Theme list / swatches / labels | `themeNames`, `themeColors`, `formatThemeName` |
 
-Storage: `localStorage["color-theme"]` + cookie; `localStorage["font-family"]` + cookie.
+Storage: `localStorage["color-theme"]` + cookie; `localStorage["font-family"]` + cookie;
+`localStorage["color-theme-randomize"]` = `{ mode, lastAt, pool? }`.
 Events on `window`: `COLOR_THEME_CHANGE_EVENT`, `FONT_CHANGE_EVENT` — every switcher
 listens, so they stay in sync.
 
@@ -67,4 +70,6 @@ footer. `bun demo` then open `/app-shell.html`.
 | Chosen font shows the fallback | Family not loaded (no `google`, nothing self-hosted) or unquoted digit name | Add `google`, import the Fontsource package, or quote the family |
 | Default theme flashes on reload | Theme read from `localStorage` after mount | Inline `themeInitScript()` in `<head>` |
 | Two switchers disagree | Theme set by writing the class directly | Call `setColorTheme` / `setFont`, which fire the sync events |
+| Theme randomizes twice on load | On-load check run outside `applyRandomizeSchedule` | Use `startRandomizeSchedule`/`applyRandomizeSchedule`; they skip when `<html data-theme-randomized>` is set |
+| Hourly schedule never fires | No randomize-aware component mounted | Mount `RandomThemeButton`/`ThemeDropdown`, or call `startRandomizeSchedule()` |
 | Hydration mismatch on `<html>` | Init script changed the class before hydrate | `suppressHydrationWarning` on `<html>` |

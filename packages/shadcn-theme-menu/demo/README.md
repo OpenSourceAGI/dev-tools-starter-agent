@@ -62,7 +62,7 @@ or stop auto-deploying on every push for the ones you don't.
 
 | Section | Shows |
 | --- | --- |
-| Header | `FontSwitcher`, `ThemeToggle`, `ThemeDropdown` and `CinematicThemeSwitcher` side by side, plus a link to the app shell |
+| Header | `RandomThemeButton`, `FontSwitcher`, `ThemeToggle`, `ThemeDropdown` and `CinematicThemeSwitcher` side by side, plus a link to the app shell |
 | Every theme | Each styled theme as a clickable swatch, plus the names the menus list that ship no stylesheet |
 | A theme is a typeface too | `--font-sans` applied automatically, `.font-theme-serif` / `.font-theme-mono` opted into, with the resolved family printed live |
 | The components | Every switcher wired to its callbacks, including `ThemeDropdown` rendered through injected `Button` and `DropdownMenu` primitives |
@@ -101,7 +101,8 @@ project:
 - the stock shadcn `sidebar` block with `collapsible="icon"` — folds to an icon
   rail on desktop (header button, the rail, or `Ctrl/⌘+B`) and becomes an
   off-canvas sheet below 768px that closes itself when you follow a link;
-- a sticky header with `FontSwitcher`, `ThemeDropdown` and `ThemeToggle`;
+- a sticky header with `RandomThemeButton` (dice + auto-randomize schedule),
+  `FontSwitcher`, `ThemeDropdown` and `ThemeToggle`;
 - `SidebarUserMenu` in the sidebar footer, with its Color Theme and Font
   submenus;
 - `themeInitScript()` inlined into `<head>` by the `inlineThemeInitScript`

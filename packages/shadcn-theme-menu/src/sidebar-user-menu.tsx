@@ -31,6 +31,7 @@ import CinematicThemeSwitcher from "./cinematic-theme-switcher"
 import { themeNames, themeColors, formatThemeName } from "./themes"
 import { applyColorTheme, COLOR_THEME_CHANGE_EVENT, getStoredColorTheme, setColorTheme as persistColorTheme } from "./color-theme"
 import { FontMenuItems, useFontSwitcher } from "./font-switcher"
+import { RandomizeMenuItems, useRandomizeTheme } from "./random-theme-button"
 import { fontOptions, type FontOption } from "./fonts"
 
 interface SettingsDialogProps {
@@ -52,6 +53,8 @@ interface SidebarUserMenuProps {
   fonts?: FontOption[]
   /** Hide the "Font" submenu. */
   hideFontMenu?: boolean
+  /** Hide "Randomize theme" and the auto-randomize settings in the Color Theme submenu. */
+  hideRandomize?: boolean
 }
 
 export function SidebarUserMenu({
@@ -61,12 +64,14 @@ export function SidebarUserMenu({
   onFontChange,
   fonts = fontOptions,
   hideFontMenu = false,
+  hideRandomize = false,
 }: SidebarUserMenuProps = {}) {
   const user = userProp || { name: "Guest User", email: "guest@example.com", image: null }
   const [colorTheme, setColorTheme] = React.useState("minimal")
   const [mounted, setMounted] = React.useState(false)
   const [previewTheme, setPreviewTheme] = React.useState<string | null>(null)
   const fontMenu = useFontSwitcher(fonts, onFontChange)
+  const randomizer = useRandomizeTheme(onColorThemeChange)
 
   React.useEffect(() => {
     setMounted(true)
@@ -176,6 +181,16 @@ export function SidebarUserMenu({
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent className="max-h-[400px] overflow-y-auto">
+                  {!hideRandomize && (
+                    <>
+                      <RandomizeMenuItems
+                        mode={randomizer.mode}
+                        onRandomize={() => randomizer.randomize()}
+                        onModeChange={randomizer.setMode}
+                      />
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   <div className="px-2 py-1.5 flex items-center justify-center">
                     <CinematicThemeSwitcher />
                   </div>

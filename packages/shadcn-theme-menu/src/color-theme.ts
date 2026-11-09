@@ -8,6 +8,7 @@
  * app can drive the theme from its own UI, a settings page, or plain JS.
  */
 import { themeNames } from "./themes"
+import { randomizeInitFragment } from "./randomize"
 import { FONT_INIT_STYLE_ID, FONT_STORAGE_KEY, fontOptions, googleFontsUrl, THEME_FONT_ID } from "./fonts"
 
 /** `localStorage` key (and cookie name) the color theme is stored under. */
@@ -56,8 +57,10 @@ export function setColorTheme(name: string): void {
 
 /**
  * A tiny script to inline in `<head>` so the stored color theme *and* font are
- * on `<html>` before the first paint — without it the page flashes the default
- * theme until React mounts. `next-themes` already does the same for light/dark.
+ * on `<html>` before the first paint — and, when a randomize schedule is due
+ * (see ./randomize), so the *new* random theme is. Without it the page flashes
+ * the default theme until React mounts. `next-themes` already does the same
+ * for light/dark.
  *
  * ```tsx
  * // Next.js app/layout.tsx
@@ -80,8 +83,11 @@ export function themeInitScript(defaultTheme = "minimal"): string {
   // The font goes in a <style> rather than inline: <body> does not exist yet
   // when this runs. `applyFont` removes it (FONT_INIT_STYLE_ID) on first use.
   return (
-    `(function(){try{var d=document.documentElement,t=localStorage.getItem(${json(COLOR_THEME_STORAGE_KEY)})||${json(defaultTheme)};` +
-    `if(${json(themeNames)}.indexOf(t)<0)t=${json(defaultTheme)};d.classList.add("theme-"+t);` +
+    `(function(){try{var d=document.documentElement,n=${json(themeNames)},t=localStorage.getItem(${json(COLOR_THEME_STORAGE_KEY)})||${json(defaultTheme)};` +
+    `if(n.indexOf(t)<0)t=${json(defaultTheme)};` +
+    // A randomize schedule that is due picks the theme here, before paint.
+    `try{${randomizeInitFragment()}}catch(e){}` +
+    `d.classList.add("theme-"+t);` +
     `var id=localStorage.getItem(${json(FONT_STORAGE_KEY)}),f=${json(fonts)}[id];if(!f)return;d.dataset.font=id;` +
     `var st=document.createElement("style");st.id=${json(FONT_INIT_STYLE_ID)};` +
     `st.textContent="html,html body{font-family:"+f[0]+" !important}";document.head.appendChild(st);` +

@@ -6,6 +6,7 @@ import {
   CinematicThemeSwitcher,
   SidebarUserMenu,
   FontSwitcher,
+  RandomThemeButton,
   themeColors,
   formatThemeName,
 } from 'shadcn-theme-menu'
@@ -94,6 +95,13 @@ function Demo() {
               <LayoutTemplate />
               <span className="hidden sm:inline">App shell</span>
             </a>
+            <RandomThemeButton
+              onRandomize={(theme) => {
+                setColorTheme(theme)
+                log('RandomThemeButton', `onRandomize("${theme}")`)
+              }}
+              onModeChange={(mode) => log('RandomThemeButton', `onModeChange("${mode}")`)}
+            />
             <FontSwitcher onFontChange={(id) => log('FontSwitcher', `onFontChange("${id}")`)} />
             <ThemeToggle onThemeChange={(mode) => log('ThemeToggle', `onThemeChange("${mode}")`)} />
             <ThemeDropdown

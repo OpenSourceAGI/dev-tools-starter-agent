@@ -6,6 +6,7 @@ export { themeDisplayNames } from './themes';
 export { default as CinematicThemeSwitcher } from './cinematic-theme-switcher';
 export { SidebarUserMenu } from './sidebar-user-menu';
 export { FontSwitcher, FontMenuItems, useFontSwitcher, groupFonts } from './font-switcher';
+export { RandomThemeButton, RandomizeMenuItems, useRandomizeTheme } from './random-theme-button';
 
 // Framework-agnostic helpers
 export {
@@ -33,8 +34,25 @@ export {
   getThemeFonts,
   primaryFamily,
 } from './fonts';
+export {
+  RANDOMIZE_STORAGE_KEY,
+  RANDOMIZE_SESSION_KEY,
+  RANDOMIZE_CHANGE_EVENT,
+  RANDOMIZE_INTERVALS,
+  randomizeModes,
+  getRandomizeSettings,
+  setRandomizeSettings,
+  setRandomizeMode,
+  pickRandomTheme,
+  randomizeColorTheme,
+  isRandomizeDue,
+  applyRandomizeSchedule,
+  startRandomizeSchedule,
+} from './randomize';
 
 // Types
 export type { ThemeProviderProps } from 'next-themes';
 export type { FontOption, FontCategory } from './fonts';
 export type { FontSwitcherProps } from './font-switcher';
+export type { RandomThemeButtonProps } from './random-theme-button';
+export type { RandomizeMode, RandomizeSettings } from './randomize';

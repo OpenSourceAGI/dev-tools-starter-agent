@@ -13,6 +13,7 @@ import {
 } from "./components/ui/dropdown-menu"
 import { useTheme } from "next-themes"
 import { themeNames, themeColors, formatThemeName } from "./themes"
+import { RandomizeMenuItems, useRandomizeTheme } from "./random-theme-button"
 import { COLOR_THEME_CHANGE_EVENT, setColorTheme as persistColorTheme } from "./color-theme"
 
 export { themeNames, themeDisplayNames, themeColors, formatThemeName } from "./themes"
@@ -23,6 +24,8 @@ interface ThemeDropdownProps {
   iconSrc?: string
   onColorThemeChange?: (theme: string) => void
   onModeChange?: (mode: string) => void
+  /** Hide the "Randomize theme" button and auto-randomize settings at the top. */
+  hideRandomize?: boolean
 }
 
 export function ThemeDropdown({
@@ -30,12 +33,14 @@ export function ThemeDropdown({
   DropdownMenu: CustomDropdownMenu,
   iconSrc,
   onColorThemeChange,
-  onModeChange
+  onModeChange,
+  hideRandomize = false,
 }: ThemeDropdownProps = {}) {
   const { theme, setTheme } = useTheme()
   const [colorTheme, setColorTheme] = useState("minimal")
   const [mounted, setMounted] = useState(false)
   const [previewTheme, setPreviewTheme] = useState<string | null>(null)
+  const randomizer = useRandomizeTheme(onColorThemeChange)
 
   const ButtonComp = CustomButton || Button
   const MenuComp = CustomDropdownMenu || {
@@ -114,6 +119,19 @@ export function ThemeDropdown({
         </ButtonComp>
       </Trigger>
       <Content align="end" className="w-56 max-h-[400px] overflow-y-auto">
+        {!hideRandomize && (
+          <>
+            <RandomizeMenuItems
+              mode={randomizer.mode}
+              onRandomize={() => randomizer.randomize()}
+              onModeChange={randomizer.setMode}
+              Item={Item}
+              Label={Label}
+              Separator={Separator}
+            />
+            <Separator />
+          </>
+        )}
         <Label>Appearance</Label>
         <Separator />
         <Item onClick={() => handleModeChange("light")} className="cursor-pointer py-1 h-7">
