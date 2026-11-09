@@ -66,6 +66,7 @@ Beautiful theme components for shadcn/ui with 24+ color themes, dark/light mode,
 - **Customizable** – pass your own Button/DropdownMenu components or set themes programmatically
 - **Persistent** – automatic `localStorage` support for color theme preferences
 - **Themed typography** – each theme brings its own font, previewed live on hover
+- **Random themes** – a dice button plus auto-randomize every visit, session, hour, day or week
 - **Font switcher** – `FontSwitcher` and a Font submenu let users override the theme's font; Google families load on demand
 - **Framework-agnostic helpers** – `setColorTheme`, `setFont`, `themeInitScript` and friends work without React
 - **App shell demo** – a responsive sidebar + header shell with every switcher built in, ready to copy
@@ -287,6 +288,52 @@ To load Google families yourself — say, preloading the one you know a user
 picked — `googleFontsUrl(["Inter", "Lora"])` returns the CSS2 URL and
 `loadGoogleFont("Inter")` injects it and resolves once it has loaded.
 
+## Random Themes
+
+`RandomThemeButton` is a dice button that applies a random color theme (never
+the current one). The arrow beside it opens the **auto-randomize** settings:
+
+| Setting | Picks a new random theme |
+| --- | --- |
+| Off (default) | Only when the dice is pressed |
+| Every visit | On every page load |
+| Every session | Once per browser session |
+| Every hour / day / week | When that long has passed since the last pick — checked on load and every minute while the page is open |
+
+```tsx
+import { RandomThemeButton } from "shadcn-theme-menu";
+
+<RandomThemeButton
+  onRandomize={(theme) => console.log(theme)}
+  onModeChange={(mode) => console.log(mode)}
+/>
+```
+
+The same **Randomize theme** item and schedule sit at the top of
+`ThemeDropdown` and of the Color Theme submenu in `SidebarUserMenu`
+(`hideRandomize` removes them). Any of these components keeps the schedule
+running while it is mounted; only one timer runs however many are on the page.
+
+The setting is stored in `localStorage["color-theme-randomize"]` as
+`{ "mode": "hourly", "lastAt": 1794182950338 }` (add `"pool": [...]` to limit
+the draw to some themes). `themeInitScript()` runs the on-load check too, so a
+due pick is applied *before* the first paint instead of flashing the old theme,
+and the React side then skips its own check for that page load.
+
+Without React:
+
+```ts
+import {
+  randomizeColorTheme, setRandomizeMode, setRandomizeSettings,
+  getRandomizeSettings, startRandomizeSchedule, pickRandomTheme,
+} from "shadcn-theme-menu";
+
+randomizeColorTheme();                       // roll now
+setRandomizeMode("daily");                   // "off" | "visit" | "session" | "hourly" | "daily" | "weekly"
+setRandomizeSettings({ pool: ["nord", "dracula", "catppuccin"] });
+const stop = startRandomizeSchedule();       // on-load check + one-minute timer
+```
+
 ## How the Themes Work
 
 - **A theme is a class.** `<html class="theme-nord dark">`. `themes.css`
@@ -373,6 +420,10 @@ window.addEventListener(COLOR_THEME_CHANGE_EVENT, (e) =>
 | `googleFontsUrl(families, weights?)` | Build a Google Fonts CSS2 URL |
 | `getThemeFonts()` | The active theme's `--font-sans/serif/mono` |
 | `useFontSwitcher(fonts?, onChange?)` | The React state behind `FontSwitcher`, for building your own picker |
+| `randomizeColorTheme(pool?)` | Apply a random theme other than the current one |
+| `setRandomizeMode(mode)` / `getRandomizeSettings()` | Set or read the auto-randomize schedule |
+| `startRandomizeSchedule()` | Run the schedule (on-load check + one-minute timer); returns a stop function |
+| `useRandomizeTheme(onRandomize?)` | The React state behind `RandomThemeButton` |
 
 ### Avoiding a flash of the default theme
 
@@ -404,7 +455,7 @@ server and render the class directly.
 Full TypeScript support with exported types:
 
 ```tsx
-import type { ThemeProviderProps, FontOption, FontCategory, FontSwitcherProps } from "shadcn-theme-menu";
+import type { ThemeProviderProps, FontOption, FontCategory, FontSwitcherProps, RandomThemeButtonProps, RandomizeMode, RandomizeSettings } from "shadcn-theme-menu";
 ```
 
 ## Demo
@@ -434,7 +485,7 @@ the Vite/Tailwind wiring that lets a demo consume the package from source.
 `demo/app-shell.html` (`http://localhost:3001/app-shell.html`) is a second
 page: a bare, responsive app shell with the themes built in — collapsible
 sidebar (an off-canvas sheet below 768px), a sticky header with
-`FontSwitcher`, `ThemeDropdown` and `ThemeToggle`, `SidebarUserMenu` in the
+`RandomThemeButton`, `FontSwitcher`, `ThemeDropdown` and `ThemeToggle`, `SidebarUserMenu` in the
 sidebar footer, and `themeInitScript()` inlined so a reload never flashes. Its
 pages explain how the themes work, the font options, and how the layout
 behaves on mobile. Copy [`demo/src/app-shell/AppShell.tsx`](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/packages/shadcn-theme-menu/demo/src/app-shell/AppShell.tsx)
