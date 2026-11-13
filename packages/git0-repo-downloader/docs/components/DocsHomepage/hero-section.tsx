@@ -35,6 +35,14 @@ export function HeroSection() {
 
       <div className="container mx-auto px-4 pt-12 relative">
         <div className="flex flex-col items-center text-center max-w-5xl mx-auto">
+          <img
+            src="https://i.imgur.com/eYod5fn.png"
+            alt="git0 mascot"
+            width={308}
+            height={342}
+            className="mb-6 h-40 w-auto md:h-48"
+          />
+
           <Badge variant="outline" className="mb-6 px-4 py-1.5 border-primary/30 text-primary gap-2">
             <Sparkles className="h-4 w-4" />
             Download Git Repo on Step Zero
