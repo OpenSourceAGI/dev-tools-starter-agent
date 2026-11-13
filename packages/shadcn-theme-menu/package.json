@@ -1,6 +1,6 @@
 {
   "name": "shadcn-theme-menu",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "A collection of beautiful shadcn/ui theme components with dynamic theme switching and animations",
   "author": "vtempest",
   "type": "module",
