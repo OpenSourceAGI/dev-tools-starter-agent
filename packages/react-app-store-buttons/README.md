@@ -28,10 +28,10 @@
 <!-- template-git-repo:badges:end -->
 
 <!-- skills:install:start -->
-**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill app-store-buttons` ([what it covers](../../skills/app-store-buttons/SKILL.md))
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill react-app-store-buttons` ([what it covers](../../skills/react-app-store-buttons/SKILL.md))
 <!-- skills:install:end -->
 
-# react-native-app-buttons
+# react-app-store-buttons
 
 React badge components for app store and platform download links. Badges ship as bundled assets — no CDN required.
 [DEMO](https://appdemo-dev-tools-mu.vercel.app)
@@ -41,13 +41,13 @@ React badge components for app store and platform download links. Badges ship as
 ## Install
 
 ```bash
-npm install react-native-app-buttons
+npm install react-app-store-buttons
 ```
 
 Import the bundled stylesheet if your project doesn't use Tailwind:
 
 ```ts
-import "react-native-app-buttons/styles";
+import "react-app-store-buttons/styles";
 ```
 
 ## Features
@@ -64,7 +64,7 @@ import "react-native-app-buttons/styles";
 ## Usage
 
 ```tsx
-import { DownloadAppButton } from "react-native-app-buttons";
+import { DownloadAppButton } from "react-app-store-buttons";
 
 <DownloadAppButton platform="ios"              appId="6474268307"               autoHighlight />
 <DownloadAppButton platform="android"          appId="com.example.app"          autoHighlight />
@@ -109,7 +109,7 @@ Pass `href` instead of `appId` to use an explicit URL:
 ## Utilities
 
 ```ts
-import { getOS, OS, platformMatchesOS, buildStoreUrl, buildDeepLink, resolveHref } from "react-native-app-buttons";
+import { getOS, OS, platformMatchesOS, buildStoreUrl, buildDeepLink, resolveHref } from "react-app-store-buttons";
 
 getOS()                                             // → OS.macOS | OS.Windows | OS.Linux | …
 platformMatchesOS("macos", getOS())                 // → true on macOS

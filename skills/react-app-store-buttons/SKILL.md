@@ -1,11 +1,11 @@
 ---
-name: app-store-buttons
+name: react-app-store-buttons
 description: Guide to the app store download badges in packages/react-app-store-buttons — rendering DownloadAppButton for iOS, Android, Chrome, macOS, Windows, Linux and Snap, appId vs href, native deep links, autoHighlight OS detection, badge sizing, the styles import, and the getOS/buildStoreUrl/buildDeepLink helpers. Use when working with these buttons or troubleshooting them — a badge that doesn't render, the wrong package name on install, deep links that don't open the store app, highlight not matching the user's OS, or SSR/hydration mismatches from userAgent detection.
 ---
 
 # Working With the App Store Buttons
 
-The React badge components in `packages/react-app-store-buttons`. **Mind the name**: `package.json` declares `react-app-store-buttons`, while the README and root README call it `react-native-app-buttons`. Check the registry name before writing an install command; inside this monorepo, import from the workspace package. Badge images are bundled as assets, so nothing is fetched from a CDN.
+The React badge components in `packages/react-app-store-buttons`, published to npm as `react-app-store-buttons` (`npm install react-app-store-buttons`). The old name `react-native-app-buttons` is a stale earlier package frozen at 0.1.4; don't install it. Badge images are bundled as assets, so nothing is fetched from a CDN.
 
 ## Setup
 
@@ -58,7 +58,7 @@ Platforms: `ios`, `android`, `chrome-extension`, `chrome-extension-white`, `maco
 
 | Symptom | Cause → fix |
 | --- | --- |
-| `npm i react-native-app-buttons` installs the wrong thing (or 404s) | The README name and the `package.json` name (`react-app-store-buttons`) disagree. Use the name the registry actually serves; in this repo, depend on the workspace package. |
+| `npm i react-native-app-buttons` installs an old version | That is the package's former name, frozen at 0.1.4. Install `react-app-store-buttons` and update imports (including `react-app-store-buttons/styles`). |
 | Badge area is blank | Images ship in `dist` as bundled assets — a bundler configured to ignore image imports will drop them. Make sure your build handles the package's assets, and that you imported the component from the package root. |
 | Badge is unstyled / no glow | The stylesheet wasn't imported. Add `import "react-app-store-buttons/styles"` unless your app already provides the Tailwind classes. |
 | Hydration mismatch with `autoHighlight` | Detection reads `navigator.userAgent`, which doesn't exist during SSR. Render the highlight after mount, or drive it with an explicit `highlight` prop computed on the client. |

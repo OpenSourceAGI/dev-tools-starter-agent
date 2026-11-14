@@ -1,6 +1,6 @@
 # CLAUDE.md — `react-app-store-buttons`
 
-**skill:** [`skills/app-store-buttons`](../../../skills/app-store-buttons/SKILL.md)
+**skill:** [`skills/react-app-store-buttons`](../../../skills/react-app-store-buttons/SKILL.md)
 · **runner:** Vitest · **build:** Vite + `tsc --emitDeclarationOnly`
 
 React components for App Store / Google Play / platform download buttons, with

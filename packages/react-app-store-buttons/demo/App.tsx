@@ -68,7 +68,7 @@ export function App() {
     <div className="min-h-screen font-sans">
       <header className="py-16 px-6 text-center border-b border-gray-800">
         <h1 className="text-3xl font-bold tracking-tight mb-2">
-          react-native-app-buttons
+          react-app-store-buttons
         </h1>
         <p className="text-gray-400 text-lg mb-4">
           Platform download badges for React
@@ -124,7 +124,7 @@ export function App() {
       </Section>
 
       <footer className="py-8 text-center text-gray-600 text-sm border-t border-gray-800">
-        react-native-app-buttons · MIT License
+        react-app-store-buttons · MIT License
       </footer>
     </div>
   );

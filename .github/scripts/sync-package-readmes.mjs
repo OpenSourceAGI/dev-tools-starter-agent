@@ -156,7 +156,7 @@ const SKILLS_BY_PACKAGE = {
   'manage-storage': ['manage-storage'],
   'native-app-wrapper': ['native-app-wrapper'],
   'open-when-ready': ['open-ready'],
-  'react-app-store-buttons': ['app-store-buttons'],
+  'react-app-store-buttons': ['react-app-store-buttons'],
   'server-shell-setup': ['server-shell-setup'],
   'setup-git-repo': ['github-actions-setup', 'git-badges'],
   'shadcn-theme-menu': ['shadcn-theme-menu'],
