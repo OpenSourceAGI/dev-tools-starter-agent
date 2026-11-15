@@ -27,6 +27,7 @@ import {
 } from "./prompt";
 import { resolveProviders, type ProviderOption } from "./providers";
 import { useAskAIStyles } from "./styles";
+import type { SuggestedQuestions, SuggestionContext } from "./suggestions";
 import type { AIProvider, PageContext, PromptInput, PromptMode } from "./types";
 
 export interface AskAIPanelProps {
@@ -57,6 +58,15 @@ export interface AskAIPanelProps {
   placeholder?: string;
   /** Heading above the message box. Pass `null` to hide it. */
   heading?: ReactNode;
+  /**
+   * Suggested questions shown under the message box; clicking one fills it in.
+   * Pass a list, or a function that gets the page (and its text) and returns
+   * one — `qwkSearchSuggestions()` generates them like QwkSearch's follow-ups.
+   * Hidden when unset, empty, or the function fails.
+   */
+  suggestedQuestions?: SuggestedQuestions;
+  /** Label above the suggested questions. Default "Suggested questions". */
+  suggestionsLabel?: ReactNode;
   /** Called whenever a prompt is sent to a provider — handy for analytics. */
   onSend?: (event: {
     provider: AIProvider;
@@ -76,6 +86,37 @@ export interface AskAIPanelProps {
 
 type LoadState = "idle" | "loading" | "ready" | "error";
 type Status = { text: string; tone?: "error" } | null;
+
+type SuggestionLoader = Exclude<SuggestedQuestions, string[]>;
+
+/**
+ * Generated suggestions per loader and page, so reopening the dropdown (which
+ * remounts the panel) doesn't ask the model again.
+ */
+const suggestionCache = new WeakMap<
+  SuggestionLoader,
+  Map<string, Promise<string[]>>
+>();
+
+function loadSuggestions(
+  loader: SuggestionLoader,
+  context: () => Promise<SuggestionContext>,
+  pageKey: string,
+): Promise<string[]> {
+  let byPage = suggestionCache.get(loader);
+  if (!byPage) {
+    byPage = new Map();
+    suggestionCache.set(loader, byPage);
+  }
+  const cached = byPage.get(pageKey);
+  if (cached) return cached;
+  const pending = context()
+    .then((ctx) => loader(ctx))
+    .then((list) => (Array.isArray(list) ? list.filter(Boolean) : []));
+  byPage.set(pageKey, pending);
+  pending.catch(() => byPage?.delete(pageKey));
+  return pending;
+}
 
 /** Visible text of the page's main content, for `content` mode without Markdown. */
 function readPageText(): string {
@@ -127,6 +168,8 @@ export function AskAIPanel({
   maxUrlLength = DEFAULT_MAX_URL_LENGTH,
   placeholder = "Ask a question about this page…",
   heading = "Ask AI about this page",
+  suggestedQuestions,
+  suggestionsLabel = "Suggested questions",
   onSend,
   autoFocus,
   inline,
@@ -151,15 +194,21 @@ export function AskAIPanel({
     if (autoFocus) inputRef.current?.focus();
   }, [autoFocus]);
 
+  const readContent = useCallback(
+    async (): Promise<string> =>
+      getContent
+        ? await getContent()
+        : markdownUrl
+          ? await fetchMarkdown(toAbsoluteUrl(markdownUrl))
+          : readPageText(),
+    [getContent, markdownUrl],
+  );
+
   const loadContent = useCallback(async (): Promise<string | undefined> => {
     if (content !== undefined) return content;
     setLoadState("loading");
     try {
-      const text = getContent
-        ? await getContent()
-        : markdownUrl
-          ? await fetchMarkdown(toAbsoluteUrl(markdownUrl))
-          : readPageText();
+      const text = await readContent();
       setContent(text);
       setLoadState("ready");
       return text;
@@ -171,7 +220,7 @@ export function AskAIPanel({
       });
       return undefined;
     }
-  }, [content, getContent, markdownUrl]);
+  }, [content, readContent]);
 
   // Prefetch as soon as content mode is chosen, so a provider click can open
   // its tab synchronously (popup blockers drop window.open after an await).
@@ -190,6 +239,64 @@ export function AskAIPanel({
       githubUrl,
     };
   }, [pageUrl, markdownUrl, title, githubUrl]);
+
+  const [suggestions, setSuggestions] = useState<string[]>(
+    Array.isArray(suggestedQuestions) ? suggestedQuestions : [],
+  );
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const latest = useRef({ page, readContent, content });
+  latest.current = { page, readContent, content };
+
+  // A list shows as given. A loader runs once per page; the latest closures are
+  // read through a ref so an inline function prop doesn't refetch every render.
+  const suggestionsKey = Array.isArray(suggestedQuestions)
+    ? suggestedQuestions.join("\n")
+    : suggestedQuestions;
+  useEffect(() => {
+    if (!suggestedQuestions || Array.isArray(suggestedQuestions)) {
+      setSuggestions(suggestedQuestions ?? []);
+      setSuggestionsLoading(false);
+      return;
+    }
+    let cancelled = false;
+    const { page: getPage } = latest.current;
+    const ctx = getPage();
+    setSuggestionsLoading(true);
+    loadSuggestions(
+      suggestedQuestions,
+      async () => {
+        const { readContent: read, content: known } = latest.current;
+        let text = known;
+        if (text === undefined) {
+          try {
+            text = await read();
+          } catch {
+            text = undefined;
+          }
+        }
+        return { ...ctx, content: text };
+      },
+      ctx.pageUrl,
+    )
+      .then((list) => {
+        if (!cancelled) setSuggestions(list);
+      })
+      .catch(() => {
+        if (!cancelled) setSuggestions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSuggestionsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [suggestionsKey]);
+
+  const pickSuggestion = (question: string) => {
+    setMessage(question);
+    inputRef.current?.focus();
+  };
 
   const prompts = useCallback(() => {
     const ctx = page();
@@ -297,6 +404,28 @@ export function AskAIPanel({
         onChange={(event) => setMessage(event.target.value)}
         onKeyDown={onKeyDown}
       />
+      {(suggestionsLoading || suggestions.length > 0) && (
+        <div className="aai-suggestions" aria-busy={suggestionsLoading}>
+          {suggestionsLabel !== null && (
+            <div className="aai-suggestions-label">{suggestionsLabel}</div>
+          )}
+          {suggestionsLoading ? (
+            <div className="aai-suggestions-loading">Thinking of questions…</div>
+          ) : (
+            suggestions.map((question) => (
+              <button
+                key={question}
+                type="button"
+                className="aai-suggestion"
+                aria-pressed={message === question}
+                onClick={() => pickSuggestion(question)}
+              >
+                {question}
+              </button>
+            ))
+          )}
+        </div>
+      )}
       {showModeToggle && (
         <div className="aai-modes" role="group" aria-label="What to send">
           <button

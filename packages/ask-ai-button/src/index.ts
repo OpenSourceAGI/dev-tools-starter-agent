@@ -22,6 +22,19 @@ export {
   fetchMarkdown,
   clearMarkdownCache,
 } from "./clipboard";
+export {
+  qwkSearchSuggestions,
+  buildSuggestionsPrompt,
+  parseSuggestions,
+  SUGGEST_FOLLOWUPS_PROMPT,
+  QWKSEARCH_API_URL,
+  DEFAULT_MAX_SUGGESTIONS,
+} from "./suggestions";
+export type {
+  SuggestedQuestions,
+  SuggestionContext,
+  QwkSearchSuggestionsOptions,
+} from "./suggestions";
 export { askAIButtonCss, useAskAIStyles, STYLE_ELEMENT_ID } from "./styles";
 export * from "./icons";
 export type { AIProvider, PageContext, PromptInput, PromptMode } from "./types";

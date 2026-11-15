@@ -81,6 +81,17 @@ export const askAIButtonCss = `
   background: transparent; color: inherit; font: inherit;
 }
 .aai-input::placeholder { color: var(--aai-muted); }
+.aai-suggestions { display: flex; flex-direction: column; gap: 0.25rem; }
+.aai-suggestions-label { font-size: 0.75rem; font-weight: 500; color: var(--aai-muted); }
+.aai-suggestions-loading { font-size: 0.75rem; color: var(--aai-muted); padding: 0.25rem 0; }
+.aai-suggestion {
+  display: block; width: 100%; padding: 0.375rem 0.5rem;
+  border: 1px solid var(--aai-border); border-radius: 0.5rem;
+  background: transparent; color: inherit; font: inherit; font-size: 0.8125rem;
+  text-align: left; cursor: pointer; transition: background-color 120ms;
+}
+.aai-suggestion:hover, .aai-suggestion[aria-pressed="true"] { background: var(--aai-accent); }
+.aai-suggestion:focus-visible { outline: 2px solid var(--aai-primary); outline-offset: 2px; }
 .aai-modes { display: flex; padding: 0.125rem; gap: 0.125rem; border: 1px solid var(--aai-border); border-radius: 0.5rem; }
 .aai-mode {
   flex: 1; padding: 0.25rem 0.5rem; border: 0; border-radius: 0.375rem;
