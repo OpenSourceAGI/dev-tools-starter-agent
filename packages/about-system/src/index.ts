@@ -6,7 +6,7 @@
  *
  * @example
  * ```typescript
- * import { getSystemInfo } from 'about-system';
+ * import { getSystemInfo, infoFunctions } from 'about-system';
  *
  * const info = await getSystemInfo();
  * console.log(info.cpu);
@@ -14,5 +14,5 @@
  * ```
  */
 
-export { getSystemInfo, loadCache, saveCache } from './system-info-api.js';
-export type { SystemInfo, SystemInfoOptions, Platform, GetSystemInfoFunction, DisplaySystemInfoFunction, PlatformAvailability } from './systeminfo-types.js';
+export { getSystemInfo, infoFunctions, loadCache, saveCache } from './system-info-api.js';
+export type { SystemInfo, SystemInfoOptions, Platform, InfoContext, GetSystemInfoFunction, DisplaySystemInfoFunction, PlatformAvailability } from './systeminfo-types.js';

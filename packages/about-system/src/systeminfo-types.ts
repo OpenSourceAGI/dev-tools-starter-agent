@@ -527,3 +527,9 @@ export interface PlatformAvailability {
   /** Fields that may be empty on certain platforms */
   conditional: Array<keyof SystemInfo>;
 }
+
+/**
+ * Context passed to each `infoFunctions` entry. Share one across calls so
+ * repeated lookups reuse the same cache.
+ */
+export type { InfoContext } from "./types/internal-types";

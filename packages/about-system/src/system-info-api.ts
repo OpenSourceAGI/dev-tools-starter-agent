@@ -16,6 +16,7 @@ import type { IPInfo } from "./utils/network";
 import path from "path";
 import type { SystemInfo, SystemInfoOptions } from "./systeminfo-types";
 import type { Cache } from "./cache/cache";
+import type { InfoContext } from "./types/internal-types";
 import { isCacheValid } from "./cache/cache";
 import { CACHE_FILE } from "./info/settings"; // Using CACHE_FILE from settings to ensure consistency
 
@@ -83,14 +84,6 @@ const CACHE_DURATION = {
 const IS_WINDOWS = os.platform() === "win32";
 const IS_MAC = os.platform() === "darwin";
 const IS_LINUX = os.platform() === "linux";
-
-/**
- * Context object passed to info collection functions
- */
-interface InfoContext {
-  cache: Cache;
-  ipInfo?: IPInfo;
-}
 
 /**
  * Loads cache from disk
@@ -254,3 +247,12 @@ export async function getSystemInfo(
 }
 
 export { loadCache, saveCache };
+export type {
+  SystemInfo,
+  SystemInfoOptions,
+  Platform,
+  InfoContext,
+  GetSystemInfoFunction,
+  DisplaySystemInfoFunction,
+  PlatformAvailability,
+} from "./systeminfo-types";

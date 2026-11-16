@@ -23,10 +23,10 @@ Press **Esc** while it runs (interactive terminal only) to stop collecting and p
 
 | Import | Exports |
 | --- | --- |
-| `about-system` | `getSystemInfo(options?)`, `loadCache()`, `saveCache(cache)` |
-| `about-system/api` | `infoFunctions`, `getSystemInfo`, `loadCache`, `saveCache` |
+| `about-system` | `getSystemInfo(options?)`, `infoFunctions`, `loadCache()`, `saveCache(cache)`, and every type below |
+| `about-system/api` | `infoFunctions`, `getSystemInfo`, `loadCache`, `saveCache`, and every type below |
 | `about-system/cli` | CLI entry (`about-system` bin) |
-| `about-system/types` | `SystemInfo`, `SystemInfoOptions`, `Platform`, `InfoContext`, `GetSystemInfoFunction`, `DisplaySystemInfoFunction`, `PlatformAvailability` |
+| `about-system/types` (types only) | `SystemInfo`, `SystemInfoOptions`, `Platform`, `InfoContext`, `GetSystemInfoFunction`, `DisplaySystemInfoFunction`, `PlatformAvailability` |
 
 ## Info blocks
 
