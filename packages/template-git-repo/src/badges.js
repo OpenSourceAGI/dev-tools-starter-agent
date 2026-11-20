@@ -79,7 +79,7 @@ export const BADGES = [
     needs: [],
     alt: 'Ask DeepWiki',
     href: (c) => `https://deepwiki.com/${c.repoSlug}`,
-    img: () => 'https://deepwiki.com/badge.svg',
+    img: () => 'https://img.shields.io/badge/Ask_DeepWiki-000?logo=github',
     setup:
       'Nothing to configure for a public repo — visit deepwiki.com/<owner>/<repo> once to trigger the first index. Private repos need the DeepWiki GitHub App installed.',
   },

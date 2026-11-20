@@ -79,7 +79,7 @@ add a root config, or point the button at a subdirectory URL.
 ### Ask DeepWiki
 
 ```html
-<a href="https://deepwiki.com/OWNER/REPO"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+<a href="https://deepwiki.com/OWNER/REPO"><img src="https://img.shields.io/badge/Ask_DeepWiki-000?logo=github" alt="Ask DeepWiki" /></a>
 ```
 
 DeepWiki indexes public repos automatically. The first visit to the link

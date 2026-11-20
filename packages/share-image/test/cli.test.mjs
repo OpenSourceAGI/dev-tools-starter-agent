@@ -6,6 +6,8 @@ import { dirname, join } from "node:path";
 import { describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 
+import sharp from "sharp";
+
 const CLI = fileURLToPath(new URL("../bin/share-image.mjs", import.meta.url));
 const DEMO = fileURLToPath(new URL("./demo.mjs", import.meta.url));
 const MOCK_FETCH = fileURLToPath(new URL("./mock-fetch.cjs", import.meta.url));
@@ -19,6 +21,38 @@ const IMAGE_BASE64 = Buffer.from(IMAGE_BYTES).toString("base64");
 const uploaded = (link = "https://i.imgur.com/abc.png") => ({ body: { data: { link } } });
 const rejected = (status, error = "rejected") => ({ status, body: { data: { error } } });
 const base64 = contents => Buffer.from(contents).toString("base64");
+
+async function makeJpeg(dir, name = "photo.jpg", color = { r: 255, g: 0, b: 0 }) {
+	const path = join(dir, name);
+	await sharp({
+		create: {
+			width: 1,
+			height: 1,
+			channels: 3,
+			background: color,
+		},
+	})
+		.jpeg()
+		.toFile(path);
+	return path;
+}
+
+async function makePng(dir, name = "image.png", color = { r: 0, g: 255, b: 0 }) {
+	const path = join(dir, name);
+	await sharp({
+		create: {
+			width: 1,
+			height: 1,
+			channels: 3,
+			background: color,
+		},
+	})
+		.png()
+		.toFile(path);
+	return path;
+}
+
+const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47]);
 
 // Creates files from a { "relative/path": contents } map for the length of the callback.
 async function withFiles(files, callback) {
@@ -473,6 +507,50 @@ describe("files and folders", () => {
 					"",
 				].join("\n"),
 			);
+		});
+	});
+});
+
+describe("JPEG to PNG conversion", () => {
+	test("converts a JPEG file to PNG before upload", async () => {
+		await withFiles({}, async dir => {
+			const jpegPath = await makeJpeg(dir, "photo.jpg");
+			const jpegBytes = await readFile(jpegPath);
+			const expectedPng = await sharp(jpegBytes).png().toBuffer();
+			const { code, stdout, calls } = await run([jpegPath], {
+				routes: { [`POST ${expectedPng.toString("base64")}`]: uploaded() },
+			});
+			assert.equal(code, 0);
+
+			// The uploaded image should be a PNG, not the original JPEG bytes.
+			const uploadedBytes = Buffer.from(calls[0].image, "base64");
+			assert.ok(uploadedBytes.subarray(0, 4).equals(PNG_MAGIC), "uploaded image should start with PNG magic bytes");
+			assert.notEqual(calls[0].image, base64(jpegBytes), "uploaded image should differ from original JPEG bytes");
+		});
+	});
+
+	test("keeps a PNG file as PNG without conversion", async () => {
+		await withFiles({}, async dir => {
+			const pngPath = await makePng(dir, "image.png");
+			const original = await readFile(pngPath);
+			const { code, stdout, calls } = await run([pngPath], {
+				routes: { [`POST ${base64(original)}`]: uploaded() },
+			});
+			assert.equal(code, 0);
+			assert.equal(calls[0].image, base64(original), "PNG file should be uploaded unchanged");
+		});
+	});
+
+	test("leaves non-JPEG, non-PNG files unchanged", async () => {
+		await withFiles({}, async dir => {
+			const gifPath = join(dir, "anim.gif");
+			const gifBytes = Buffer.from([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]); // GIF89a header
+			await writeFile(gifPath, gifBytes);
+			const { code, stdout, calls } = await run([gifPath], {
+				routes: { [`POST ${base64(gifBytes)}`]: uploaded() },
+			});
+			assert.equal(code, 0);
+			assert.equal(calls[0].image, base64(gifBytes), "GIF file should be uploaded unchanged");
 		});
 	});
 });

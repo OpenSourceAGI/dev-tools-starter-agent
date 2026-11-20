@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 // Upload images to Imgur anonymously by URL, file or folder and print the Imgur link for each.
-// Requires Node 18+. No dependencies.
+// Requires Node 18+. Uses sharp for JPEG→PNG conversion.
 
 import { spawn } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
+
+import sharp from "sharp";
 
 const USAGE = `Usage:
   share-image [--json] <url|file|folder> [...]
@@ -41,6 +43,20 @@ const TIMEOUT_MS = 60_000;
 const IMAGE_EXTENSIONS = new Set([
 	".apng", ".bmp", ".gif", ".heic", ".jpeg", ".jpg", ".png", ".svg", ".tif", ".tiff", ".webp",
 ]);
+
+// JPEG files start with FF D8 FF. PNG files stay PNG; nothing is ever converted to JPEG.
+const JPEG_MAGIC = Buffer.from([0xff, 0xd8, 0xff]);
+
+function isJpeg(buffer) {
+	return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
+}
+
+async function toPng(buffer) {
+	if (isJpeg(buffer)) {
+		return await sharp(buffer).png().toBuffer();
+	}
+	return buffer;
+}
 
 // Retrying with the image bytes can't help when the client is rejected or rate limited.
 const NO_FALLBACK_STATUSES = new Set([401, 403, 429]);
@@ -133,7 +149,9 @@ async function upload(input) {
 				cause: imgurError,
 			});
 		}
-		return postImage(image);
+		const bytes = Buffer.from(image, "base64");
+		const png = await toPng(bytes);
+		return postImage(png.toString("base64"));
 	}
 }
 
@@ -184,7 +202,12 @@ async function uploadItem({ input, isFile, error }) {
 	if (error) {
 		throw new Error(error);
 	}
-	return isFile ? postImage((await readFile(input)).toString("base64")) : upload(input);
+	if (isFile) {
+		const buffer = await readFile(input);
+		const png = await toPng(buffer);
+		return postImage(png.toString("base64"));
+	}
+	return upload(input);
 }
 
 // Failures worth another try: timeouts, network errors, rate limits and server errors.

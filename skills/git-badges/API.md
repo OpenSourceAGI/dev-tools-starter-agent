@@ -45,7 +45,7 @@ Pass without the `https://doi.org/` prefix.
 ## 2. Ask DeepWiki
 
 ```html
-<a href="https://deepwiki.com/OWNER/REPO"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+<a href="https://deepwiki.com/OWNER/REPO"><img src="https://img.shields.io/badge/Ask_DeepWiki-000?logo=github" alt="Ask DeepWiki" /></a>
 ```
 
 The image is static and always renders; the first visit to the link triggers

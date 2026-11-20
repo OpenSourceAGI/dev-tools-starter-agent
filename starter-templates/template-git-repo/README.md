@@ -1,6 +1,6 @@
 <p align="center">
 <!-- badge:doi --><a href="https://doi.org/{{DOI}}"><img src="https://zenodo.org/badge/DOI/{{DOI}}.svg" alt="DOI" /></a>
-    <a href="https://deepwiki.com/{{OWNER}}/{{REPO}}"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki" /></a>
+    <a href="https://deepwiki.com/{{OWNER}}/{{REPO}}"><img src="https://img.shields.io/badge/Ask_DeepWiki-000?logo=github" alt="Ask DeepWiki" /></a>
 <!-- badge:website --><a href="{{WEBSITE_URL}}"><img height="20px" src="https://img.shields.io/badge/App-blueviolet?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Website" /></a>
 <!-- badge:docs --><a href="{{DOCS_URL}}"><img src="https://img.shields.io/badge/Docs-blue?logo=ReadTheDocs&logoColor=white" alt="Documentation" /></a>
 <!-- badge:api --><a href="{{API_URL}}"><img src="https://img.shields.io/badge/API-blue?logo=fastapi&logoColor=white" alt="API" /></a>

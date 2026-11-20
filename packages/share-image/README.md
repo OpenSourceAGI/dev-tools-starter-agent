@@ -22,7 +22,9 @@
 
 # share-img
 
-Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed, and no dependencies. Requires Node 18 or later.
+Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed. Requires Node 18 or later.
+
+JPEG (`.jpg`, `.jpeg`) files are converted to PNG before uploading. PNG files stay PNG — nothing is ever converted to JPEG.
 
 ## Install
 
@@ -71,7 +73,7 @@ Copied to clipboard
 The `Scanning`, `Found`, `[n/total] Uploading` and `Done` lines are progress, printed to stderr. Only the result lines go to stdout, so piping the output still gives you just the results.
 
 - **Every image found is uploaded publicly, and this tool can't delete uploads.** Check what's in a folder before you point the tool at it.
-- These file types are included: `apng`, `bmp`, `gif`, `heic`, `jpeg`, `jpg`, `png`, `svg`, `tif`, `tiff` and `webp`. Imgur may still reject some of them, which shows up as an error for that file.
+- These file types are included: `apng`, `bmp`, `gif`, `heic`, `jpeg`, `jpg`, `png`, `svg`, `tif`, `tiff` and `webp`. JPEG files are converted to PNG before uploading; PNG files stay PNG. Imgur may still reject some types, which shows up as an error for that file.
 - Hidden files and folders and symlinks are skipped.
 - A folder with no images counts as a failed upload.
 
