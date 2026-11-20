@@ -111,6 +111,53 @@ describe("AskAIButton (fab)", () => {
   });
 });
 
+describe("AskAIButton (floating)", () => {
+  it("renders as a FAB with the floating shorthand", () => {
+    const { container } = render(<AskAIButton {...props} floating />);
+    expect(container.querySelector(".aai-fab-root .aai-fab")).toBeTruthy();
+  });
+});
+
+describe("AskAIPanel suggested questions", () => {
+  it("shows a static list and fills the message box on click", () => {
+    render(
+      <AskAIPanel
+        {...props}
+        inline
+        suggestedQuestions={["How do I start?", "What is next?"]}
+      />,
+    );
+    expect(screen.getByText("Suggested questions")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "What is next?" }));
+    expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe(
+      "What is next?",
+    );
+  });
+
+  it("loads questions from a function with the page text", async () => {
+    const loader = vi.fn().mockResolvedValue(["Generated one?"]);
+    render(<AskAIPanel {...props} inline suggestedQuestions={loader} />);
+    await screen.findByRole("button", { name: "Generated one?" });
+    expect(loader.mock.calls[0][0]).toMatchObject({
+      title: props.title,
+      content: "# Intro\nBody text",
+    });
+  });
+
+  it("hides the section when the loader fails", async () => {
+    const loader = vi.fn().mockRejectedValue(new Error("nope"));
+    render(<AskAIPanel {...props} inline suggestedQuestions={loader} />);
+    await waitFor(() =>
+      expect(screen.queryByText("Suggested questions")).toBeNull(),
+    );
+  });
+
+  it("is absent by default", () => {
+    render(<AskAIPanel {...props} inline />);
+    expect(screen.queryByText("Suggested questions")).toBeNull();
+  });
+});
+
 describe("AskAIPanel", () => {
   it("includes the page markdown in content mode", async () => {
     render(<AskAIPanel {...props} inline />);

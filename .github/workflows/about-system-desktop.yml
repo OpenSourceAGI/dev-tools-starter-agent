@@ -23,8 +23,8 @@ permissions:
   contents: write
 
 env:
-  APP_DIR: packages/about-system-info/native
-  CLI_DIR: packages/about-system-info
+  APP_DIR: packages/about-system/native
+  CLI_DIR: packages/about-system
 
 jobs:
   build:

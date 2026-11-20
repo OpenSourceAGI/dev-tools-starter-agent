@@ -1,11 +1,11 @@
 ---
 name: about-system
-description: Guide to about-system (packages/about-system-info), the cross-platform system-info CLI and library — install and run it, pick specific info blocks, JSON output, the settings file (colors, emojis, labels, display order), the cache, the shell-greeting installer, and the programmatic API. Use when working with about-system or troubleshooting it — blocks that print empty, a greeting that doesn't run on terminal start, stale or wrong values, `infoFunctions` import errors, or `--set` changes that seem ignored.
+description: Guide to about-system (packages/about-system), the cross-platform system-info CLI and library — install and run it, pick specific info blocks, JSON output, the settings file (colors, emojis, labels, display order), the cache, the shell-greeting installer, and the programmatic API. Use when working with about-system or troubleshooting it — blocks that print empty, a greeting that doesn't run on terminal start, stale or wrong values, `infoFunctions` import errors, or `--set` changes that seem ignored.
 ---
 
 # Working With about-system
 
-The CLI and library in `packages/about-system-info`, published to npm as **`about-system`** (the directory name is not the package name). It prints 30+ system metrics as one emoji line, on Linux, macOS, Windows, and Android/Termux. Full block list, settings keys, and cache TTLs live in [API.md](API.md); read it when you need an exact block name, setting path, or default.
+The CLI and library in `packages/about-system`, published to npm as **`about-system`**. It prints 30+ system metrics as one emoji line, on Linux, macOS, Windows, and Android/Termux. Full block list, settings keys, and cache TTLs live in [API.md](API.md); read it when you need an exact block name, setting path, or default.
 
 ## Setup
 
@@ -61,7 +61,7 @@ const uptime = infoFunctions.uptime();
 | --- | --- |
 | `about-system web` answers "Dashboard not found" | `dist/web` is missing — the dashboard is built by the second half of `bun run build` (or `bun run build:web`). A plain `vite build` only builds the library. |
 | Web UI unreachable from another machine | It binds `127.0.0.1` by default. Use `--host 0.0.0.0` (exposes system details to anyone who can reach the port) or an SSH tunnel. |
-| `infoFunctions is not exported` / undefined import | The root entry exports only `getSystemInfo`, `loadCache`, `saveCache` and types. `infoFunctions` lives in the `about-system/api` subpath — the README's root import is wrong. |
+| `infoFunctions is not exported`, `InfoContext` missing, or `Cannot find module './systeminfo-types'` in `dist/*.d.ts` | Fixed in 0.10.66: the root entry and `about-system/api` both export `infoFunctions` and all types (including `InfoContext`), and the published declarations are self-contained. Upgrade; on older versions import `infoFunctions` from `about-system/api` and set `skipLibCheck`. |
 | `--cache-clear` does nothing / unknown flag | That flag in the README doesn't exist. The real one is `--refresh`. |
 | Values are stale (IP, disk, uptime) | Cached by design, per-block TTL (IP lookup 10 min, CPU/OS/device 24 h, top process 5 s). Run `--refresh`, or delete `systeminfo-cache.json` in the OS temp dir. |
 | A block prints empty | The underlying tool isn't on that platform/PATH (`docker` for `containers`, `nvidia-smi`/`system_profiler` for `gpu`, `ss`/`netstat` for `ports`). Empty is the intended fallback, not a crash — drop the block from `display_order` if you don't want the gap. |

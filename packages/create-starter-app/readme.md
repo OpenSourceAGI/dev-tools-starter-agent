@@ -187,7 +187,7 @@ bun create starter-app
 
 ### Utility Packages
 
-#### 6. packages/about-system-info
+#### 6. packages/about-system
 
 **System information display tool**
 
@@ -373,7 +373,7 @@ Starter-DOCS/
 │   ├── template-nextjs-betterauth-prisma-shadcn/    # Next.js + Prisma template
 │   ├── template-fumadocs/              # Fumadocs starter template
 │   ├── template-docusaurus/            # Docusaurus starter template
-│   ├── about-system-info/              # System info CLI tool
+│   ├── about-system/              # System info CLI tool
 │   ├── create-cloud-db/                # Turso DB setup CLI
 │   ├── manage-storage/                 # Multi-cloud storage library
 │   ├── open-when-ready/                # Smart dev server launcher

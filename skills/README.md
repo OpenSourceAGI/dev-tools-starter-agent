@@ -26,10 +26,10 @@ the package.
 
 | Skill | Package | Covers |
 | --- | --- | --- |
-| [about-system](./about-system/SKILL.md) | `about-system-info` | The system-info CLI and library: blocks, settings file, cache, shell greeting |
+| [about-system](./about-system/SKILL.md) | `about-system` | The system-info CLI and library: blocks, settings file, cache, shell greeting |
 | [ask-ai-button](./ask-ai-button/SKILL.md) | `ask-ai-button` | Ask AI dropdown/FAB for docs pages, link vs content prompts, custom and API providers, theming |
 | [api2ai](./api2ai/SKILL.md) | `api2ai-mcp-generator` | Generating MCP servers from OpenAPI, tool filtering, the three-layer security model |
-| [app-store-buttons](./app-store-buttons/SKILL.md) | `react-app-store-buttons` | Download badges, `appId` vs `href`, native deep links, OS highlighting |
+| [react-app-store-buttons](./react-app-store-buttons/SKILL.md) | `react-app-store-buttons` | Download badges, `appId` vs `href`, native deep links, OS highlighting |
 | [cloudflare-to-claude-fix](./cloudflare-to-claude-fix/SKILL.md) | `cloudflare-to-claude-fix` | Queue consumer, routine `/fire` API, secrets, retries and the DLQ |
 | [code-tree-graph](./code-tree-graph/SKILL.md) | `code-tree-graph` | `DependencyGraph`, `FileTreeView`, `TypeTable`, and the AST engine |
 | [create-cloud-db](./create-cloud-db/SKILL.md) | `create-cloud-db` | Turso database creation and the `.env` rewrite |
@@ -44,6 +44,7 @@ the package.
 | [open-ready](./open-ready/SKILL.md) | `open-when-ready` | Dev-server wrapper: ready/error detection, flags, log locations |
 | [repo-badges](./repo-badges/SKILL.md) | `template-git-repo` | The README badge template: which badges, which rows, what each needs set up outside the repo |
 | [server-shell-setup](./server-shell-setup/SKILL.md) | `server-shell-setup` | The bootstrap installer, components, fish aliases |
+| [shadcn-theme-menu](./shadcn-theme-menu/SKILL.md) | `shadcn-theme-menu` | Theme classes, the switchers, the font switcher and how to get fonts, no-flash init script, the app shell demo |
 | [template-git-repo](./template-git-repo/SKILL.md) | `template-git-repo` | One-command repo setup: workflows, helper scripts, turbo.json, codecov.yml, badge block |
 | [test-google-login](./test-google-login/SKILL.md) | `test-google-login` | Persisting a Google sign-in as a Playwright storageState, the setup-project guard, app-minted sessions, and the Workers Browser Rendering Durable Object |
 | [verify-phone-sms](./verify-phone-sms/SKILL.md) | `verify-phone-sms` | SNS-backed SMS verification, endpoints, auth, VoIP blocking |

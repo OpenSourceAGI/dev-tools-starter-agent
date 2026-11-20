@@ -137,4 +137,10 @@ describe("AI_PROVIDERS", () => {
       "perplexity",
     ]);
   });
+  it("no longer ships Cursor", () => {
+    expect(AI_PROVIDERS.some((p) => p.id === ("cursor" as string))).toBe(false);
+  });
+  it("gives QwkSearch its own icon instead of a favicon lookup", () => {
+    expect(AI_PROVIDERS[0].icon).toBeTruthy();
+  });
 });

@@ -1,6 +1,6 @@
 ---
 name: ask-ai-button
-description: Guide to ask-ai-button (packages/ask-ai-button) — the "Ask AI about this page" React component for docs sites. Covers AskAIButton as a dropdown or floating action button, the inline AskAIPanel, CopyPageButton, link vs content prompt modes, choosing built-in providers (QwkSearch, Perplexity, Claude, ChatGPT, Gemini, Grok, Copilot, Le Chat, Venice, Brave, Cursor — listed in that order), adding custom URL or API (onSelect) providers, the URL-length fallback, theming with --aai-* variables, and Fumadocs integration. Use when adding an Ask AI / copy-for-LLM button to a docs page or troubleshooting one — prompts not pre-filling, popups blocked, the page text missing, unstyled panels, or CSP errors from the injected stylesheet.
+description: Guide to ask-ai-button (packages/ask-ai-button) — the "Ask AI about this page" React component for docs sites. Covers AskAIButton as a dropdown or floating action button (`floating` / `variant="fab"`), optional suggested questions (static or generated with QwkSearch's follow-up generator), the inline AskAIPanel, CopyPageButton, link vs content prompt modes, choosing built-in providers (QwkSearch, Perplexity, Claude, ChatGPT, Gemini, Grok, Copilot, Le Chat, Venice, Brave — listed in that order; QwkSearch uses its color logo), adding custom URL or API (onSelect) providers, the URL-length fallback, theming with --aai-* variables, and Fumadocs integration. Use when adding an Ask AI / copy-for-LLM button to a docs page or troubleshooting one — prompts not pre-filling, popups blocked, the page text missing, unstyled panels, or CSP errors from the injected stylesheet.
 ---
 
 # Working With ask-ai-button
@@ -14,7 +14,7 @@ import { AskAIButton, AskAIPanel, CopyPageButton } from "ask-ai-button";
 
 <CopyPageButton markdownUrl={`${page.url}.mdx`} />
 <AskAIButton markdownUrl={`${page.url}.mdx`} title={page.data.title} />   // dropdown
-<AskAIButton variant="fab" />                                              // floating, bottom-right
+<AskAIButton floating />                                                   // floating, bottom-right (= variant="fab")
 <AskAIPanel markdownUrl="/docs/intro.mdx" inline />                        // in page flow
 ```
 
@@ -31,6 +31,8 @@ The bundle starts with `"use client"`, so a Next.js server component can render 
 | Lock the mode | `showModeToggle={false}` |
 | Text from somewhere other than `markdownUrl` | `getContent={() => …}` |
 | Different wording | `promptTemplate={(input) => string}` — `input` has `mode`, `message`, `content`, `pageUrl`, `markdownUrl`, `title` |
+| Suggested questions under the message box | `suggestedQuestions={["…", "…"]}` or `suggestedQuestions={qwkSearchSuggestions()}` (create the loader once, outside render) |
+| Same follow-up prompt with your own model | `buildSuggestionsPrompt({ query, article })` → call your LLM → `parseSuggestions(reply)` |
 | Analytics | `onSend={({ provider, prompt, href }) => …}` |
 | FAB in the other corner / icon only | `position="bottom-left"`, `label={null}` |
 | Panel lined up with the right edge of the trigger | `align="end"` |
@@ -41,6 +43,7 @@ The bundle starts with `"use client"`, so a Next.js server component can render 
 - **Content source**: `getContent()` → else fetch `markdownUrl` (cached per URL, failures evicted) → else `<article>`/`<main>` `innerText`.
 - **Prefetch**: switching to `content` mode fetches immediately and disables provider buttons until loaded, so the click can call `window.open` synchronously (popup blockers drop opens after an `await`).
 - **URL length**: if the provider URL would exceed `maxUrlLength` (default 8000, per-provider `maxUrlLength` wins), the tab opens with the `link` prompt and the full prompt goes on the clipboard, with a status message saying so.
+- **Suggested questions**: a list renders as-is; a loader gets `{ pageUrl, markdownUrl, title, content }` (content loaded the same way as `content` mode) and is cached per loader + page, so reopening the dropdown doesn't refetch. `qwkSearchSuggestions()` POSTs `{ agent: "suggest-followups", provider, query, article }` to `<baseUrl>/agents` (default `https://api.qwksearch.com`) and applies QwkSearch's clean-up: max 4, add `?`, strip `*`. Clicking a question fills the message box. Hidden when empty or the loader throws.
 - **Styles**: injected once as `<style id="ask-ai-button-styles">`. Colors read Fumadocs' `--color-fd-*` tokens, else a neutral palette; dark under `.dark` / `[data-theme="dark"]`. All classes are prefixed `aai-`.
 
 ## Troubleshooting

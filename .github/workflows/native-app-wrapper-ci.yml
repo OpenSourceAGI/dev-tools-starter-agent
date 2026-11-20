@@ -9,13 +9,13 @@ on:
   pull_request:
     paths:
       - "packages/native-app-wrapper/**"
-      - "packages/about-system-info/native/**"
+      - "packages/about-system/native/**"
       - ".github/workflows/native-app-wrapper-ci.yml"
   push:
     branches: [master]
     paths:
       - "packages/native-app-wrapper/**"
-      - "packages/about-system-info/native/**"
+      - "packages/about-system/native/**"
 
 jobs:
   generated-files-match-profiles:
@@ -24,7 +24,7 @@ jobs:
       matrix:
         app:
           - packages/native-app-wrapper
-          - packages/about-system-info/native
+          - packages/about-system/native
     steps:
       - uses: actions/checkout@v4
 

@@ -80,7 +80,7 @@ steps:
 ```
 
 [`tauri-apps/tauri-action`](https://github.com/tauri-apps/tauri-action) handles the build and can
-attach the artifacts to a GitHub Release. `packages/about-system-info`'s
+attach the artifacts to a GitHub Release. `packages/about-system`'s
 `.github/workflows/about-system-desktop.yml` is a complete working instance of this, including the
 sidecar build step that has to run first.
 

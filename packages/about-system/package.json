@@ -1,6 +1,6 @@
 {
   "name": "about-system",
-  "version": "0.10.55",
+  "version": "0.10.66",
   "description": "A Node.js script to display key system information with emojis. Cross-platform support for Windows, macOS, and Linux with customizable output and caching.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
       "import": "./dist/about-system-cli.js"
     },
     "./types": {
-      "types": "./src/systeminfo-types.d.ts"
+      "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
@@ -70,9 +70,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OpenSourceAGI/dev-tools-starter-agent.git",
-    "directory": "packages/about-system-info"
+    "directory": "packages/about-system"
   },
-  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system-info",
+  "homepage": "https://github.com/OpenSourceAGI/dev-tools-starter-agent/tree/master/packages/about-system",
   "files": [
     "dist/**/*",
     "src/**/*.ts",

@@ -6,10 +6,9 @@ import {
   BraveIcon,
   ChatGPTIcon,
   ClaudeIcon,
-  CursorIcon,
   GeminiIcon,
   PerplexityIcon,
-  QwkSearchIcon,
+  QwkSearchColorIcon,
 } from "./icons";
 import type { AIProvider } from "./types";
 
@@ -20,7 +19,7 @@ export const AI_PROVIDERS = [
   {
     id: "qwksearch",
     title: "QwkSearch",
-    icon: <QwkSearchIcon />,
+    icon: <QwkSearchColorIcon />,
     getHref: (p) => `https://qwksearch.com/?q=${q(p)}`,
   },
   {
@@ -73,12 +72,6 @@ export const AI_PROVIDERS = [
     title: "Brave",
     icon: <BraveIcon />,
     getHref: (p) => `https://search.brave.com/ask?q=${q(p)}`,
-  },
-  {
-    id: "cursor",
-    title: "Cursor",
-    icon: <CursorIcon />,
-    getHref: (p) => `https://cursor.com/link/prompt?text=${q(p)}`,
   },
 ] as const satisfies readonly AIProvider[];
 

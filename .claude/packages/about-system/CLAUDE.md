@@ -1,4 +1,4 @@
-# CLAUDE.md — `about-system` (`packages/about-system-info`)
+# CLAUDE.md — `about-system` (`packages/about-system`)
 
 **npm name:** `about-system` · **skill:** [`skills/about-system`](../../../skills/about-system/SKILL.md)
 · **runner:** Vitest · **build:** Vite
@@ -32,7 +32,7 @@ ISP and installed tools as one compact emoji line. Designed to be dropped into
 `web/` (dashboard: `src/App.tsx`, shadcn components in `src/components/ui`)
 
 ```bash
-cd packages/about-system-info
+cd packages/about-system
 bun run test
 bun run build          # Vite — consumers get dist/, not src/
 ```

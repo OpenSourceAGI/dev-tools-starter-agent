@@ -143,7 +143,7 @@ const SKILLS_SOURCE = 'https://github.com/OpenSourceAGI/dev-tools-starter-agent'
  * if a name does not exist on disk.
  */
 const SKILLS_BY_PACKAGE = {
-  'about-system-info': ['about-system'],
+  'about-system': ['about-system'],
   'api2ai-mcp-generator': ['api2ai'],
   'ask-ai-button': ['ask-ai-button'],
   'cloudflare-to-claude-fix': ['cloudflare-to-claude-fix'],
@@ -156,9 +156,10 @@ const SKILLS_BY_PACKAGE = {
   'manage-storage': ['manage-storage'],
   'native-app-wrapper': ['native-app-wrapper'],
   'open-when-ready': ['open-ready'],
-  'react-app-store-buttons': ['app-store-buttons'],
+  'react-app-store-buttons': ['react-app-store-buttons'],
   'server-shell-setup': ['server-shell-setup'],
   'setup-git-repo': ['github-actions-setup', 'git-badges'],
+  'shadcn-theme-menu': ['shadcn-theme-menu'],
   'template-git-repo': ['template-git-repo', 'repo-badges'],
   'test-google-login': ['test-google-login'],
   'verify-phone-sms': ['verify-phone-sms'],

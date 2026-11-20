@@ -28,6 +28,8 @@ export interface AskAIButtonProps extends Omit<
 > {
   /** `dropdown` (default) sits inline; `fab` floats in a corner of the viewport. */
   variant?: "dropdown" | "fab";
+  /** Shorthand for `variant="fab"`: render as a floating action button. */
+  floating?: boolean;
   /** Trigger text. Default "Ask AI". The FAB shows only its icon when set to `null`. */
   label?: ReactNode;
   /** Trigger icon. Defaults to a sparkle. */
@@ -66,6 +68,7 @@ function ChevronDown() {
 
 export function AskAIButton({
   variant = "dropdown",
+  floating,
   label = "Ask AI",
   icon = <SparkleIcon />,
   align = "start",
@@ -111,7 +114,7 @@ export function AskAIButton({
     };
   }, [open, setOpen]);
 
-  const isFab = variant === "fab";
+  const isFab = floating ?? variant === "fab";
   const rootClasses = [
     "aai-root",
     isFab && "aai-fab-root",

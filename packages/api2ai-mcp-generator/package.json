@@ -1,6 +1,6 @@
 {
   "name": "api2ai",
-  "version": "1.0.61",
+  "version": "1.0.72",
   "description": "Generate production-ready MCP servers from any OpenAPI specification using the highly-used and convenient [mcp-use](https://mcp-use.com) framework",
   "license": "rights.institute/prosper",
   "author": "vtempest",
@@ -118,7 +118,6 @@
     "@types/marked": "^6.0.0",
     "@types/pg": "latest",
     "@types/sql.js": "latest",
-    "@upstash/redis": "latest",
     "@vercel/analytics": "1.6.1",
     "@vercel/postgres": "latest",
     "@xata.io/client": "latest",

@@ -18,7 +18,6 @@ package name**, and turbo filters on the package name.
 
 | Directory | npm name |
 | --- | --- |
-| `about-system-info` | `about-system` |
 | `api2ai-mcp-generator` | `api2ai` |
 | `export-svg-icons-typescript` | `export-svg-typescript` |
 | `git0-repo-downloader` | `git0` |
@@ -49,7 +48,7 @@ Several packages have **no build step at all** and ship source directly
 artifact — which means a syntax error ships. Check `package.json` before
 assuming either way.
 
-Build tools differ too: Vite for `about-system-info`, `code-tree-graph`,
+Build tools differ too: Vite for `about-system`, `code-tree-graph`,
 `manage-storage`, `react-app-store-buttons`; `bun build` for `git0`; `next build`
 for `api2ai`.
 

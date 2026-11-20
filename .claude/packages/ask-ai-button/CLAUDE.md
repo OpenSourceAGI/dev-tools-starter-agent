@@ -18,13 +18,16 @@
 - **No Tailwind, no CSS import.** Styles live in `src/styles.ts` and are
   injected at runtime; class names (`aai-*`) and `--aai-*` variables are public
   surface.
+- **The suggestions prompt mirrors QwkSearch's `suggest-followups` agent**
+  (from the `ai-research-agent` package). Keep `SUGGEST_FOLLOWUPS_PROMPT` and
+  `parseSuggestions` in step with it rather than rewording them.
 - The bundle keeps its `"use client"` banner (`vite.config.ts`) so Next.js
   server components can render it.
 
 ## Layout
 
 `src/AskAIButton.tsx` (trigger, FAB, CopyPageButton) · `src/AskAIPanel.tsx`
-(the panel) · `src/providers.tsx` · `src/prompt.ts` · `src/clipboard.ts` ·
+(the panel) · `src/suggestions.ts` (suggested questions, QwkSearch follow-ups) · `src/providers.tsx` · `src/prompt.ts` · `src/clipboard.ts` ·
 `src/styles.ts` · `src/icons.tsx` · `demo/` (`bun run dev`)
 
 ```bash

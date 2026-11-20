@@ -55,7 +55,7 @@
 
 An **Ask AI** button for docs sites. The visitor types a question, picks a
 model, and a new tab opens in QwkSearch, Perplexity, Claude, ChatGPT, Gemini,
-Grok, Copilot, Le Chat, Venice, Brave or Cursor with the prompt already
+Grok, Copilot, Le Chat, Venice or Brave with the prompt already
 filled in: the current page (as a link or as pasted Markdown) plus their
 question. They can also just copy the prompt, or copy the page as Markdown.
 
@@ -90,7 +90,7 @@ import { AskAIButton, CopyPageButton } from "ask-ai-button";
 </div>
 
 // Floating action button, once in your layout
-<AskAIButton variant="fab" position="bottom-right" />
+<AskAIButton floating position="bottom-right" />   // same as variant="fab"
 
 // Inline panel, anywhere in the page
 <AskAIPanel markdownUrl="/docs/intro.mdx" inline />
@@ -116,6 +116,32 @@ clipboard so the visitor can paste it.
 
 `Ctrl/⌘ + Enter` in the message box sends to the first provider.
 
+### Suggested questions
+
+Optionally show a few starter questions under the message box; clicking one
+fills it in. Pass a fixed list, or generate them with QwkSearch's follow-up
+generator — the same `suggest-followups` agent and clean-up QwkSearch uses for
+the follow-ups under its answers:
+
+```tsx
+import { AskAIButton, qwkSearchSuggestions } from "ask-ai-button";
+
+// Create the loader once (outside the component) so results are cached per page.
+const suggestions = qwkSearchSuggestions({
+  baseUrl: "https://api.qwksearch.com", // or your own QwkSearch deployment
+  provider: "groq",                      // optional: model, key, max (default 4)
+});
+
+<AskAIButton suggestedQuestions={suggestions} />
+<AskAIButton suggestedQuestions={["How do I install it?", "What does it cost?"]} />
+```
+
+A loader receives the page (`pageUrl`, `markdownUrl`, `title`) and its text as
+`content`, and can return questions from anywhere. To use your own model with
+the same prompt, call `buildSuggestionsPrompt({ query, article })` and turn the
+reply into questions with `parseSuggestions(reply)`. The section stays hidden
+when the list is empty or the loader fails.
+
 ### Choosing providers
 
 ```tsx
@@ -123,7 +149,8 @@ clipboard so the visitor can paste it.
 ```
 
 Built-in IDs, in menu order: `qwksearch`, `perplexity`, `claude`, `chatgpt`,
-`gemini`, `grok`, `copilot`, `mistral`, `venice`, `brave`, `cursor`. Mix them
+`gemini`, `grok`, `copilot`, `mistral`, `venice`, `brave`. QwkSearch shows its
+full-color logo. Mix them
 with your own:
 
 ```tsx
@@ -157,7 +184,6 @@ in what happens after that.
 | [Le Chat](https://chat.mistral.ai) | `mistral` | Mistral's hosted assistant | Mistral models only | Web search with sources | File uploads and document analysis | Agents, connectors, memory | European, fast and open-weight-friendly, but single-provider |
 | [Venice](https://venice.ai) | `venice` | Privacy-oriented hosted multi-model chat | Several open model families (Llama, Qwen, DeepSeek and others) | No dedicated research/search workflow | Limited file uploads | System prompts; no built-in MCP, skills or durable memory | Private and flexible on models, but light on research and productivity tooling |
 | [Brave](https://search.brave.com) | `brave` | AI answers on top of Brave's independent search index | Brave-managed models | Search-first answers with cited results | — | Brave Search API for developers | Privacy-focused search, but a shallow chat and tooling surface |
-| [Cursor](https://cursor.com) | `cursor` | AI code editor; the prompt opens in Cursor's agent | Multiple providers (Claude, GPT, Gemini and others) | Codebase-aware, with web and docs lookup | Your local project | MCP, rules, agents | Built for code; needs Cursor installed and is not a general research tool |
 
 For general web research, **Perplexity** is the simplest hosted
 answer-with-citations experience, while **QwkSearch** is the most complete
@@ -197,9 +223,12 @@ file extraction, MCP, notes, storage sync, browser tooling and IDE integration.
 | `promptTemplate` | `buildPrompt` | `(input) => string` to change the wording. |
 | `maxUrlLength` | `8000` | URL length before falling back to the link prompt. |
 | `placeholder`, `heading` | — | Text in the panel. `heading={null}` hides the header. |
+| `suggestedQuestions` | — | A list of questions, or `(page) => string[] \| Promise<string[]>` such as `qwkSearchSuggestions()`. |
+| `suggestionsLabel` | `"Suggested questions"` | Label above them; `null` hides it. |
 | `onSend` | — | `({ provider, prompt, href })` after each send — for analytics. |
 | `injectStyles` | `true` | Set `false` if you ship `askAIButtonCss` yourself. |
 | `variant` | `dropdown` | `dropdown` or `fab`. |
+| `floating` | — | Shorthand for `variant="fab"`; wins over `variant` when set. |
 | `label`, `icon` | `"Ask AI"`, sparkle | Trigger content. `label={null}` gives an icon-only FAB. |
 | `align` | `start` | Dropdown: panel aligns to the trigger's `start` or `end` edge. |
 | `position` | `bottom-right` | FAB: `bottom-right` or `bottom-left`. |
@@ -207,7 +236,8 @@ file extraction, MCP, notes, storage sync, browser tooling and IDE integration.
 
 Helpers exported for building your own UI: `buildPrompt`,
 `resolveProviderTarget`, `resolveProviders`, `AI_PROVIDERS`, `fetchMarkdown`,
-`copyText`, `copyPendingText`, and the brand icons.
+`copyText`, `copyPendingText`, `qwkSearchSuggestions`, `buildSuggestionsPrompt`,
+`parseSuggestions`, and the brand icons (including `QwkSearchColorIcon`).
 
 ## Theming
 

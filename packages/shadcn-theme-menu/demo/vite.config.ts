@@ -2,6 +2,7 @@ import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { themeInitScript } from '../src/color-theme'
 
 const pkgSrc = path.resolve(__dirname, '../src')
 
@@ -31,8 +32,34 @@ function resolvePackageImportsFromDemo(): Plugin {
   }
 }
 
+/**
+ * Inline `themeInitScript()` into any page that asks for it, so the stored
+ * color theme and font are on <html> before the first paint. This is the Vite
+ * equivalent of putting the script in a Next.js root layout's <head>.
+ */
+function inlineThemeInitScript(): Plugin {
+  return {
+    name: 'demo:inline-theme-init',
+    transformIndexHtml(html) {
+      return html.replace(
+        /<!-- theme-init:[^>]*-->/,
+        `<script>${themeInitScript('minimal')}</script>`,
+      )
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [resolvePackageImportsFromDemo(), react(), tailwindcss()],
+  plugins: [resolvePackageImportsFromDemo(), inlineThemeInitScript(), react(), tailwindcss()],
+  build: {
+    rollupOptions: {
+      // Two pages: the full component demo and the bare app shell.
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        'app-shell': path.resolve(__dirname, 'app-shell.html'),
+      },
+    },
+  },
   resolve: {
     // Array form: order matters, the `/themes.css` subpath has to win over the
     // bare-specifier entry below it.

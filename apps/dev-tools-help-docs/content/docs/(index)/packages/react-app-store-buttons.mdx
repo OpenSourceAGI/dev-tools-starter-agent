@@ -33,7 +33,7 @@ icon: Smartphone
     <img src="https://img.shields.io/badge/Bun-14151A?logo=bun&logoColor=white" alt="Bun" /> <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" alt="TypeScript" /> <img src="https://img.shields.io/badge/React-20232A?logo=react&logoColor=white" alt="React" /> <img src="https://img.shields.io/badge/Tailwind%20CSS-06B6D4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /> <img src="https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white" alt="Vite" /> <img src="https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white" alt="Vitest" />
 </div>
 
-**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill app-store-buttons` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/app-store-buttons/SKILL.md))
+**🤖 Agent skill** — `npx skills@latest add https://github.com/OpenSourceAGI/dev-tools-starter-agent --skill react-app-store-buttons` ([what it covers](https://github.com/OpenSourceAGI/dev-tools-starter-agent/blob/master/skills/react-app-store-buttons/SKILL.md))
 
 React badge components for app store and platform download links. Badges ship as bundled assets — no CDN required.
 [DEMO](https://appdemo-dev-tools-mu.vercel.app)
@@ -43,13 +43,13 @@ React badge components for app store and platform download links. Badges ship as
 ## Install
 
 ```bash
-npm install react-native-app-buttons
+npm install react-app-store-buttons
 ```
 
 Import the bundled stylesheet if your project doesn't use Tailwind:
 
 ```ts
-import "react-native-app-buttons/styles";
+import "react-app-store-buttons/styles";
 ```
 
 ## Features
@@ -66,7 +66,7 @@ import "react-native-app-buttons/styles";
 ## Usage
 
 ```tsx
-import { DownloadAppButton } from "react-native-app-buttons";
+import { DownloadAppButton } from "react-app-store-buttons";
 
 <DownloadAppButton platform="ios"              appId="6474268307"               autoHighlight />
 <DownloadAppButton platform="android"          appId="com.example.app"          autoHighlight />
@@ -111,7 +111,7 @@ Pass `href` instead of `appId` to use an explicit URL:
 ## Utilities
 
 ```ts
-import { getOS, OS, platformMatchesOS, buildStoreUrl, buildDeepLink, resolveHref } from "react-native-app-buttons";
+import { getOS, OS, platformMatchesOS, buildStoreUrl, buildDeepLink, resolveHref } from "react-app-store-buttons";
 
 getOS()                                             // → OS.macOS | OS.Windows | OS.Linux | …
 platformMatchesOS("macos", getOS())                 // → true on macOS

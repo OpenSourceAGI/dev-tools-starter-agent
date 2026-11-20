@@ -41,7 +41,7 @@ interface Entry {
 const PACKAGES: Entry[] = [
   {
     category: 'CLI Tools',
-    dir: 'packages/about-system-info',
+    dir: 'packages/about-system',
     title: 'about-system',
     icon: 'Cpu',
   },

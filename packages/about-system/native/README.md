@@ -44,7 +44,7 @@ rather than shipping a web page.
 ## Build
 
 ```bash
-cd packages/about-system-info
+cd packages/about-system
 bun install            # the CLI's own dependencies — the sidecar build needs them
 
 cd native
