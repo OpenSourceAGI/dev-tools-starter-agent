@@ -13,7 +13,6 @@
     "server-shell-setup",
     "---Libraries---",
     "code-tree-graph",
-    "export-svg-icons-typescript",
     "manage-storage",
     "ask-ai-button",
     "react-app-store-buttons",
@@ -26,6 +25,7 @@
     "verify-phone-sms",
     "web2mobile-wrapper",
     "---Other---",
+    "export-svg-typescript",
     "shadcn-sidebar",
     "shadcn-theme-menu",
     "share-image"
