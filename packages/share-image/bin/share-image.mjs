@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Upload images to Imgur anonymously by URL, file or folder and print the Imgur link for each.
-// Requires Node 18+. Uses sharp for JPEG→PNG conversion.
+// Requires Node 18+. Uses sharp to convert JPEG to PNG; PNG is never converted to JPEG.
 
 import { spawn } from "node:child_process";
 import { readdir, readFile, stat } from "node:fs/promises";
@@ -14,6 +14,9 @@ const USAGE = `Usage:
 
 Folders are searched for images, including in subfolders. Hidden files and
 folders and symlinks are skipped. Uploads are public and can't be deleted.
+
+JPEG images, from files, URLs or data URLs, are converted to PNG before
+uploading. PNG images stay PNG; nothing is ever converted to JPEG.
 
 Images upload one at a time. Progress such as "[2/5] Uploading photos/b.jpg"
 goes to stderr, so stdout stays safe to pipe.
@@ -45,7 +48,7 @@ const IMAGE_EXTENSIONS = new Set([
 ]);
 
 // JPEG files start with FF D8 FF. PNG files stay PNG; nothing is ever converted to JPEG.
-const JPEG_MAGIC = Buffer.from([0xff, 0xd8, 0xff]);
+const JPEG_EXTENSIONS = new Set([".jpg", ".jpeg", ".jpe", ".jfif"]);
 
 function isJpeg(buffer) {
 	return buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
@@ -56,6 +59,15 @@ async function toPng(buffer) {
 		return await sharp(buffer).png().toBuffer();
 	}
 	return buffer;
+}
+
+// Uploads the bytes, after converting a JPEG to PNG.
+async function postBytes(buffer) {
+	return postImage((await toPng(buffer)).toString("base64"));
+}
+
+function hasJpegExtension(path) {
+	return JPEG_EXTENSIONS.has(extname(path).toLowerCase());
 }
 
 // Retrying with the image bytes can't help when the client is rejected or rate limited.
@@ -126,14 +138,21 @@ async function upload(input) {
 	}
 
 	if (protocol === "data:") {
-		return postImage(input.split(",")[1] ?? "");
+		const [header, data = ""] = input.split(",");
+		return header.endsWith(";base64") ? postBytes(Buffer.from(data, "base64")) : postImage(data);
 	}
 	if (protocol !== "http:" && protocol !== "https:") {
 		throw new Error(`unsupported URL scheme "${protocol}"`);
 	}
 
+	// A JPEG is downloaded and converted here, because Imgur would keep it as JPEG.
+	if (hasJpegExtension(new URL(input).pathname)) {
+		return postBytes(Buffer.from(await downloadAsBase64(input), "base64"));
+	}
+
+	let link;
 	try {
-		return await postImage(input);
+		link = await postImage(input);
 	} catch (imgurError) {
 		if (NO_FALLBACK_STATUSES.has(imgurError.status)) {
 			throw imgurError;
@@ -149,10 +168,18 @@ async function upload(input) {
 				cause: imgurError,
 			});
 		}
-		const bytes = Buffer.from(image, "base64");
-		const png = await toPng(bytes);
-		return postImage(png.toString("base64"));
+		return postBytes(Buffer.from(image, "base64"));
 	}
+
+	// The URL had no JPEG extension but served a JPEG, so upload it again as PNG.
+	if (hasJpegExtension(new URL(link).pathname)) {
+		try {
+			return await postBytes(Buffer.from(await downloadAsBase64(input), "base64"));
+		} catch {
+			progress(`Couldn't convert ${input} to PNG, keeping the JPEG upload`);
+		}
+	}
+	return link;
 }
 
 async function findImages(folder) {
@@ -203,9 +230,7 @@ async function uploadItem({ input, isFile, error }) {
 		throw new Error(error);
 	}
 	if (isFile) {
-		const buffer = await readFile(input);
-		const png = await toPng(buffer);
-		return postImage(png.toString("base64"));
+		return postBytes(await readFile(input));
 	}
 	return upload(input);
 }

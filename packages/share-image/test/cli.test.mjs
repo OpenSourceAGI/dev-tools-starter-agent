@@ -555,16 +555,90 @@ describe("JPEG to PNG conversion", () => {
 	});
 });
 
+describe("JPEG URLs and data URLs", () => {
+	async function jpegAndPng() {
+		const jpeg = await sharp({ create: { width: 1, height: 1, channels: 3, background: { r: 255, g: 0, b: 0 } } })
+			.jpeg()
+			.toBuffer();
+		return { jpeg, png: await sharp(jpeg).png().toBuffer() };
+	}
+
+	test("downloads a .jpg URL and uploads it as PNG, without asking Imgur to fetch the JPEG", async () => {
+		const { jpeg, png } = await jpegAndPng();
+		const url = "https://example.com/photos/b.JPG?w=100";
+		const { code, stdout, calls } = await run([url], {
+			routes: {
+				[`GET ${url}`]: { bodyBase64: jpeg.toString("base64") },
+				[`POST ${png.toString("base64")}`]: uploaded(),
+			},
+		});
+		assert.equal(code, 0);
+		assert.equal(stdout, `${url}\thttps://i.imgur.com/abc.png\n`);
+		assert.deepEqual(calls.map(call => call.method), ["GET", "POST"]);
+		assert.ok(Buffer.from(calls[1].image, "base64").subarray(0, 4).equals(PNG_MAGIC));
+	});
+
+	test("reports a failed download of a JPEG URL", async () => {
+		const url = "https://example.com/b.jpeg";
+		const { code, stdout } = await run([url], { routes: { [`GET ${url}`]: { status: 404 } } });
+		assert.equal(code, 1);
+		assert.equal(stdout, `${url}\tERROR: HTTP 404\n`);
+	});
+
+	test("uploads again as PNG when a URL without a JPEG extension turns out to be a JPEG", async () => {
+		const { jpeg, png } = await jpegAndPng();
+		const url = "https://example.com/image?id=1";
+		const { code, stdout } = await run([url], {
+			routes: {
+				[`POST ${url}`]: uploaded("https://i.imgur.com/jpg.jpeg"),
+				[`GET ${url}`]: { bodyBase64: jpeg.toString("base64") },
+				[`POST ${png.toString("base64")}`]: uploaded("https://i.imgur.com/png.png"),
+			},
+		});
+		assert.equal(code, 0);
+		assert.equal(stdout, `${url}\thttps://i.imgur.com/png.png\n`);
+	});
+
+	test("keeps the JPEG link when the PNG upload can't be made", async () => {
+		const url = "https://example.com/image?id=1";
+		const { code, stdout, stderr } = await run([url], {
+			routes: {
+				[`POST ${url}`]: uploaded("https://i.imgur.com/jpg.jpg"),
+				[`GET ${url}`]: { status: 404 },
+			},
+		});
+		assert.equal(code, 0);
+		assert.equal(stdout, `${url}\thttps://i.imgur.com/jpg.jpg\n`);
+		assert.match(stderr, /Couldn't convert .* to PNG/);
+	});
+
+	test("converts a JPEG data URL to PNG", async () => {
+		const { jpeg, png } = await jpegAndPng();
+		const input = `data:image/jpeg;base64,${jpeg.toString("base64")}`;
+		const { code, calls } = await run([input], { routes: { [`POST ${png.toString("base64")}`]: uploaded() } });
+		assert.equal(code, 0);
+		assert.equal(calls.length, 1);
+	});
+
+	test("keeps a PNG data URL unchanged", async () => {
+		const { png } = await jpegAndPng();
+		const input = `data:image/png;base64,${png.toString("base64")}`;
+		const { code, calls } = await run([input], { routes: { [`POST ${png.toString("base64")}`]: uploaded() } });
+		assert.equal(code, 0);
+		assert.equal(calls[0].image, png.toString("base64"));
+	});
+});
+
 describe("demo", () => {
-	const input = "https://example.com/photos/cat.jpeg?w=100&s=2";
+	const input = "https://example.com/photos/cat.png?w=100&s=2";
 
 	test("prints the input file name and the Imgur link", async () => {
 		const { code, stdout } = await run([input], {
 			script: DEMO,
-			routes: { [`POST ${input}`]: uploaded("https://i.imgur.com/TtaUiZf.jpeg") },
+			routes: { [`POST ${input}`]: uploaded("https://i.imgur.com/TtaUiZf.png") },
 		});
 		assert.equal(code, 0);
-		assert.equal(stdout, "input file: cat.jpeg\noutput url: https://i.imgur.com/TtaUiZf.jpeg\n");
+		assert.equal(stdout, "input file: cat.png\noutput url: https://i.imgur.com/TtaUiZf.png\n");
 	});
 
 	test("prints the whole input when it has no file name", async () => {
@@ -583,7 +657,7 @@ describe("demo", () => {
 				routes: { [`POST ${input}`]: uploaded(link) },
 			});
 			assert.equal(code, 1);
-			assert.equal(stdout, `input file: cat.jpeg\nFAIL: not an Imgur image link: ${link}\n`);
+			assert.equal(stdout, `input file: cat.png\nFAIL: not an Imgur image link: ${link}\n`);
 		}
 	});
 
@@ -593,7 +667,7 @@ describe("demo", () => {
 			routes: { [`POST ${input}`]: rejected(429, "Too many requests") },
 		});
 		assert.equal(code, 1);
-		assert.equal(stdout, "input file: cat.jpeg\nFAIL: Too many requests\n");
+		assert.equal(stdout, "input file: cat.png\nFAIL: Too many requests\n");
 	});
 
 	test("fails when the CLI rejects its arguments", async () => {
