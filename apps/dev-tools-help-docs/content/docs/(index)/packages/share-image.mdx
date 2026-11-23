@@ -1,6 +1,6 @@
 ---
 title: 'share-img'
-description: 'CLI that uploads images to Imgur by URL, file or folder and prints the Imgur link for each one (JPEG is converted to PNG)'
+description: 'CLI that uploads images to Imgur by URL, file or folder and prints the Imgur link for each one (JPEG is converted to PNG, PNG stays PNG)'
 icon: Package
 ---
 
@@ -49,7 +49,7 @@ icon: Package
 
 Upload one or many images to Imgur by URL, file or folder and get the Imgur link for each one. No Imgur account or setup needed. Requires Node 18 or later.
 
-JPEG (`.jpg`, `.jpeg`) files are converted to PNG before uploading. PNG files stay PNG — nothing is ever converted to JPEG.
+JPEG images are converted to PNG before uploading, whether they come from a file, a URL or a data URL. PNG images stay PNG, and nothing is ever converted to JPEG.
 
 ## Install
 
@@ -90,7 +90,7 @@ Found 2 images in ./photos
 [1/2] Uploading photos/a.png
 photos/a.png	https://i.imgur.com/xxxxxxx.png
 [2/2] Uploading photos/trips/b.jpg
-photos/trips/b.jpg	https://i.imgur.com/yyyyyyy.jpg
+photos/trips/b.jpg	https://i.imgur.com/yyyyyyy.png
 Done: 2 uploaded, 0 failed
 Copied to clipboard
 ```
@@ -203,6 +203,8 @@ This makes a real, public upload to Imgur, and it can't be deleted with this too
 ## How it works
 
 Images upload one at a time, in input order. Imgur first tries to fetch each URL itself. If it can't, the image is downloaded on your machine and sent to Imgur directly, which helps with hosts that block Imgur. This retry is skipped on `401`, `403` and `429` responses, since sending the image again wouldn't help.
+
+A URL ending in `.jpg`, `.jpeg`, `.jpe` or `.jfif` is always downloaded on your machine, converted to PNG and sent to Imgur, because Imgur would keep it as JPEG. If a URL without one of those endings turns out to be a JPEG, it is downloaded, converted and uploaded again as PNG, and the PNG link is printed. The first, JPEG upload stays on Imgur.
 
 Each request times out after 60 seconds, and a timed-out upload is retried as described in [Retries](#retries).
 
